@@ -1,10 +1,12 @@
 import { clientApi } from "@/src/lib/api/client";
-import type { AdminLoginInput, AdminOtpInput } from "../types";
+import { AdminLoginResponse, AdminVerifyOtpResponse } from "../types/admin-auth.types";
 
 export const adminAuthApi = {
-  login: (data: AdminLoginInput) => clientApi.post("/admin/login", data),
-
-  verifyOtp: (data: AdminOtpInput) => clientApi.post("/admin/verify-otp", data),
-
-  logout: () => clientApi.post("/admin/logout"),
+  login: (data: { email: string; password: string }) => 
+    clientApi.post<AdminLoginResponse>("/admin/auth/login", data),
+    
+  verifyOtp: (data: { admin_id: number; code: string }) => 
+    clientApi.post<AdminVerifyOtpResponse>("/admin/auth/verify-otp", data),
+    
+  logout: () => clientApi.post("/admin/auth/logout"),
 };
