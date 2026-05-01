@@ -19,8 +19,8 @@ export const useRegister = () => {
       const res = await userAuthApi.register(data);
       setUser(res.data.data.user);
       router.push("/dashboard");
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Registration failed";
+    } catch (err: any) {
+      const message = err?.message || "Registration failed";
       setError(message);
     } finally {
       setLoading(false);

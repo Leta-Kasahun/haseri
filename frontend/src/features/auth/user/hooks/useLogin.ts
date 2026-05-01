@@ -19,8 +19,8 @@ export const useLogin = () => {
       const res = await userAuthApi.login(data);
       setUser(res.data.data.user);
       router.push("/dashboard");
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Login failed";
+    } catch (err: any) {
+      const message = err?.message || "Login failed";
       setError(message);
     } finally {
       setLoading(false);
