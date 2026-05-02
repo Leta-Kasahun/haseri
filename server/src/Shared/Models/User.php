@@ -24,8 +24,14 @@ class User extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
     public function refreshTokens()
     {
         return $this->hasMany(RefreshToken::class, 'user_id');
+    }
+
+    public function address()
+    {
+        return $this->hasOne(Address::class)->where('is_primary', true);
     }
 }

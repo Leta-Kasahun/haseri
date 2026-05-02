@@ -2,7 +2,6 @@
 namespace Haseri\Backend\Modules\Customer\Verification\Controllers;
 
 use Haseri\Backend\Modules\Customer\Verification\Services\CustomerVerificationService;
-use Haseri\Backend\Modules\Auth\Middleware\AuthMiddleware;
 use Haseri\Backend\Shared\Helpers\Response;
 use Haseri\Backend\Shared\Exceptions\HttpException;
 
@@ -15,10 +14,9 @@ class CustomerVerificationController
         $this->service = new CustomerVerificationService();
     }
 
-    public function initiate()
+    public function initiate($user)
     {
         try {
-            $user = AuthMiddleware::handle();
             $result = $this->service->initiate($user->id);
             Response::success($result);
         } catch (HttpException $e) {
@@ -26,10 +24,9 @@ class CustomerVerificationController
         }
     }
 
-    public function confirm()
+    public function confirm($user)
     {
         try {
-            $user = AuthMiddleware::handle();
             $result = $this->service->confirm($user->id);
             Response::success($result);
         } catch (HttpException $e) {
@@ -37,10 +34,9 @@ class CustomerVerificationController
         }
     }
 
-    public function status()
+    public function status($user)
     {
         try {
-            $user = AuthMiddleware::handle();
             $result = $this->service->status($user->id);
             Response::success($result);
         } catch (HttpException $e) {
