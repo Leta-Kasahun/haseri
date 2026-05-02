@@ -17,4 +17,20 @@ trait Notifiable
     {
         return $this->unreadNotifications()->count();
     }
+
+    public function markAsRead($id)
+    {
+        return $this->notifications()->where('id', $id)->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
+    }
+
+    public function markAllAsRead()
+    {
+        return $this->unreadNotifications()->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
+    }
 }

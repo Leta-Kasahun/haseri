@@ -1,9 +1,16 @@
 <?php
 namespace Haseri\Backend\Shared\Models;
+
 use Illuminate\Database\Eloquent\Model;
+use Haseri\Backend\Shared\Traits\Notifiable;
+use Haseri\Backend\Shared\Traits\HasLocation;
+
 class User extends Model
 {
+    use Notifiable, HasLocation;
+
     protected $table = 'users';
+
     protected $fillable = [
         'first_name',
         'last_name',
@@ -30,13 +37,13 @@ class User extends Model
         return $this->hasMany(RefreshToken::class, 'user_id');
     }
 
-    public function address()
+    public function customerVerification()
     {
-        return $this->hasOne(Address::class)->where('is_primary', true);
+        return $this->hasOne(CustomerVerification::class);
     }
 
     public function technicianVerification()
-{
-    return $this->hasOne(TechnicianVerification::class);
-}
+    {
+        return $this->hasOne(TechnicianVerification::class);
+    }
 }
