@@ -3,6 +3,7 @@ namespace Haseri\Backend\Modules\Auth\Controllers;
 
 use Haseri\Backend\Modules\Auth\Services\RegisterService;
 use Haseri\Backend\Modules\Auth\Requests\RegisterRequest;
+use Haseri\Backend\Shared\Helpers\Response;
 use Haseri\Backend\Shared\Exceptions\HttpException;
 
 class RegisterController
@@ -16,19 +17,24 @@ class RegisterController
             $service = new RegisterService();
             $result = $service->register($data);
 
-            http_response_code(201);
-            echo json_encode([
-                'success' => true,
-                'data'    => $result,
-            ]);
+            Response::success($result, 201);
+        } catch (\Throwable $e) {
+            $message = $e->getMessage();
+            $statusCode = $e instanceof HttpException ? $e->getStatusCode() : 500;
+            
+            // Sanitize database errors for users
+            if (str_contains($message, 'Duplicate entry')) {
+                $message = 'This email or phone number is already registered.';
+                $statusCode = 409;
+            } elseif ($statusCode === 500) {
+                $message = 'An unexpected error occurred. Please try again later.';
+            }
 
-        } catch (HttpException $e) {
-            http_response_code($e->getStatusCode());
-            echo json_encode([
-                'success' => false,
-                'error'   => $e->getMessage(),
-                'errors'  => method_exists($e, 'getErrors') ? $e->getErrors() : null,
-            ]);
+            Response::error(
+                $message, 
+                $statusCode,
+                method_exists($e, 'getErrors') ? $e->getErrors() : null
+            );
         }
     }
 }

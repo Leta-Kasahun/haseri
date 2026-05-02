@@ -8,3 +8,4 @@ export * from './TopProvidersSection';
 export * from './TestimonialSection';
 export * from './FaqSection';
 export * from './CtaSection';
+export * from './CategoryFilter';

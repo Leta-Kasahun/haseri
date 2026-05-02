@@ -1,127 +1,122 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { env } from "@/src/config/env";
 import { userAuthApi } from "@/src/features/auth/user/services";
-
-type GooglePayload = {
-  new_user?: boolean;
-  user?: { id: string | number };
-};
-
-type UseGoogleRegisterOptions = {
-  onNewUser: (userId: string | null) => void;
-  onExistingUser: (user: unknown) => void;
-};
+import { useAuth } from "@/src/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 declare global {
   interface Window {
     google?: any;
+    __googleInit?: boolean;
   }
 }
 
-export const useGoogleRegister = ({ onNewUser, onExistingUser }: UseGoogleRegisterOptions) => {
+export const useGoogleRegister = () => {
+  const { setUser } = useAuth();
+  const router = useRouter();
   const [googleLoading, setGoogleLoading] = useState(false);
   const [googleReady, setGoogleReady] = useState(false);
   const [googleError, setGoogleError] = useState<string | null>(null);
-  const googleInitRef = useRef(false);
-  const onNewUserRef = useRef(onNewUser);
-  const onExistingUserRef = useRef(onExistingUser);
 
-  useEffect(() => {
-    onNewUserRef.current = onNewUser;
-    onExistingUserRef.current = onExistingUser;
-  }, [onExistingUser, onNewUser]);
+  const handleResponse = async (response: { credential?: string }) => {
+    if (!response?.credential) {
+      setGoogleLoading(false);
+      return;
+    }
+    try {
+      setGoogleLoading(true);
+      setGoogleError(null);
+      const res = await userAuthApi.google({ id_token: response.credential });
+      const payload = res.data.data;
+      if (payload?.new_user) {
+        router.push("/register/role");
+        return;
+      }
+      if (payload?.user) {
+        setUser(payload.user);
+        router.push(payload.user.role === "admin" ? "/admin/dashboard" : "/dashboard");
+        return;
+      }
+    } catch (err: any) {
+      setGoogleError(err?.message || "Authentication failed");
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!env.GOOGLE_CLIENT_ID || typeof window === "undefined") return;
-
     const loadGoogleScript = () =>
-      new Promise<void>((resolve, reject) => {
-        if (document.querySelector("script[data-google-identity]")) {
-          resolve();
-          return;
-        }
-
+      new Promise<void>((resolve) => {
+        if (document.querySelector("script[data-google-identity]")) return resolve();
         const script = document.createElement("script");
         script.src = "https://accounts.google.com/gsi/client";
         script.async = true;
         script.defer = true;
         script.dataset.googleIdentity = "true";
         script.onload = () => resolve();
-        script.onerror = () => reject(new Error("Failed to load Google sign-in"));
         document.head.appendChild(script);
       });
-
-    const initGoogle = async () => {
+    const init = async () => {
       try {
         await loadGoogleScript();
-        if (!window.google?.accounts?.id || googleInitRef.current) return;
-
-        window.google.accounts.id.initialize({
-          client_id: env.GOOGLE_CLIENT_ID,
-          callback: async (response: { credential?: string }) => {
-            if (!response?.credential) {
-              setGoogleLoading(false);
-              setGoogleError("Google sign-in failed");
-              return;
-            }
-
-            try {
-              setGoogleError(null);
-              const res = await userAuthApi.google({ id_token: response.credential });
-              const payload = res.data.data as GooglePayload;
-
-              if (payload?.new_user) {
-                const userId = payload.user?.id ? String(payload.user.id) : null;
-                onNewUserRef.current(userId);
-                return;
-              }
-
-              if (payload?.user) {
-                onExistingUserRef.current(payload.user);
-                return;
-              }
-
-              setGoogleError("Google sign-in failed");
-            } catch (err: any) {
-              const message = err?.message || "Google sign-in failed";
-              setGoogleError(message);
-            } finally {
-              setGoogleLoading(false);
-            }
-          },
-        });
-
-        googleInitRef.current = true;
+        if (!window.google?.accounts?.id) return;
+        
+        if (!window.__googleInit) {
+          window.google.accounts.id.initialize({
+            client_id: env.GOOGLE_CLIENT_ID,
+            callback: handleResponse,
+            use_fedcm_for_prompt: false, // Set to false for better compatibility
+            auto_select: false,
+          });
+          window.__googleInit = true;
+          console.log("Google SDK Initialized");
+        }
         setGoogleReady(true);
-      } catch (err: any) {
-        const message = err?.message || "Google sign-in failed";
-        setGoogleError(message);
+      } catch (err) {
+        console.error("Google SDK Initialization failed", err);
       }
     };
-
-    initGoogle();
+    init();
   }, []);
 
   const handleGoogleLogin = () => {
-    if (!env.GOOGLE_CLIENT_ID) {
-      setGoogleError("Google sign-in is not configured");
-      return;
-    }
-
+    if (googleLoading) return;
+    
     if (!googleReady || !window.google?.accounts?.id) {
-      setGoogleError("Google sign-in is not ready yet");
+      setGoogleError("Google Sign-In is not ready yet. Please refresh.");
       return;
     }
 
     setGoogleError(null);
     setGoogleLoading(true);
-    window.google.accounts.id.prompt((notification: any) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        setGoogleLoading(false);
-      }
-    });
+    
+    try {
+      window.google.accounts.id.prompt((notification: any) => {
+        console.log("Google Prompt Notification:", notification.getMomentType(), notification.isDisplayMoment());
+        
+        if (notification.isNotDisplayed()) {
+          console.warn("Google Prompt not displayed:", notification.getNotDisplayedReason());
+          setGoogleError("Please check your browser settings or try again later.");
+          setGoogleLoading(false);
+        }
+        
+        if (notification.isSkippedMoment()) {
+          console.warn("Google Prompt skipped:", notification.getSkippedReason());
+          setGoogleLoading(false);
+        }
+
+        if (notification.isDismissedMoment()) {
+           setGoogleLoading(false);
+        }
+      });
+    } catch (err) {
+      console.error("Google prompt failed", err);
+      setGoogleLoading(false);
+      setGoogleError("Failed to trigger Google Sign-In");
+    }
   };
 
   return { googleLoading, googleReady, googleError, handleGoogleLogin };

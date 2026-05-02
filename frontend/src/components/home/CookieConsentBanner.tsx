@@ -15,7 +15,7 @@ export const CookieConsentBanner = () => {
     setHasMounted(true);
     const stored = localStorage.getItem(CONSENT_KEY);
     if (!stored) {
-      // Small delay so it smoothly appears after page loads
+     
       const timer = setTimeout(() => setVisible(true), 1500);
       return () => clearTimeout(timer);
     }
@@ -45,7 +45,7 @@ export const CookieConsentBanner = () => {
         >
           <div className="w-full max-w-7xl pointer-events-auto bg-slate-50 dark:bg-slate-900 border border-border/50 shadow-2xl rounded-t-2xl md:rounded-2xl px-6 py-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative">
             
-            {/* Center Dropdown Handle */}
+         
             <button 
               onClick={handleReject} 
               className="absolute -top-3 left-1/2 -translate-x-1/2 bg-slate-50 dark:bg-slate-900 border border-border/50 rounded-full p-1 shadow-sm text-muted-foreground hover:text-foreground transition-all hover:translate-y-0.5 group"

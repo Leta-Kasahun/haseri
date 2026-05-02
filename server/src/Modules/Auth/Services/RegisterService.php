@@ -27,7 +27,7 @@ class RegisterService
             'first_name' => $data['first_name'],
             'last_name'  => $data['last_name'],
             'email'      => $data['email'],
-            'phone'      => $data['phone'] ?? null,
+            'phone'      => !empty($data['phone']) ? $data['phone'] : null,
             'password'   => password_hash($data['password'], PASSWORD_DEFAULT),
             'role'       => $data['role'],
         ]);

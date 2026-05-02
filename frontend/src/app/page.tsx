@@ -1,5 +1,5 @@
 import React from "react";
-import { HomeTemplate } from "@/src/home/HomeTemplate";
+import { HomeTemplate } from "@/src/components/home/HomeTemplate";
 
 export default function HomePage() {
   return <HomeTemplate />;

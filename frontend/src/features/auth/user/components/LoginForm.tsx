@@ -13,6 +13,7 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { emailSchema, phoneSchema, passwordSchema } from "@/src/utils/validators";
 import { getRequiredSchemaError } from "@/src/utils/validators/form";
+import { useGoogleRegister } from "../../shared";
 
 declare global {
   interface Window {
@@ -29,77 +30,6 @@ export const LoginForm = () => {
   const [usePhone, setUsePhone] = useState(false);
   const [touched, setTouched] = useState({ identity: false, password: false });
   const [errors, setErrors] = useState<{ identity?: string | null; password?: string | null }>({});
-  const [googleLoading, setGoogleLoading] = useState(false);
-  const [googleReady, setGoogleReady] = useState(false);
-  const [googleError, setGoogleError] = useState<string | null>(null);
-  const googleInitRef = useRef(false);
-
-  useEffect(() => {
-    if (!env.GOOGLE_CLIENT_ID || typeof window === "undefined") return;
-
-    const loadGoogleScript = () =>
-      new Promise<void>((resolve, reject) => {
-        if (document.querySelector("script[data-google-identity]")) {
-          resolve();
-          return;
-        }
-
-        const script = document.createElement("script");
-        script.src = "https://accounts.google.com/gsi/client";
-        script.async = true;
-        script.defer = true;
-        script.dataset.googleIdentity = "true";
-        script.onload = () => resolve();
-        script.onerror = () => reject(new Error("Failed to load Google sign-in"));
-        document.head.appendChild(script);
-      });
-
-    const initGoogle = async () => {
-      try {
-        await loadGoogleScript();
-        if (!window.google?.accounts?.id || googleInitRef.current) return;
-
-        window.google.accounts.id.initialize({
-          client_id: env.GOOGLE_CLIENT_ID,
-          callback: async (response: { credential?: string }) => {
-            if (!response?.credential) {
-              setGoogleLoading(false);
-              setGoogleError("Google sign-in failed");
-              return;
-            }
-
-            try {
-              setGoogleError(null);
-              const res = await userAuthApi.google({ id_token: response.credential });
-              const payload = res.data.data;
-
-              if (payload?.new_user) {
-                router.push("/register/role");
-                return;
-              }
-
-              setUser(payload.user);
-              router.push("/dashboard");
-            } catch (err: any) {
-              const message = err?.message || "Google sign-in failed";
-              setGoogleError(message);
-            } finally {
-              setGoogleLoading(false);
-            }
-          },
-        });
-
-        googleInitRef.current = true;
-        setGoogleReady(true);
-      } catch (err: any) {
-        const message = err?.message || "Google sign-in failed";
-        setGoogleError(message);
-      }
-    };
-
-    initGoogle();
-  }, [router, setUser]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -137,36 +67,20 @@ export const LoginForm = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
-    if (!env.GOOGLE_CLIENT_ID) {
-      setGoogleError("Google sign-in is not configured");
-      return;
-    }
+  const googleAuth = useGoogleRegister();
 
-    if (!googleReady || !window.google?.accounts?.id) {
-      setGoogleError("Google sign-in is not ready yet");
-      return;
-    }
 
-    setGoogleError(null);
-    setGoogleLoading(true);
-    window.google.accounts.id.prompt((notification: any) => {
-      if (notification.isNotDisplayed() || notification.isSkippedMoment()) {
-        setGoogleLoading(false);
-      }
-    });
-  };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className="w-full max-w-xl mx-auto px-4 sm:px-0">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border border-border/50 p-10 shadow-2xl shadow-primary/5 rounded-none"
+        className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border border-border/50 p-6 sm:p-10 shadow-2xl shadow-primary/5 rounded-none"
       >
         <div className="mb-10 text-center">
           <h1 className="text-4xl font-black uppercase tracking-tighter mb-3">Welcome Back</h1>
-          <p className="text-muted-foreground text-sm font-medium tracking-wide">
+          <p className="text-foreground/80 text-sm font-semibold tracking-wide">
             Enter your credentials to continue
           </p>
         </div>
@@ -174,7 +88,7 @@ export const LoginForm = () => {
         <form onSubmit={handleSubmit} className="space-y-8">
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">
                 {usePhone ? "Phone Number" : "Email Address"}
               </label>
               <button
@@ -191,18 +105,34 @@ export const LoginForm = () => {
               </button>
             </div>
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
-                {usePhone ? <Phone className="w-4 h-4" /> : <Mail className="w-4 h-4" />}
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors flex items-center gap-2">
+                {usePhone ? (
+                  <div className="flex items-center gap-1.5 border-r border-border pr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="14" viewBox="0 0 640 480" className="rounded-sm shadow-sm">
+                      <path fill="#006233" d="M0 0h640v160H0z"/>
+                      <path fill="#fce300" d="M0 160h640v160H0z"/>
+                      <path fill="#ef3340" d="M0 320h640v160H0z"/>
+                      <g transform="translate(320 240) scale(1.06667)">
+                        <circle r="120" fill="#0039a6"/>
+                        <path fill="none" stroke="#fce300" strokeWidth="12" d="M0-100l23.5 72.4h76.1L38.2 16.8l23.5 72.4L0 44.8l-61.7 44.4 23.5-72.4-61.4-44.4h76.1z"/>
+                        <circle r="25" fill="#fce300"/>
+                      </g>
+                    </svg>
+                    <span className="text-[11px] font-black text-foreground tracking-tighter">+251</span>
+                  </div>
+                ) : (
+                  <Mail className="w-4 h-4" />
+                )}
               </div>
               <Input
                 type={usePhone ? "tel" : "email"}
-                placeholder={usePhone ? "+251..." : "alex@example.com"}
+                placeholder={usePhone ? "912345678" : "alex@example.com"}
                 value={identity}
                 onChange={(e) => updateIdentity(e.target.value)}
                 onBlur={() =>
                   setTouched((prev) => ({ ...prev, identity: true }))
                 }
-                className="rounded-none border border-border h-14 pl-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50"
+                className={`rounded-none border border-border h-14 ${usePhone ? "pl-24" : "pl-12"} focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50`}
               />
             </div>
             {touched.identity && errors.identity && (
@@ -214,7 +144,7 @@ export const LoginForm = () => {
 
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60">
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">
                 Password
               </label>
               <Link
@@ -276,8 +206,8 @@ export const LoginForm = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={handleGoogleLogin}
-              disabled={googleLoading}
+              onClick={googleAuth.handleGoogleLogin}
+              disabled={googleAuth.googleLoading}
               className="rounded-none h-14 border border-border bg-white text-slate-900 font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-white/90 transition-all"
             >
               <span className="flex items-center">
@@ -294,12 +224,12 @@ export const LoginForm = () => {
                   <path fill="#FBBC05" d="M10.57 28.44a14.5 14.5 0 0 1-.76-4.44c0-1.54.27-3.03.76-4.44l-8.01-6.22A24 24 0 0 0 0 24c0 3.84.9 7.47 2.56 10.78l8.01-6.34z" />
                   <path fill="#34A853" d="M24 48c6.44 0 11.86-2.12 15.81-5.76l-7.19-5.58c-2.01 1.35-4.58 2.15-8.62 2.15-6.27 0-11.65-3.58-14.02-8.78l-8.01 6.34C6.47 42.62 14.62 48 24 48z" />
                 </svg>
-                {googleLoading ? "Connecting..." : "Sign in with Google"}
+                {googleAuth.googleLoading ? "Connecting..." : "Sign in with Google"}
               </span>
             </Button>
-            {googleError && (
+            {googleAuth.googleError && (
               <p className="text-[10px] text-destructive font-semibold uppercase tracking-wider">
-                {googleError}
+                {googleAuth.googleError}
               </p>
             )}
           </div>

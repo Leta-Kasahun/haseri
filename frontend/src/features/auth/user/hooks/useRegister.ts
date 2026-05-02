@@ -17,9 +17,14 @@ export const useRegister = () => {
     setError(null);
     try {
       const res = await userAuthApi.register(data);
+      if (!res.data?.data?.user) {
+        console.error("Registration response missing user data:", res.data);
+        throw new Error("Registration succeeded but user data is missing in response");
+      }
       setUser(res.data.data.user);
       router.push("/dashboard");
     } catch (err: any) {
+      console.error("Registration error:", err);
       const message = err?.message || "Registration failed";
       setError(message);
     } finally {

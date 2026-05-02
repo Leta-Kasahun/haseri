@@ -11,7 +11,7 @@ import { Toaster } from "../components/ui/sonner";
 import { AuthProvider, QueryProvider} from "../providers"
 import { cn } from "@/src/lib/utils";
 
-import { CookieConsentBanner } from "@/src/home/CookieConsentBanner";
+import { CookieConsentBanner } from "@/src/components/home/CookieConsentBanner";
 
 const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 

@@ -17,6 +17,8 @@ interface RegisterFormProps {
   mode?: "details" | "role";
   submitLabel?: string;
   onSubmit?: (data: Omit<RegisterInput, "role">) => Promise<void>;
+  children?: React.ReactNode;
+  className?: string;
 }
 
 export const RegisterForm = ({
@@ -24,6 +26,8 @@ export const RegisterForm = ({
   mode = "role",
   submitLabel,
   onSubmit,
+  children,
+  className,
 }: RegisterFormProps) => {
   const { register, loading, error } = useRegister();
   const [submitting, setSubmitting] = useState(false);
@@ -120,11 +124,11 @@ export const RegisterForm = ({
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
+    <div className={`w-full ${className}`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border border-border/50 p-10 shadow-2xl shadow-primary/5 rounded-none"
+        className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border border-border/50 p-6 sm:p-10 shadow-2xl shadow-primary/5 rounded-none"
       >
         <div className="mb-10 text-center">
           <div className="inline-flex items-center justify-center w-14 h-14 bg-primary/5 border border-primary/20 rounded-none mb-6">
@@ -139,7 +143,7 @@ export const RegisterForm = ({
               "Create your account"
             )}
           </h1>
-          <p className="text-muted-foreground text-sm font-medium tracking-wide">
+          <p className="text-foreground/80 text-sm font-semibold tracking-wide">
             {role ? "Begin your journey with Haseri" : "Start with your account details"}
           </p>
         </div>
@@ -147,7 +151,7 @@ export const RegisterForm = ({
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60">First Name</label>
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">First Name</label>
               <Input
                 name="first_name"
                 placeholder="John"
@@ -163,7 +167,7 @@ export const RegisterForm = ({
               )}
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60">Last Name</label>
+              <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">Last Name</label>
               <Input
                 name="last_name"
                 placeholder="Doe"
@@ -181,7 +185,7 @@ export const RegisterForm = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60">Email Address</label>
+            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">Email Address</label>
             <div className="relative group">
               <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
                 <Mail className="w-4 h-4" />
@@ -204,19 +208,31 @@ export const RegisterForm = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60">Phone (Optional)</label>
+            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">Phone (Optional)</label>
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
-                <Phone className="w-4 h-4" />
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors flex items-center gap-2">
+                <div className="flex items-center gap-1.5 border-r border-border pr-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="14" viewBox="0 0 640 480" className="rounded-sm shadow-sm">
+                    <path fill="#006233" d="M0 0h640v160H0z"/>
+                    <path fill="#fce300" d="M0 160h640v160H0z"/>
+                    <path fill="#ef3340" d="M0 320h640v160H0z"/>
+                    <g transform="translate(320 240) scale(1.06667)">
+                      <circle r="120" fill="#0039a6"/>
+                      <path fill="none" stroke="#fce300" strokeWidth="12" d="M0-100l23.5 72.4h76.1L38.2 16.8l23.5 72.4L0 44.8l-61.7 44.4 23.5-72.4-61.4-44.4h76.1z"/>
+                      <circle r="25" fill="#fce300"/>
+                    </g>
+                  </svg>
+                  <span className="text-[11px] font-black text-foreground tracking-tighter">+251</span>
+                </div>
               </div>
               <Input
                 name="phone"
                 type="tel"
-                placeholder="+251..."
+                placeholder="912345678"
                 value={formData.phone}
                 onChange={handleChange}
                 onBlur={() => setTouched((prev) => ({ ...prev, phone: true }))}
-                className="rounded-none border border-border h-12 pl-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50"
+                className="rounded-none border border-border h-12 pl-24 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50"
               />
             </div>
             {touched.phone && errors.phone && (
@@ -232,7 +248,7 @@ export const RegisterForm = ({
           </div>
 
           <div className="space-y-2">
-            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/60">Security</label>
+            <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-foreground/80">Security</label>
             <div className="grid grid-cols-1 gap-4">
               <div className="relative group">
                 <div className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-primary transition-colors">
@@ -291,6 +307,8 @@ export const RegisterForm = ({
             {!isLoading && <ArrowRight className="ml-3 w-4 h-4" />}
           </Button>
         </form>
+
+        {children}
 
         <p className="mt-8 text-center text-xs font-medium text-muted-foreground tracking-tight">
           Already a member?{" "}

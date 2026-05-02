@@ -31,10 +31,15 @@ export const useGoogleRoleSelection = (storageKey = "haseri:register:google") =>
 
       try {
         const res = await userAuthApi.googleRole({ user_id: googleUserId, role });
+        if (!res.data?.data?.user) {
+          console.error("Google role response missing user data:", res.data);
+          throw new Error("Failed to receive user data after setting role");
+        }
         setUser(res.data.data.user as any);
         sessionStorage.removeItem(storageKey);
         router.push("/dashboard");
       } catch (err: any) {
+        console.error("Google role selection error:", err);
         const message = err?.message || "Google sign-in failed";
         setGoogleRoleError(message);
       } finally {

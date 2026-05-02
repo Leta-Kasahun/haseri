@@ -32,9 +32,19 @@ class LoginController
             unset($result['refresh_token']);
 
             Response::success($result);
-        } catch (HttpException $e) {
-            Response::error($e->getMessage(), $e->getStatusCode(), 
-                method_exists($e, 'getErrors') ? $e->getErrors() : null);
+        } catch (\Throwable $e) {
+            $message = $e->getMessage();
+            $statusCode = $e instanceof HttpException ? $e->getStatusCode() : 500;
+            
+            if ($statusCode === 500) {
+                $message = 'An unexpected error occurred. Please try again later.';
+            }
+
+            Response::error(
+                $message, 
+                $statusCode,
+                method_exists($e, 'getErrors') ? $e->getErrors() : null
+            );
         }
     }
 
@@ -63,8 +73,8 @@ class LoginController
             unset($result['refresh_token']);
 
             Response::success($result);
-        } catch (HttpException $e) {
-            Response::error($e->getMessage(), $e->getStatusCode());
+        } catch (\Throwable $e) {
+            Response::error($e->getMessage(), $e instanceof HttpException ? $e->getStatusCode() : 500);
         }
     }
 
@@ -80,8 +90,8 @@ class LoginController
             Cookie::delete('refresh_token');
 
             Response::success(['message' => 'Logged out']);
-        } catch (HttpException $e) {
-            Response::error($e->getMessage(), $e->getStatusCode());
+        } catch (\Throwable $e) {
+            Response::error($e->getMessage(), $e instanceof HttpException ? $e->getStatusCode() : 500);
         }
     }
 }

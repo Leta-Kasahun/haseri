@@ -1,7 +1,9 @@
 import { z } from "zod";
 const frontendPublicEnvSchema = z.object({
   NEXT_PUBLIC_APP_URL: z.string().trim().url().default("http://localhost:3000"),
+  NEXT_PUBLIC_BASE_URL: z.string().trim().url().optional(),
   NEXT_PUBLIC_BACKEND_ORIGIN: z.string().trim().url().default("http://localhost:8000"),
+  NEXT_PUBLIC_API_URL: z.string().trim().url().optional(),
   NEXT_PUBLIC_API_PREFIX: z
     .string()
     .trim()
@@ -14,7 +16,9 @@ const frontendPublicEnvSchema = z.object({
 export const parseFrontendPublicEnv = (envSource: NodeJS.ProcessEnv) => {
   const parsed = frontendPublicEnvSchema.safeParse({
     NEXT_PUBLIC_APP_URL: envSource.NEXT_PUBLIC_APP_URL,
+    NEXT_PUBLIC_BASE_URL: envSource.NEXT_PUBLIC_BASE_URL,
     NEXT_PUBLIC_BACKEND_ORIGIN: envSource.NEXT_PUBLIC_BACKEND_ORIGIN,
+    NEXT_PUBLIC_API_URL: envSource.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_API_PREFIX: envSource.NEXT_PUBLIC_API_PREFIX,
     NEXT_PUBLIC_API_TIMEOUT_MS: envSource.NEXT_PUBLIC_API_TIMEOUT_MS,
     NEXT_PUBLIC_GOOGLE_CLIENT_ID: envSource.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
