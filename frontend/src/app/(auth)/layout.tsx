@@ -13,13 +13,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
       <div className="w-full lg:w-1/2 h-[240px] sm:h-[320px] lg:h-screen lg:sticky lg:top-0 overflow-hidden bg-slate-900">
         <div className="absolute inset-0 z-10 bg-primary/10 mix-blend-overlay" />
         <div className="absolute inset-0 z-20 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-80" />
-        <Image
-          src="/images/auth-side.png"
-          alt="Haseri Platform"
-          fill
-          className="object-cover grayscale-[0.3]"
-          priority
-        />
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="/images/auth-side.png"
+            alt="Haseri Platform"
+            fill
+            sizes="(max-width: 1024px) 100vw, 50vw"
+            className="object-cover grayscale-[0.3]"
+            priority
+          />
+        </div>
         
         {/* Branding on Image */}
         <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 lg:bottom-16 lg:left-16 z-30 max-w-xs sm:max-w-sm lg:max-w-md">

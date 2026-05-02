@@ -1,0 +1,36 @@
+import React from "react";
+import { Navbar } from "@/src/components/layout/Navbar";
+import { Footer } from "@/src/components/layout/Footer";
+import { 
+  HeroSection, 
+  FeaturesSection,
+  CategoriesSection, 
+  HowItWorksSection,
+  StatsSection,
+  ExploreJobsSection,
+  TopProvidersSection,
+  TestimonialSection,
+  FaqSection,
+  CtaSection
+} from "@/src/home/sections";
+
+export const HomeTemplate = () => {
+  return (
+    <div className="flex flex-col min-h-screen bg-background">
+      <Navbar />
+      <main className="flex-grow">
+        <HeroSection />
+        <FeaturesSection />
+        <CategoriesSection />
+        <HowItWorksSection />
+        <StatsSection />
+        <ExploreJobsSection />
+        <TopProvidersSection />
+        <TestimonialSection />
+        <FaqSection />
+        <CtaSection />
+      </main>
+      <Footer />
+    </div>
+  );
+};

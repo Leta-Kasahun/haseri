@@ -24,6 +24,7 @@ export const Navbar = () => {
     { name: "Providers", href: "/providers" },
     { name: "Categories", href: "/categories" },
     { name: "How it Works", href: "/how-it-works" },
+    { name: "About", href: "/about" },
   ];
 
   return (
@@ -71,8 +72,8 @@ export const Navbar = () => {
           <Button variant="ghost" className="rounded-none font-bold uppercase text-xs tracking-widest" asChild>
             <Link href="/login">Login</Link>
           </Button>
-          <Button className="rounded-none px-5  h-10 bg-primary hover:bg-primary/90 text-white font-bold uppercase text-xs tracking-widest shadow-none border-2 border-primary transition-all active:scale-95">
-            Get Started
+          <Button className="rounded-none px-5 h-10 bg-primary hover:bg-primary/90 text-white font-bold uppercase text-xs tracking-widest shadow-none border-2 border-primary transition-all active:scale-95" asChild>
+            <Link href="/register">Get Started</Link>
           </Button>
         </div>
 
