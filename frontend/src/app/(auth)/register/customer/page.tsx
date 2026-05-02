@@ -1,11 +1,5 @@
-import { RegisterForm } from "@/src/features/auth/user/components/RegisterForm";
-import { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Register as Customer | Haseri",
-  description: "Join Haseri as a customer to hire experts",
-};
+import { redirect } from "next/navigation";
 
 export default function RegisterCustomerPage() {
-  return <RegisterForm role="customer" />;
+  redirect("/register");
 }
