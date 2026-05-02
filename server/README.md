@@ -1,115 +1,213 @@
 ```bash
 server/
+├── public/
+│   ├── index.php
+│   └── .htaccess
 │
-├── public/                                    # Entry Point Layer
-│   ├── index.php                              # Application entry
-│   └── .htaccess                              # URL rewriting
-│
-├── bootstrap/                                 # Boot Layer
-│   └── app.php                                # Load configs, start app
+├── bootstrap/
+│   └── app.php
 │
 ├── src/
+│   ├── Core/
+│   │   ├── Application.php
+│   │   ├── Router.php
+│   │   └── Database.php
 │   │
-│   ├── Core/                                  # Engine Layer
-│   │   ├── Application.php                    # App lifecycle
-│   │   ├── Router.php                         # Route dispatcher
-│   │   └── Database.php                       # Database connection
+│   ├── Config/
+│   │   ├── app.php
+│   │   ├── database.php
+│   │   ├── cors.php
+│   │   ├── chapa.php
+│   │   └── upload.php
 │   │
-│   ├── Config/                                # Configuration Layer
-│   │   ├── app.php                            # App settings
-│   │   ├── database.php                       # DB credentials
-│   │   ├── cors.php                           # CORS settings
-│   │   ├── jwt.php                            # JWT settings
-│   │   └── session.php                        # Session settings
+│   ├── Routes/
+│   │   ├── api.php
+│   │   ├── auth.php
+│   │   ├── admin.php
+│   │   ├── customer.php
+│   │   ├── technician.php
+│   │   ├── jobs.php
+│   │   ├── payments.php
+│   │   ├── reviews.php
+│   │   └── notifications.php
 │   │
-│   ├── Routes/                                # Route Definitions
-│   │   ├── api.php                            # Main API routes
-│   │   ├── auth.php                           # Auth routes
-│   │   ├── customer.php                       # Customer routes
-│   │   ├── technician.php                     # Technician routes
-│   │   ├── booking.php                        # Booking routes
-│   │   ├── payment.php                        # Payment routes
-│   │   ├── review.php                         # Review routes
-│   │   ├── notification.php                   # Notification routes
-│   │   └── admin.php                          # Admin routes
+│   ├── Shared/
+│   │   ├── Models/
+│   │   │   ├── User.php
+│   │   │   ├── Admin.php
+│   │   │   ├── AdminOtp.php
+│   │   │   ├── RefreshToken.php
+│   │   │   ├── Address.php
+│   │   │   ├── CustomerVerification.php
+│   │   │   ├── TechnicianVerification.php
+│   │   │   ├── Payment.php
+│   │   │   ├── JobCategory.php
+│   │   │   ├── Job.php
+│   │   │   ├── JobApplication.php
+│   │   │   ├── Review.php
+│   │   │   └── Notification.php
+│   │   │
+│   │   ├── Helpers/
+│   │   │   ├── JWT.php
+│   │   │   ├── Response.php
+│   │   │   ├── Cookie.php
+│   │   │   ├── ValidationHelper.php
+│   │   │   ├── EmailHelper.php
+│   │   │   ├── CorsHelper.php
+│   │   │   └── Upload/
+│   │   │       ├── FileUploader.php
+│   │   │       └── ImageUploader.php
+│   │   │
+│   │   ├── Exceptions/
+│   │   │   ├── HttpException.php
+│   │   │   ├── BadRequestException.php
+│   │   │   ├── UnauthorizedException.php
+│   │   │   ├── ForbiddenException.php
+│   │   │   ├── NotFoundException.php
+│   │   │   ├── ConflictException.php
+│   │   │   ├── ValidationException.php
+│   │   │   ├── TooManyRequestsException.php
+│   │   │   └── InternalServerErrorException.php
+│   │   │
+│   │   ├── Enums/
+│   │   │   ├── UserRole.php
+│   │   │   ├── PaymentType.php
+│   │   │   ├── JobStatus.php
+│   │   │   ├── VerificationStatus.php
+│   │   │   ├── ApplicationStatus.php
+│   │   │   ├── DocumentType.php
+│   │   │   └── NotificationType.php
+│   │   │
+│   │   ├── Traits/
+│   │   │   ├── Notifiable.php
+│   │   │   └── HasLocation.php
+│   │   │
+│   │   └── Services/
+│   │       └── TrustScoreService.php
 │   │
-│   ├── Shared/                                # Shared Resources
-│   │   ├── Models/                            # Eloquent models
-│   │   ├── Helpers/                           # Utility functions
-│   │   ├── Exceptions/                        # Custom exceptions
-│   │   ├── Traits/                            # Reusable traits
-│   │   └── Enums/                             # Constants/Enums
-│   │
-│   └── Modules/                               # Feature Modules
-│       │
-│       ├── Auth/                              # Authentication
+│   └── Modules/
+│       ├── Auth/
 │       │   ├── Controllers/
+│       │   │   ├── RegisterController.php
+│       │   │   ├── LoginController.php
+│       │   │   ├── GoogleAuthController.php
+│       │   │   ├── ForgotPasswordController.php
+│       │   │   ├── ResetPasswordController.php
+│       │   │   └── AdminAuthController.php
 │       │   ├── Services/
+│       │   │   ├── RegisterService.php
+│       │   │   ├── LoginService.php
+│       │   │   ├── AdminAuthService.php
+│       │   │   ├── ForgotPasswordService.php
+│       │   │   └── ResetPasswordService.php
 │       │   ├── Requests/
+│       │   │   ├── RegisterRequest.php
+│       │   │   ├── LoginRequest.php
+│       │   │   ├── VerifyIdentityRequest.php
+│       │   │   ├── ResetPasswordRequest.php
+│       │   │   ├── AdminLoginRequest.php
+│       │   │   └── AdminOtpRequest.php
 │       │   ├── Middleware/
+│       │   │   └── AuthMiddleware.php
 │       │   └── Resources/
 │       │
-│       ├── Customer/                          # Customer Management
+│       ├── Customer/
 │       │   ├── Controllers/
+│       │   │   └── CustomerController.php
 │       │   ├── Services/
+│       │   │   └── CustomerService.php
+│       │   ├── Requests/
+│       │   │   └── UpdateProfileRequest.php
+│       │   └── Resources/
+│       │       └── CustomerResource.php
+│       │
+│       ├── Technician/
+│       │   ├── Controllers/
+│       │   │   ├── TechnicianController.php
+│       │   │   └── TechnicianVerificationController.php
+│       │   ├── Services/
+│       │   │   ├── TechnicianService.php
+│       │   │   └── TechnicianVerificationService.php
 │       │   ├── Repositories/
+│       │   │   └── TechnicianRepository.php
 │       │   ├── Requests/
-│       │   ├── Middleware/
+│       │   │   └── TechnicianVerificationRequest.php
 │       │   └── Resources/
+│       │       └── TechnicianResource.php
 │       │
-│       ├── Technician/                        # Technician Management
+│       ├── Jobs/
 │       │   ├── Controllers/
+│       │   │   ├── JobController.php
+│       │   │   └── JobApplicationController.php
 │       │   ├── Services/
+│       │   │   ├── JobService.php
+│       │   │   └── JobApplicationService.php
 │       │   ├── Repositories/
+│       │   │   └── JobRepository.php
 │       │   ├── Requests/
-│       │   ├── Middleware/
+│       │   │   ├── CreateJobRequest.php
+│       │   │   └── ApplicationRequest.php
 │       │   └── Resources/
+│       │       ├── JobResource.php
+│       │       └── JobCollection.php
 │       │
-│       ├── Booking/                           # Booking System
+│       ├── Payments/
 │       │   ├── Controllers/
-│       │   ├── Services/
-│       │   ├── Repositories/
-│       │   ├── Requests/
-│       │   ├── Middleware/
-│       │   └── Resources/
+│       │   │   └── PaymentController.php
+│       │   └── Services/
+│       │       ├── PaymentService.php
+│       │       └── ChapaService.php
 │       │
-│       ├── Payment/                           # Payment Processing
+│       ├── Reviews/
 │       │   ├── Controllers/
+│       │   │   └── ReviewController.php
 │       │   ├── Services/
-│       │   ├── Requests/
-│       │   ├── Middleware/
-│       │   └── Resources/
+│       │   │   └── ReviewService.php
+│       │   └── Requests/
+│       │       └── CreateReviewRequest.php
 │       │
-│       ├── Review/                            # Reviews & Ratings
+│       ├── Notifications/
 │       │   ├── Controllers/
-│       │   ├── Services/
-│       │   ├── Requests/
-│       │   ├── Middleware/
-│       │   └── Resources/
+│       │   │   └── NotificationController.php
+│       │   └── Services/
+│       │       └── NotificationService.php
 │       │
-│       ├── Notification/                      # Notifications
-│       │   ├── Controllers/
-│       │   ├── Services/
-│       │   └── Resources/
-│       │
-│       └── Admin/                             # Admin Dashboard
+│       └── Admin/
 │           ├── Controllers/
+│           │   ├── VerificationController.php
+│           │   ├── JobApprovalController.php
+│           │   └── DashboardController.php
 │           ├── Services/
-│           ├── Requests/
-│           ├── Middleware/
-│           └── Resources/
+│           └── Requests/
 │
-├── storage/                                   # Storage Layer
-│   ├── logs/                                  # Application logs
+├── storage/
+│   ├── logs/
 │   ├── uploads/
-│   │   ├── profiles/                          # Profile pictures
-│   │   └── documents/                         # Uploaded documents
-│   └── cache/                                 # Cache files
+│   │   ├── ids/
+│   │   ├── documents/
+│   │   ├── profiles/
+│   │   └── jobs/
+│   └── cache/
 │
-├── .env                                       # Environment variables
-├── .env.example                               # Example env file
-├── .gitignore                                 # Git ignore
-├── composer.json                              # Dependencies
-└── composer.lock                              # Locked versions
-
+├── database/
+│   ├── migrations/
+│   │   ├── 001_create_users_table.php
+│   │   ├── 002_create_admins_table.php
+│   │   ├── 003_create_admin_otps_table.php
+│   │   ├── 004_create_refresh_tokens_table.php
+│   │   ├── 005_create_addresses_table.php
+│   │   ├── 006_create_customer_verifications_table.php
+│   │   ├── 007_create_technician_verifications_table.php
+│   │   ├── 008_create_payments_table.php
+│   │   ├── 009_create_job_categories_table.php
+│   │   ├── 010_create_jobs_table.php
+│   │   ├── 011_create_job_applications_table.php
+│   │   ├── 012_create_reviews_table.php
+│   │   └── 013_create_notifications_table.php
+│   └── migrate.php
+│
+├── .env
+├── .gitignore
+├── composer.json
+└── composer.lock
 ```
