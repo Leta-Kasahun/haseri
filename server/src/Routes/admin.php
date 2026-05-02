@@ -4,6 +4,9 @@ use Haseri\Backend\Modules\Admin\Controllers\TechnicianApprovalController;
 use Haseri\Backend\Modules\Auth\Middleware\AuthMiddleware;
 use Haseri\Backend\Shared\Helpers\Response;
 use Haseri\Backend\Shared\Exceptions\HttpException;
+use Haseri\Backend\Modules\Admin\Controllers\DashboardController;
+use Haseri\Backend\Modules\Admin\Controllers\UserManagementController;
+use Haseri\Backend\Modules\Admin\Controllers\SettingsController;
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -45,4 +48,73 @@ try {
     }
 } catch (HttpException $e) {
     Response::error($e->getMessage(), $e->getStatusCode());
+}
+
+
+if ($uri === '/api/admin/dashboard' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new DashboardController())->stats($admin);
+    exit;
+}
+
+if ($uri === '/api/admin/dashboard/recent-jobs' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new DashboardController())->recentJobs($admin);
+    exit;
+}
+
+if ($uri === '/api/admin/dashboard/recent-payments' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new DashboardController())->recentPayments($admin);
+    exit;
+}
+
+
+if ($uri === '/api/admin/users' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new UserManagementController())->index($admin);
+    exit;
+}
+
+if (preg_match('/^\/api\/admin\/users\/(\d+)$/', $uri, $m) && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new UserManagementController())->show($admin, $m[1]);
+    exit;
+}
+
+if (preg_match('/^\/api\/admin\/users\/(\d+)\/deactivate$/', $uri, $m) && $method === 'PUT') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new UserManagementController())->deactivate($admin, $m[1]);
+    exit;
+}
+
+if (preg_match('/^\/api\/admin\/users\/(\d+)\/activate$/', $uri, $m) && $method === 'PUT') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new UserManagementController())->activate($admin, $m[1]);
+    exit;
+}
+
+if (preg_match('/^\/api\/admin\/users\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new UserManagementController())->destroy($admin, $m[1]);
+    exit;
+}
+
+
+if ($uri === '/api/admin/settings/fees' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new SettingsController())->fees($admin);
+    exit;
+}
+
+if ($uri === '/api/admin/settings/fees' && $method === 'PUT') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new SettingsController())->updateFees($admin);
+    exit;
+}
+
+if ($uri === '/api/admin/analytics' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new SettingsController())->analytics($admin);
+    exit;
 }

@@ -13,7 +13,8 @@
         "monolog/monolog": "^2.0",
         "intervention/image": "^4.0",
         "google/apiclient": "^2.19",
-        "phpmailer/phpmailer": "^7.0"
+        "phpmailer/phpmailer": "^7.0",
+        "pusher/pusher-php-server": "^7.2"
     },
     "autoload": {
         "psr-4": {
