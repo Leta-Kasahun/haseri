@@ -32,8 +32,8 @@ const firaMono = Fira_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Bondex CRM",
-  description: "Feature-rich CRM frontend",
+  title: "Haseri",
+  description: "Haseri local service marketplace",
 };
 
 export default function RootLayout({
