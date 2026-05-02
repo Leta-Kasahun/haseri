@@ -1,5 +1,6 @@
 <?php
 use Haseri\Backend\Modules\Technician\Controllers\TechnicianVerificationController;
+use Haseri\Backend\Modules\Technician\Controllers\TechnicianController;
 use Haseri\Backend\Modules\Auth\Middleware\AuthMiddleware;
 use Haseri\Backend\Shared\Helpers\Response;
 use Haseri\Backend\Shared\Exceptions\HttpException;
@@ -17,6 +18,18 @@ try {
     if ($uri === '/api/technician/verification-status' && $method === 'GET') {
         $user = AuthMiddleware::handle();
         (new TechnicianVerificationController())->status($user);
+        exit;
+    }
+
+    if ($uri === '/api/technician/profile' && $method === 'GET') {
+        $user = AuthMiddleware::handle();
+        (new TechnicianController())->show($user);
+        exit;
+    }
+
+    if ($uri === '/api/technician/profile' && $method === 'PUT') {
+        $user = AuthMiddleware::handle();
+        (new TechnicianController())->update($user);
         exit;
     }
 } catch (HttpException $e) {

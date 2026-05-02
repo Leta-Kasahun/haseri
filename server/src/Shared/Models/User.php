@@ -34,4 +34,9 @@ class User extends Model
     {
         return $this->hasOne(Address::class)->where('is_primary', true);
     }
+
+    public function technicianVerification()
+{
+    return $this->hasOne(TechnicianVerification::class);
+}
 }
