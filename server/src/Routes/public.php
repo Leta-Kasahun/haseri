@@ -23,3 +23,8 @@ if ($uri === '/api/public/stats' && $method === 'GET') {
     (new PublicController())->stats();
     exit;
 }
+
+if (preg_match('/^\/api\/public\/technicians\/(\d+)$/', $uri, $m) && $method === 'GET') {
+    (new PublicController())->technicianProfile($m[1]);
+    exit;
+}

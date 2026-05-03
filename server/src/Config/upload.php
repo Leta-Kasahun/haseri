@@ -8,5 +8,6 @@ return [
         'documents' => 'storage/uploads/documents/',
         'profiles' => 'storage/uploads/profiles/',
         'jobs' => 'storage/uploads/jobs/',
+         'covers' => 'storage/uploads/covers/',
     ],
 ];

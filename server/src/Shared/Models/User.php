@@ -46,4 +46,10 @@ class User extends Model
     {
         return $this->hasOne(TechnicianVerification::class);
     }
+
+
+    public function skills()
+{
+    return $this->hasMany(TechnicianSkill::class);
+}
 }

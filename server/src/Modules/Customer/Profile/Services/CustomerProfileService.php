@@ -3,6 +3,7 @@ namespace Haseri\Backend\Modules\Customer\Profile\Services;
 
 use Haseri\Backend\Shared\Models\User;
 use Haseri\Backend\Shared\Models\Address;
+use Haseri\Backend\Shared\Helpers\Upload\ImageUploader;
 use Haseri\Backend\Shared\Exceptions\NotFoundException;
 
 class CustomerProfileService
@@ -23,7 +24,6 @@ class CustomerProfileService
             'first_name' => $data['first_name'] ?? $user->first_name,
             'last_name' => $data['last_name'] ?? $user->last_name,
             'phone' => $data['phone'] ?? $user->phone,
-            'avatar' => $data['avatar'] ?? $user->avatar,
         ]);
 
         if (!empty($data['city'])) {
@@ -40,6 +40,22 @@ class CustomerProfileService
         }
 
         return User::with('address')->find($userId);
+    }
+
+    public function updateAvatar($userId, $file)
+    {
+        $uploader = new ImageUploader();
+        $path = $uploader->upload($file, 'profiles');
+        User::find($userId)->update(['avatar' => $path]);
+        return ['avatar' => $path];
+    }
+
+    public function updateCover($userId, $file)
+    {
+        $uploader = new ImageUploader();
+        $path = $uploader->upload($file, 'covers');
+        User::find($userId)->update(['cover_image' => $path]);
+        return ['cover_image' => $path];
     }
 
     public function delete($userId)

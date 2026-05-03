@@ -35,6 +35,26 @@ class CustomerProfileController
         }
     }
 
+    public function updateAvatar($user)
+    {
+        try {
+            $result = $this->service->updateAvatar($user->id, $_FILES['avatar']);
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
+
+    public function updateCover($user)
+    {
+        try {
+            $result = $this->service->updateCover($user->id, $_FILES['cover']);
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
+
     public function delete($user)
     {
         try {

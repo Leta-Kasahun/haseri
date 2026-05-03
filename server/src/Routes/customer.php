@@ -9,7 +9,7 @@ $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
 
 try {
-    
+    // Verification
     if ($uri === '/api/customer/verify' && $method === 'POST') {
         $user = AuthMiddleware::handle();
         (new CustomerVerificationController())->initiate($user);
@@ -28,7 +28,7 @@ try {
         exit;
     }
 
-    // Profile routes
+    // Profile
     if ($uri === '/api/customer/profile' && $method === 'GET') {
         $user = AuthMiddleware::handle();
         (new CustomerProfileController())->show($user);
@@ -44,6 +44,19 @@ try {
     if ($uri === '/api/customer/profile' && $method === 'DELETE') {
         $user = AuthMiddleware::handle();
         (new CustomerProfileController())->delete($user);
+        exit;
+    }
+
+    // Avatar
+    if ($uri === '/api/customer/avatar' && $method === 'POST') {
+        $user = AuthMiddleware::handle();
+        (new CustomerProfileController())->updateAvatar($user);
+        exit;
+    }
+
+    if ($uri === '/api/customer/cover' && $method === 'POST') {
+        $user = AuthMiddleware::handle();
+        (new CustomerProfileController())->updateCover($user);
         exit;
     }
 } catch (HttpException $e) {
