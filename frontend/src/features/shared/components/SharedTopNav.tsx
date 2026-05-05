@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserMenu } from "./UserMenu";
+import { NotificationCenter } from "@/src/features/notifications";
 import {
   Bell,
   Search,
@@ -49,10 +50,7 @@ export const SharedTopNav = () => {
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3 sm:gap-4">
-            <Button variant="ghost" size="icon" className="text-slate-500 hover:text-primary relative rounded-full h-12 w-12">
-              <Bell className="w-8 h-8" />
-              <span className="absolute top-2.5 right-2.5 w-3 h-3 bg-primary rounded-full ring-2 ring-white dark:ring-slate-950" />
-            </Button>
+            <NotificationCenter />
             
             <UserMenu />
 
