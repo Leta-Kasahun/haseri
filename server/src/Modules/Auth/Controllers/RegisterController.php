@@ -5,7 +5,7 @@ use Haseri\Backend\Modules\Auth\Services\RegisterService;
 use Haseri\Backend\Modules\Auth\Requests\RegisterRequest;
 use Haseri\Backend\Shared\Helpers\Response;
 use Haseri\Backend\Shared\Exceptions\HttpException;
-
+#registration controller
 class RegisterController
 {
     public function register()

@@ -1,12 +1,12 @@
 <?php
 namespace Haseri\Backend\Modules\Auth\Services;
-
 use Haseri\Backend\Shared\Models\User;
 use Haseri\Backend\Shared\Models\RefreshToken;
 use Haseri\Backend\Shared\Helpers\JWT;
 use Haseri\Backend\Shared\Exceptions\ConflictException;
 use Haseri\Backend\Shared\Enums\UserRole;
 
+#user registration service
 class RegisterService
 {
     public function register(array $data)
@@ -31,17 +31,15 @@ class RegisterService
             'password'   => password_hash($data['password'], PASSWORD_DEFAULT),
             'role'       => $data['role'],
         ]);
-
+ #refresh token and acces  toekn
         $accessToken  = JWT::generateAccessToken($user->id, $user->role);
         $refreshToken = JWT::generateRefreshToken($user->id, $user->role);
-
         RefreshToken::create([
             'user_id'    => $user->id,
             'user_type'  => 'user',
             'token'      => $refreshToken,
             'expires_at' => date('Y-m-d H:i:s', time() + 604800),
         ]);
-
         return [
             'access_token'  => $accessToken,
             'refresh_token' => $refreshToken,

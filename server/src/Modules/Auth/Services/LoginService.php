@@ -5,7 +5,6 @@ use Haseri\Backend\Shared\Models\User;
 use Haseri\Backend\Shared\Models\RefreshToken;
 use Haseri\Backend\Shared\Helpers\JWT;
 use Haseri\Backend\Shared\Exceptions\UnauthorizedException;
-
 class LoginService
 {
     public function login(string $credential, string $password)
