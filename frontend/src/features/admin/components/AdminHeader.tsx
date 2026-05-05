@@ -4,6 +4,7 @@ import React from "react";
 import { Menu, Search, Bell } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { AdminUserMenu } from "./AdminUserMenu";
+import { NotificationCenter } from "@/src/features/notifications";
 
 interface AdminHeaderProps {
   toggleMobileSidebar: () => void;
@@ -34,10 +35,7 @@ export function AdminHeader({ toggleMobileSidebar }: AdminHeaderProps) {
       </div>
 
       <div className="flex items-center gap-3 md:gap-4 ml-4 shrink-0">
-        <button className="relative p-2.5 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 hidden sm:flex">
-          <Bell size={20} />
-          <span className="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-primary border-2 border-white dark:border-slate-950 shadow-sm"></span>
-        </button>
+        <NotificationCenter />
         
         <AdminUserMenu side="bottom" align="end" />
       </div>

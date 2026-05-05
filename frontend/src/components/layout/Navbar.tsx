@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@/src/hooks/useAuth";
 import { UserMenu } from "@/src/features/shared/components";
+import { NotificationCenter } from "@/src/features/notifications";
 
 export const Navbar = () => {
   const { isAuthenticated } = useAuth();
@@ -77,10 +78,7 @@ export const Navbar = () => {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <Button variant="ghost" size="icon" className="text-foreground/70 hover:text-primary relative">
-                <Bell className="w-5 h-5" />
-                <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
-              </Button>
+              <NotificationCenter />
               <UserMenu />
             </div>
           ) : (
