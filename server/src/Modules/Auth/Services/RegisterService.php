@@ -7,6 +7,7 @@ use Haseri\Backend\Shared\Helpers\JWT;
 use Haseri\Backend\Shared\Exceptions\ConflictException;
 use Haseri\Backend\Shared\Enums\UserRole;
 
+#user registration
 class RegisterService
 {
     public function register(array $data)
