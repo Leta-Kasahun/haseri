@@ -44,7 +44,6 @@ export function ProviderVerificationModal({ trigger }: ProviderVerificationModal
   const docInputRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     if (isOpen) {
@@ -58,31 +57,59 @@ export function ProviderVerificationModal({ trigger }: ProviderVerificationModal
 
   const handleSubmit = async () => {
     if (!idFile) {
-      toast.error("Please upload your ID document.");
+      toast.error("Please upload your National ID.");
       return;
     }
 
     const formData = new FormData();
-    formData.append("id_document", idFile);
+    formData.append("national_id", idFile);  // Changed from id_document
     if (docFile) {
-      formData.append("supporting_document", docFile);
+      formData.append("proof_document", docFile);  // Changed from supporting_document
+      formData.append("proof_document_type", "coc");  // Add this
     }
 
     const data = await submit(formData);
     if (data !== null) {
       const updatedStatus = await checkStatus();
       setStatus(updatedStatus);
-      toast.success("Verification documents submitted successfully!");
+      toast.success("Verification submitted!");
       setIsOpen(false);
     } else {
-      toast.error("Submission failed. Please try again.");
+      toast.error("Submission failed. Try again.");
     }
   };
 
+  const [stream, setStream] = useState<MediaStream | null>(null);
+
+
+  useEffect(() => {
+    if (isCameraOpen && stream && videoRef.current) {
+      const video = videoRef.current;
+      video.srcObject = stream;
+
+      const handleReady = () => {
+        video.play().then(() => {
+          setIsCameraReady(true);
+        }).catch(err => console.error("Playback failed:", err));
+      };
+
+      // Listen for multiple events as different browsers behave differently
+      video.addEventListener('loadedmetadata', handleReady);
+      video.addEventListener('loadeddata', handleReady);
+      video.addEventListener('playing', handleReady);
+
+      return () => {
+        video.removeEventListener('loadedmetadata', handleReady);
+        video.removeEventListener('loadeddata', handleReady);
+        video.removeEventListener('playing', handleReady);
+      };
+    }
+  }, [isCameraOpen, stream]);
+
   const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop());
-      streamRef.current = null;
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
     }
   };
 
@@ -91,23 +118,17 @@ export function ProviderVerificationModal({ trigger }: ProviderVerificationModal
     setIsCameraReady(false);
     setIsCameraOpen(true);
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: "environment" } },
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: { ideal: "environment" },
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        },
         audio: false,
       });
-      streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-        videoRef.current.onloadedmetadata = async () => {
-          try {
-            await videoRef.current?.play();
-            setIsCameraReady(true);
-          } catch {
-            setCameraError("Camera is blocked. Please allow access and try again.");
-          }
-        };
-      }
-    } catch {
+      setStream(newStream);
+    } catch (err) {
+      console.error("Camera access error:", err);
       setCameraError("Unable to access camera. Please check permissions.");
       setIsCameraOpen(false);
     }
@@ -194,8 +215,8 @@ export function ProviderVerificationModal({ trigger }: ProviderVerificationModal
                   {isVerified && status?.verified_at
                     ? `Active since ${new Date(status.verified_at).toLocaleDateString()}`
                     : isPending
-                    ? "We are reviewing your documents."
-                    : "Complete verification to unlock premium job access."}
+                      ? "We are reviewing your documents."
+                      : "Complete verification to unlock premium job access."}
                 </p>
               </div>
             </div>
@@ -229,36 +250,44 @@ export function ProviderVerificationModal({ trigger }: ProviderVerificationModal
                           Close
                         </Button>
                       </div>
-                      <button
-                        type="button"
-                        onClick={handleCapture}
-                        disabled={isCapturing || !isCameraReady}
-                        className="relative w-full aspect-square rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-900"
-                        aria-label="Capture photo"
-                      >
-                        <video
-                          ref={videoRef}
-                          playsInline
-                          muted
-                          autoPlay
-                          className="w-full h-full object-cover"
-                        />
-                        {!isCameraReady && !cameraError && (
-                          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold uppercase tracking-widest text-slate-500">
-                            Starting...
-                          </span>
-                        )}
-                        {cameraError && (
-                          <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold uppercase tracking-widest text-rose-500 px-3 text-center">
-                            {cameraError}
-                          </span>
-                        )}
-                        {isCameraReady && !cameraError && (
-                          <span className="absolute bottom-2 right-2 p-2 rounded-full bg-black/60 text-white">
-                            <Camera className="w-3.5 h-3.5" />
-                          </span>
-                        )}
-                      </button>
+                      <div className="flex flex-col items-center">
+                        <button
+                          type="button"
+                          onClick={handleCapture}
+                          disabled={isCapturing || !isCameraReady}
+                          className="relative w-full max-w-[320px] aspect-square rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 flex items-center justify-center group"
+                          aria-label="Capture photo"
+                        >
+                          <video
+                            ref={videoRef}
+                            playsInline
+                            muted
+                            autoPlay
+                            className={cn(
+                              "w-full h-full object-cover transition-opacity duration-300",
+                              isCameraReady ? "opacity-100" : "opacity-0"
+                            )}
+                          />
+                          {!isCameraReady && !cameraError && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2">
+                              <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                              <span className="text-[8px] font-black uppercase tracking-widest text-slate-400">
+                                Lens Warming...
+                              </span>
+                            </div>
+                          )}
+                          {cameraError && (
+                            <span className="absolute inset-0 flex items-center justify-center text-[9px] font-bold uppercase tracking-widest text-rose-500 px-4 text-center">
+                              {cameraError}
+                            </span>
+                          )}
+                          {isCameraReady && !cameraError && (
+                            <div className="absolute bottom-4 right-4 p-3 rounded-full bg-primary text-white shadow-xl group-hover:scale-110 transition-transform">
+                              <Camera className="w-4 h-4" />
+                            </div>
+                          )}
+                        </button>
+                      </div>
                     </div>
                   )}
                   <div className="flex items-center justify-center gap-3">
