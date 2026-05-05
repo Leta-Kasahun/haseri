@@ -13,14 +13,11 @@ class RegisterService
     public function register(array $data)
     {
         if (!in_array($data['role'], UserRole::all())) {
-            throw new ConflictException('Invalid role');
-        }
-
+            throw new ConflictException('Invalid role');}
         if (User::where('email', $data['email'])->exists()) {
-            throw new ConflictException('Email already registered');
-        }
+            throw new ConflictException('Email already registered');}
 
-        if (!empty($data['phone']) && User::where('phone', $data['phone'])->exists()) {
+if (!empty($data['phone']) && User::where('phone', $data['phone'])->exists()) {
             throw new ConflictException('Phone already registered');
         }
 
