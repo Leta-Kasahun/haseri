@@ -1,0 +1,84 @@
+"use client";
+
+import { useState } from "react";
+import { useAuth } from "@/src/hooks/useAuth";
+import { customersApi } from "../services";
+
+export const useCustomerProfile = () => {
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { setUser } = useAuth();
+
+  const resolveUser = (payload: any) => payload?.data ?? payload?.user ?? payload?.data?.user ?? null;
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const res = await customersApi.getProfile();
+      setUser(res.data.data);
+      return res.data.data;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to fetch profile";
+      setError(message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const update = async (data: Record<string, unknown>) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await customersApi.updateProfile(data);
+      setUser(res.data.data);
+      return res.data.data;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Update failed";
+      setError(message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadAvatar = async (file: File) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append("avatar", file);
+      const res = await customersApi.updateAvatar(formData);
+      const userData = resolveUser(res.data);
+      if (userData) setUser(userData);
+      return userData ?? true;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Avatar upload failed";
+      setError(message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const uploadCover = async (file: File) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const formData = new FormData();
+      formData.append("cover_image", file);
+      const res = await customersApi.updateCover(formData);
+      const userData = resolveUser(res.data);
+      if (userData) setUser(userData);
+      return userData ?? true;
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Cover upload failed";
+      setError(message);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return { fetchProfile, update, uploadAvatar, uploadCover, loading, error };
+};

@@ -1,3 +1,5 @@
+"use client";
+
 import { create } from "zustand";
 
 interface User {
@@ -14,6 +16,7 @@ interface Admin {
   id: number;
   name: string;
   email: string;
+  avatar?: string;
 }
 
 type AuthState = {
@@ -27,7 +30,7 @@ type AuthState = {
   adminLogout: () => void;
 };
 
-export const useAuthStore = create<AuthState>((set) => ({
+export const useAuthStore = create<AuthState>()((set) => ({
   user: null,
   admin: null,
   isAuthenticated: false,

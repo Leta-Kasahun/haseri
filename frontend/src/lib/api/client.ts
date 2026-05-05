@@ -8,22 +8,75 @@ export const clientApi = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+let accessToken: string | null = null;
+
+export const setAccessToken = (token: string | null) => {
+  accessToken = token;
+};
+
+export const getAccessToken = () => accessToken;
+
+const extractAccessToken = (data: unknown) => {
+  if (!data || typeof data !== "object") return null;
+  const payload = data as Record<string, any>;
+
+  return (
+    payload.access_token ||
+    payload.token ||
+    payload.tokens?.access_token ||
+    payload.data?.access_token ||
+    payload.data?.tokens?.access_token ||
+    null
+  );
+};
+
+clientApi.interceptors.request.use((config) => {
+  if (accessToken) {
+    config.headers = config.headers ?? {};
+    if (!("Authorization" in config.headers)) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
+    }
+  }
+
+  return config;
+});
+
 // Handle 401 - Refresh token via HTTPOnly cookie
 clientApi.interceptors.response.use(
   (response) => response,
   async (error: unknown) => {
     if (axios.isAxiosError(error)) {
+      const config = error.config as any;
+      const skipRefreshPaths = [
+        "/auth/login",
+        "/auth/register",
+        "/auth/google",
+        "/auth/refresh",
+        "/admin/refresh",
+      ];
+      const shouldSkipRefresh =
+        skipRefreshPaths.some((path) => config?.url?.includes(path)) ||
+        config?.headers?.["X-Skip-Auth-Refresh"] === "1";
+
+      // Retry mechanism for fragile dev servers dropping connections
+      if (error.message === "Network Error" && (!config._retryCount || config._retryCount < 2)) {
+        config._retryCount = (config._retryCount || 0) + 1;
+        await new Promise(resolve => setTimeout(resolve, 1000)); // wait 1s before retry
+        return clientApi(config);
+      }
+
       if (
         error.response?.status === 401 &&
-        !error.config?.url?.includes("/auth/refresh")
+        !shouldSkipRefresh
       ) {
         try {
-          await clientApi.post("/auth/refresh");
-          return clientApi(error.config!);
-        } catch {
-          if (typeof window !== "undefined") {
-            window.location.href = "/login";
-          }
+          const refreshResponse = await clientApi.post("/auth/refresh");
+          const refreshedToken = extractAccessToken(refreshResponse.data);
+          if (refreshedToken) setAccessToken(refreshedToken);
+
+          return clientApi(config);
+        } catch (refreshError) {
+          return Promise.reject(refreshError);
         }
       }
 
@@ -34,10 +87,17 @@ clientApi.interceptors.response.use(
       };
 
       const message = payload?.error || error.message || "Something went wrong";
+      
+      const userFriendlyMessage = message === "Network Error" 
+        ? "Unable to connect to our servers. Please check your internet connection."
+        : message;
 
-      return Promise.reject({ message, errors: payload?.errors });
+      const apiError = new Error(userFriendlyMessage);
+      (apiError as any).errors = payload?.errors;
+      (apiError as any).status = error.response?.status;
+      return Promise.reject(apiError);
     }
 
-    return Promise.reject({ message: "Something went wrong" });
+    return Promise.reject(new Error("An unexpected error occurred. Please try again."));
   }
 );

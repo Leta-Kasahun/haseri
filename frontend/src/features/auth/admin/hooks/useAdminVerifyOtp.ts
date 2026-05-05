@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { adminAuthApi } from "../services";
+import { setAccessToken } from "@/src/lib/api/client";
 import { useAuth } from "@/src/hooks/useAuth";
 import type { AdminOtpInput } from "../types";
 
@@ -17,6 +18,14 @@ export const useAdminVerifyOtp = () => {
     setError(null);
     try {
       const res = await adminAuthApi.verifyOtp(data);
+      const token =
+        res.data?.data?.access_token ||
+        res.data?.data?.token ||
+        res.data?.data?.tokens?.access_token ||
+        null;
+
+      if (token) setAccessToken(token);
+
       setAdmin(res.data.data.admin);
       router.push("/admin/dashboard");
     } catch (err: unknown) {
