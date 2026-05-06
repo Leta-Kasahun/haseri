@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Container, Section } from "@/src/features/shared/components";
+import { Container, Section, Heading } from "@/src/features/shared/components";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useProviderProfile } from "../hooks/useProviderProfile";
 import { toast } from "react-hot-toast";
@@ -19,20 +19,31 @@ export function ProviderProfileDashboard() {
   };
 
   return (
-    <Section padding="none" className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 pt-6">
-      <Container className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Single Consolidated Profile Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-none shadow-xl overflow-hidden">
+    <Section padding="none" className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 pt-10">
+      <Container className="max-w-7xl mx-auto px-4 sm:px-6 space-y-10">
+        
+        {/* Profile Header block - Standardized */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl overflow-hidden">
           <ProviderProfileCover />
           <div className="pb-6">
             <ProviderProfileHeader />
           </div>
+        </div>
+
+        {/* Identity & Details Section - Label updated to 'Edit Your Profile' */}
+        <div className="space-y-6">
+          <div className="flex items-center gap-3 px-2">
+            <div className="w-1.5 h-6 bg-primary" />
+            <Heading level={2} className="text-xl font-black uppercase tracking-tighter italic">
+              Edit Your <span className="text-primary">Profile</span>
+            </Heading>
+          </div>
           
-          {/* Details embedded directly without separate card styling */}
-          <div className="border-t border-slate-100 dark:border-slate-800">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
             <ProviderProfileDetails onSave={handleSave} isEmbedded={true} />
           </div>
         </div>
+
       </Container>
     </Section>
   );

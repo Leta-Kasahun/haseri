@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -24,6 +24,14 @@ export const DashboardSidebar = () => {
   const pathname = usePathname();
   const { sidebarOpen, setSidebarOpen, sidebarCollapsed, toggleSidebarCollapsed } = useUiStore();
   const { user } = useAuth();
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const isCustomer = user?.role === "customer";
   const isProvider = user?.role === "provider";
@@ -31,7 +39,7 @@ export const DashboardSidebar = () => {
   const menuItems = [
     { label: "Overview", href: isCustomer ? "/customer" : "/technician", icon: LayoutDashboard, show: true },
     {
-      label: "Applications",
+      label: isCustomer ? "Technicians" : "Applications",
       href: isCustomer ? "/customer/applications" : "/technician/applications",
       icon: FileText,
       show: isCustomer || isProvider
@@ -58,15 +66,15 @@ export const DashboardSidebar = () => {
 
   return (
     <>
-      {/* Mobile Overlay */}
+      {/* Mobile Backdrop - Clear/No Blur as requested */}
       <AnimatePresence>
-        {sidebarOpen && (
+        {sidebarOpen && isMobile && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSidebarOpen(false)}
-            className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm z-[60] lg:hidden"
+            className="fixed inset-0 bg-white/10 z-[60] lg:hidden" // Very subtle overlay, no blur
           />
         )}
       </AnimatePresence>
@@ -74,29 +82,39 @@ export const DashboardSidebar = () => {
       <motion.aside
         initial={false}
         animate={{
-          x: sidebarOpen ? 0 : (typeof window !== 'undefined' && window.innerWidth < 1024 ? -300 : 0),
-          width: sidebarOpen || (typeof window !== 'undefined' && window.innerWidth >= 1024) 
+          x: sidebarOpen ? 0 : (isMobile ? -300 : 0),
+          width: sidebarOpen || !isMobile 
             ? (sidebarCollapsed ? 80 : 280) 
             : 0
         }}
-        transition={{ type: "spring", damping: 25, stiffness: 200 }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
         className={cn(
-          "fixed lg:sticky top-0 left-0 h-screen bg-white dark:bg-slate-950 z-[70] overflow-hidden flex flex-col transition-all duration-300 border-r border-slate-200 dark:border-slate-800",
+          "fixed lg:sticky top-0 left-0 h-screen bg-white dark:bg-slate-950 z-[70] overflow-hidden flex flex-col transition-all duration-300 border-r border-slate-200 dark:border-slate-800 shadow-2xl lg:shadow-none",
           !sidebarOpen && "lg:w-auto"
         )}
       >
-        {/* Logo at the Top */}
+        {/* Logo & Toggle - Strategically Aligned */}
         <div className="h-20 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800 shrink-0">
-          <Link href="/" className="flex items-center gap-3 group transition-all">
-            <div className="w-8 h-8 bg-primary flex items-center justify-center transform group-hover:rotate-90 transition-transform duration-500 shadow-sm">
-              <span className="text-white font-black text-lg italic">H</span>
-            </div>
-            {!sidebarCollapsed && (
-              <span className="text-xl font-black tracking-tighter uppercase italic text-foreground whitespace-nowrap">
-                Haseri<span className="text-primary">.</span>
-              </span>
-            )}
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 group transition-all">
+              <div className="w-8 h-8 bg-primary flex items-center justify-center transform group-hover:rotate-90 transition-transform duration-500 shadow-sm">
+                <span className="text-white font-black text-lg italic">H</span>
+              </div>
+              {!sidebarCollapsed && (
+                <span className="text-xl font-black tracking-tighter uppercase italic text-foreground whitespace-nowrap">
+                  Haseri<span className="text-primary">.</span>
+                </span>
+              )}
+            </Link>
+          </div>
+
+          {/* Expand/Collapse Toggle - Desktop only, Aligned with Logo */}
+          <button
+            onClick={toggleSidebarCollapsed}
+            className="hidden lg:flex p-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-primary hover:text-white transition-all text-slate-400"
+          >
+            {sidebarCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+          </button>
 
           {/* Mobile Close Button */}
           <button 
@@ -104,19 +122,6 @@ export const DashboardSidebar = () => {
             className="lg:hidden p-2 text-slate-400 hover:text-slate-900 transition-colors"
           >
             <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Sidebar Toggle & Header Area (Desktop only toggle) */}
-        <div className="h-16 flex items-center justify-between px-6">
-          {!sidebarCollapsed && (
-             <span className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Portal</span>
-          )}
-          <button
-            onClick={toggleSidebarCollapsed}
-            className="hidden lg:flex p-1.5 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:bg-primary hover:text-white transition-all text-slate-400 ml-auto"
-          >
-            {sidebarCollapsed ? <PanelLeftOpen className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
           </button>
         </div>
 
@@ -128,7 +133,7 @@ export const DashboardSidebar = () => {
               const content = (
                 <Link
                   href={item.href}
-                  onClick={() => typeof window !== 'undefined' && window.innerWidth < 1024 && setSidebarOpen(false)}
+                  onClick={() => isMobile && setSidebarOpen(false)}
                   className={cn(
                     "flex items-center group transition-all duration-200 border-2",
                     sidebarCollapsed ? "justify-center p-3" : "justify-between px-4 py-4",
@@ -138,21 +143,28 @@ export const DashboardSidebar = () => {
                   )}
                 >
                   <div className="flex items-center gap-4">
-                    <item.icon className={cn(
-                      "w-5 h-5 transition-colors",
-                      isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"
-                    )} />
+                    {/* Hide icons on mobile as requested */}
+                    {!isMobile && (
+                      <item.icon className={cn(
+                        "w-5 h-5 transition-colors",
+                        isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"
+                      )} />
+                    )}
+                    
                     {!sidebarCollapsed && (
-                      <span className="text-[11px] font-black uppercase tracking-widest whitespace-nowrap">
+                      <span className={cn(
+                        "text-[11px] font-black uppercase tracking-widest whitespace-nowrap",
+                        isMobile && "text-[13px] tracking-[0.2em]" // Larger text for mobile since icons are gone
+                      )}>
                         {item.label}
                       </span>
                     )}
                   </div>
-                  {isActive && !sidebarCollapsed && <ChevronRight className="w-4 h-4 text-primary" />}
+                  {!sidebarCollapsed && isActive && !isMobile && <ChevronRight className="w-4 h-4 text-primary" />}
                 </Link>
               );
 
-              if (sidebarCollapsed) {
+              if (sidebarCollapsed && !isMobile) {
                 return (
                   <Tooltip key={item.href}>
                     <TooltipTrigger asChild>{content}</TooltipTrigger>

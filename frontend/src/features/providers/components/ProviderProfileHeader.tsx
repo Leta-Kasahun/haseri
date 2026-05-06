@@ -9,13 +9,14 @@ import { providersApi } from "../services";
 import { toast } from "react-hot-toast";
 import { resolveAssetUrl } from "@/src/utils/resolve-asset-url";
 import { useProviderSkills } from "../hooks/useProviderSkills";
+import { ProviderSkillsModal } from "./ProviderSkillsModal";
 
 export function ProviderProfileHeader() {
   const { user, setUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
   const avatarSrc = resolveAssetUrl(user?.avatar);
-  const { skills } = useProviderSkills();
+  const { skills, refresh } = useProviderSkills();
 
   const resolveUser = (payload: any) => payload?.data ?? payload?.user ?? payload?.data?.user ?? null;
 
@@ -29,15 +30,6 @@ export function ProviderProfileHeader() {
       const res = await providersApi.updateAvatar(formData);
       const userData = resolveUser(res.data);
       if (userData) setUser(userData);
-      if (!userData) {
-        try {
-          const profileRes = await providersApi.getProfile();
-          const refreshed = resolveUser(profileRes.data);
-          if (refreshed) setUser(refreshed);
-        } catch {
-          // ignore refresh failures
-        }
-      }
       toast.success("Avatar updated");
     } catch {
       toast.error("Failed to update avatar");
@@ -66,7 +58,7 @@ export function ProviderProfileHeader() {
           <button
             disabled={loading}
             onClick={() => fileInputRef.current?.click()}
-            className="absolute bottom-1 right-1 md:bottom-2 md:right-2 p-2 bg-primary text-white rounded-full border-[3px] border-white shadow-lg hover:scale-110 transition-transform z-30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute bottom-1 right-1 md:bottom-2 md:right-2 p-2 bg-primary text-white rounded-full border-[3px] border-white shadow-lg hover:scale-110 transition-transform z-30 disabled:opacity-50"
           >
             {loading ? (
               <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
@@ -79,7 +71,7 @@ export function ProviderProfileHeader() {
 
       <div className="w-full mt-2">
         <div className="flex items-center gap-3">
-          <Heading level={1} weight="black" uppercase className="text-lg md:text-xl tracking-tighter break-words text-slate-900 dark:text-white">
+          <Heading level={2} weight="black" uppercase className="text-base md:text-lg tracking-tighter break-words text-slate-900 dark:text-white leading-none">
             {user?.first_name} {user?.last_name}
           </Heading>
           {user?.technician_verification?.status === "approved" && (
@@ -89,53 +81,51 @@ export function ProviderProfileHeader() {
           )}
         </div>
 
-        {skills.length > 0 && (
-          <div className="mt-4">
-            <div className="flex items-center justify-between mb-2">
-              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500">Skills</p>
-              <button
-                type="button"
-                className="p-1.5 rounded-full text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-                aria-label="Edit skills"
+        {/* Skill Tags - Replacing Subtitle with Horizontal Skills List */}
+        <div className="flex flex-wrap items-center gap-2 mt-2">
+          {skills.length > 0 ? (
+            skills.map((skill, idx) => (
+              <span
+                key={idx}
+                className="px-2 py-0.5 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-none text-[8px] md:text-[9px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700"
               >
+                {skill}
+              </span>
+            ))
+          ) : (
+            <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 italic">
+              Technician at Haseri
+            </p>
+          )}
+          
+          <ProviderSkillsModal 
+            initialSkills={skills} 
+            onUpdate={refresh}
+            trigger={
+              <button className="p-1 rounded-none text-slate-300 hover:text-primary transition-colors ml-1">
                 <Pencil className="w-3.5 h-3.5" />
               </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {skills.map((skill, idx) => (
-                <span
-                  key={idx}
-                  className="px-3 py-1 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-full text-[10px] font-black uppercase tracking-widest border border-slate-200 dark:border-slate-700"
-                >
-                  {skill}
-                </span>
-              ))}
-            </div>
-          </div>
-        )}
+            }
+          />
+        </div>
 
-        <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 max-w-lg mt-1">
-          Technician on Haseri Marketplace
-        </p>
-
-        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-y-2 gap-x-6 mt-4">
+        {/* Contact Details */}
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-y-2 gap-x-6 mt-6">
           <div className="flex items-center gap-1.5 text-slate-500">
-            <MapPin className="w-3.5 h-3.5" />
+            <MapPin className="w-3.5 h-3.5 text-primary" />
             <span className="text-[11px] font-bold uppercase tracking-widest">
-              {(user as any)?.address?.city || (user as any)?.city || "Add Location"}
-              {(user as any)?.address?.specific_location ? ` • ${(user as any).address.specific_location}` : ""}
+              {(user as any)?.address?.city || (user as any)?.city || "Location Pending"}
             </span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-500">
-            <Phone className="w-3.5 h-3.5" />
+            <Phone className="w-3.5 h-3.5 text-primary" />
             <span className="text-[11px] font-bold uppercase tracking-widest">{user?.phone || "No Phone"}</span>
           </div>
           <div className="flex items-center gap-1.5 text-slate-500">
-            <Mail className="w-3.5 h-3.5" />
+            <Mail className="w-3.5 h-3.5 text-primary" />
             <span className="text-[11px] font-bold uppercase tracking-widest lowercase">{user?.email}</span>
           </div>
         </div>
-
       </div>
     </div>
   );

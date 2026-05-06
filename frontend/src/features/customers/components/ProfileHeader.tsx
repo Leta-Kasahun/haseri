@@ -47,7 +47,7 @@ export function ProfileHeader() {
           <button 
             disabled={loading}
             onClick={() => fileInputRef.current?.click()}
-            className="absolute bottom-1 right-1 md:bottom-2 md:right-2 p-2 bg-primary text-white rounded-full border-[3px] border-white shadow-lg hover:scale-110 transition-transform z-30 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="absolute bottom-1 right-1 md:bottom-2 md:right-2 p-2 bg-primary text-white rounded-full border-[3px] border-white shadow-lg hover:scale-110 transition-transform z-30 disabled:opacity-50"
           >
             {loading ? <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" /> : <Camera className="w-4 h-4 md:w-5 md:h-5" />}
           </button>
@@ -56,7 +56,8 @@ export function ProfileHeader() {
 
       <div className="w-full mt-2">
         <div className="flex items-center gap-3">
-          <Heading level={1} weight="black" uppercase className="text-2xl md:text-3xl tracking-tighter break-words text-slate-900 dark:text-white">
+          {/* Significantly reduced font size for the full name as requested */}
+          <Heading level={2} weight="black" uppercase className="text-base md:text-lg tracking-tighter break-words text-slate-900 dark:text-white">
             {user?.first_name} {user?.last_name}
           </Heading>
           {user?.is_verified && (
@@ -66,7 +67,7 @@ export function ProfileHeader() {
           )}
         </div>
         
-        <p className="text-sm font-semibold text-slate-600 dark:text-slate-400 max-w-lg mt-1">
+        <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 max-w-lg mt-1 italic">
           Customer at Haseri Marketplace
         </p>
 

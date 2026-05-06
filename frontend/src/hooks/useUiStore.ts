@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 interface UiState {
   sidebarOpen: boolean;
@@ -9,11 +10,19 @@ interface UiState {
   setSidebarCollapsed: (collapsed: boolean) => void;
 }
 
-export const useUiStore = create<UiState>((set) => ({
-  sidebarOpen: true,
-  sidebarCollapsed: false,
-  toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
-  toggleSidebarCollapsed: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
-  setSidebarOpen: (open) => set({ sidebarOpen: open }),
-  setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
-}));
+export const useUiStore = create<UiState>()(
+  persist(
+    (set) => ({
+      sidebarOpen: false, // Default to closed on mobile/initial
+      sidebarCollapsed: false,
+      toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
+      toggleSidebarCollapsed: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
+      setSidebarOpen: (open) => set({ sidebarOpen: open }),
+      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+    }),
+    {
+      name: "haseri-ui-storage",
+      partialize: (state) => ({ sidebarCollapsed: state.sidebarCollapsed }), // Only persist collapsed state
+    }
+  )
+);
