@@ -35,7 +35,7 @@ class JWT
             'role' => $role,
             'type' => 'refresh',
             'iat' => time(),
-            'exp' => time() + 604800,
+            'exp' => time() + 2592000,
         ];
 
         return FirebaseJWT::encode($payload, self::$refreshSecret, 'HS256');

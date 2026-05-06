@@ -7,3 +7,4 @@ $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 Database::init();
 JWT::init();
+

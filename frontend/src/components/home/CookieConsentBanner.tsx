@@ -83,6 +83,7 @@ export const CookieConsentBanner = () => {
               >
                 Decline
               </Button>
+              
               <Button
                 className="flex-1 md:flex-none bg-foreground text-background hover:bg-foreground/90 font-bold text-xs h-10 px-8 rounded-lg shadow-md transition-all"
                 onClick={handleAccept}

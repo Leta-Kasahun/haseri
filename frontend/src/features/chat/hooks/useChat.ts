@@ -1,18 +1,9 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import Pusher from "pusher-js";
+import { pusherClient } from "@/src/lib/pusher/pusherClient";
 import { chatApi } from "../services";
 import type { Message, SendMessageInput } from "../types";
-
-let pusherClient: Pusher | null = null;
-
-if (typeof window !== "undefined") {
-  pusherClient = new Pusher(
-    process.env.NEXT_PUBLIC_PUSHER_APP_KEY!,
-    { cluster: process.env.NEXT_PUBLIC_PUSHER_APP_CLUSTER! }
-  );
-}
 
 export const useChat = (userId?: number) => {
   const [messages, setMessages] = useState<Message[]>([]);

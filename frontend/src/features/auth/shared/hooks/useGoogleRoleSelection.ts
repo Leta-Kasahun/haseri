@@ -37,7 +37,11 @@ export const useGoogleRoleSelection = (storageKey = "haseri:register:google") =>
         }
         setUser(res.data.data.user as any);
         sessionStorage.removeItem(storageKey);
-        router.push("/dashboard");
+        if (role === "provider") {
+          router.push("/technician/verify");
+        } else {
+          router.push("/dashboard");
+        }
       } catch (err: any) {
         setGoogleRoleError(err?.message || "Google sign-in failed. Please try again.");
       } finally {

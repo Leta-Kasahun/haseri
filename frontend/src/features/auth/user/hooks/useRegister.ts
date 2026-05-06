@@ -22,7 +22,11 @@ export const useRegister = () => {
         throw new Error("Registration succeeded but user data is missing in response");
       }
       setUser(res.data.data.user);
-      router.push("/dashboard");
+      if (res.data.data.user.role === "provider") {
+        router.push("/technician/verify");
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
       setError(err?.message || "Registration failed. Please try again.");
     } finally {

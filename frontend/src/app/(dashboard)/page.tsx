@@ -21,9 +21,9 @@ export default function DashboardRedirectPage() {
     }
 
     if (user?.role === "customer") {
-      router.push("/customer/profile"); // Or a main customer dashboard if it exists
+      router.push("/customer");
     } else if (user?.role === "provider") {
-      router.push("/technician/profile"); // Or a main technician dashboard
+      router.push("/technician");
     } else {
       router.push("/");
     }

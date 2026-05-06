@@ -5,3 +5,5 @@ export * from "./ProviderProfileSidebar";
 export * from "./ProviderVerificationModal";
 export * from "./ProviderAnalytics";
 export * from "./ProviderRecentJobs";
+export * from "./TechnicianOnboarding";
+export * from "./TechnicianMobileNav";

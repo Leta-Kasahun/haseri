@@ -122,7 +122,7 @@ export const useGoogleRegister = (options: GoogleRegisterOptions = {}) => {
       try {
         await loadGoogleScript();
         if (!window.google?.accounts?.id) return;
-        
+
         if (!window.__googleInit) {
           window.google.accounts.id.initialize({
             client_id: env.GOOGLE_CLIENT_ID,
