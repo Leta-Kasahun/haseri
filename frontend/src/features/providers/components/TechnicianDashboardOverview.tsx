@@ -2,10 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import { Heading } from "@/src/features/shared/components";
-import { 
-  Briefcase, 
-  ShieldCheck, 
-  ShieldAlert, 
+import {
+  Briefcase,
+  ShieldCheck,
+  ShieldAlert,
   CheckCircle2,
   AlertCircle,
   Star,
@@ -54,41 +54,41 @@ export function TechnicianDashboardOverview() {
   const isPending = status?.status === "pending";
 
   const stats = [
-    { 
-      title: "Completed Jobs", 
-      value: "12", 
-      change: "+2 this week", 
-      icon: <CheckCircle2 size={18} />, 
-      positive: true 
+    {
+      title: "Completed Jobs",
+      value: "12",
+      change: "+2 this week",
+      icon: <CheckCircle2 size={18} />,
+      positive: true
     },
-    { 
-      title: "Active Requests", 
-      value: "3", 
-      change: "On track", 
-      icon: <Briefcase size={18} />, 
-      positive: true 
+    {
+      title: "Active Requests",
+      value: "3",
+      change: "On track",
+      icon: <Briefcase size={18} />,
+      positive: true
     },
-    { 
-      title: "Success Rate", 
-      value: "98%", 
-      change: "Excellent", 
-      icon: <TrendingUp size={18} />, 
-      positive: true 
+    {
+      title: "Success Rate",
+      value: "98%",
+      change: "Excellent",
+      icon: <TrendingUp size={18} />,
+      positive: true
     },
-    { 
-      title: "Client Rating", 
-      value: "4.9/5", 
-      change: "Top Rated", 
-      icon: <Star size={18} />, 
-      positive: true 
+    {
+      title: "Client Rating",
+      value: "4.9/5",
+      change: "Top Rated",
+      icon: <Star size={18} />,
+      positive: true
     },
   ];
 
   return (
     <div className="space-y-10">
-      
+
       {/* Welcome Banner */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="relative overflow-hidden bg-slate-900 rounded-2xl p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.1)]"
@@ -109,14 +109,14 @@ export function TechnicianDashboardOverview() {
             </Button>
           </Link>
         </div>
-        
+
         <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -mr-32 -mt-32" />
         <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full blur-2xl -ml-16 -mb-16" />
       </motion.div>
 
       {/* Verification Alert */}
       {!isVerified && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
           animate={{ opacity: 1, scale: 1 }}
           className={cn(
@@ -133,8 +133,8 @@ export function TechnicianDashboardOverview() {
                 {isPending ? "Verification Pending Review" : "Account Verification Required"}
               </h3>
               <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest mt-1">
-                {isPending 
-                  ? "We are validating your documents. You'll receive an update soon." 
+                {isPending
+                  ? "We are validating your documents. You'll receive an update soon."
                   : "Submit your national ID to unlock professional job listings."}
               </p>
             </div>
@@ -152,7 +152,7 @@ export function TechnicianDashboardOverview() {
       {/* Admin-Style Status Cards */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat, idx) => (
-          <motion.div 
+          <motion.div
             key={idx}
             variants={itemVariants}
             initial="hidden"
@@ -194,50 +194,50 @@ export function TechnicianDashboardOverview() {
         </div>
 
         <div className="flex flex-col gap-4">
-           {/* Job Item mirroring ExploreJobsSection exactly */}
-           {[1, 2, 3].map((j, idx) => (
-             <motion.div 
-               key={j}
-               initial={{ opacity: 0, x: -20 }}
-               animate={{ opacity: 1, x: 0 }}
-               transition={{ delay: idx * 0.1 }}
-               className="group bg-white dark:bg-slate-950 border border-border hover:border-primary p-6 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6"
-             >
-                <div className="flex-1">
-                   <div className="flex items-center gap-3 mb-2">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1">
-                        Home Repair
-                      </span>
-                      <span className="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-1">
-                        Urgent
-                      </span>
-                   </div>
-                   <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
-                     High-End Residential Maintenance
-                   </h3>
-                   <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground font-medium">
-                      <div className="flex items-center gap-1.5">
-                         <MapPin className="w-4 h-4" />
-                         <span>Addis Ababa, Bole</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                         <DollarSign className="w-4 h-4" />
-                         <span>ETB 5,000 - 10,000</span>
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                         <Clock className="w-4 h-4" />
-                         <span>2 hours ago</span>
-                      </div>
-                   </div>
+          {/* Job Item mirroring ExploreJobsSection exactly */}
+          {[1, 2, 3].map((j, idx) => (
+            <motion.div
+              key={j}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: idx * 0.1 }}
+              className="group bg-white dark:bg-slate-950 border border-border hover:border-primary p-6 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6"
+            >
+              <div className="flex-1">
+                <div className="flex items-center gap-3 mb-2">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1">
+                    Home Repair
+                  </span>
+                  <span className="text-[10px] font-black uppercase tracking-widest text-red-500 bg-red-500/10 px-2 py-1">
+                    Urgent
+                  </span>
                 </div>
-                
-                <div className="flex-shrink-0">
-                   <Button className="w-full md:w-auto rounded-none px-8 bg-background text-foreground border-2 border-border group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all font-bold text-xs tracking-widest uppercase h-12">
-                     Apply Now
-                   </Button>
+                <h3 className="text-xl font-bold mb-3 group-hover:text-primary transition-colors">
+                  High-End Residential Maintenance
+                </h3>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground font-medium">
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4" />
+                    <span>Addis Ababa, Bole</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <DollarSign className="w-4 h-4" />
+                    <span>ETB 5,000 - 10,000</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="w-4 h-4" />
+                    <span>2 hours ago</span>
+                  </div>
                 </div>
-             </motion.div>
-           ))}
+              </div>
+
+              <div className="flex-shrink-0">
+                <Button className="w-full md:w-auto rounded-none px-8 bg-background text-foreground border-2 border-border group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all font-bold text-xs tracking-widest uppercase h-12">
+                  Apply Now
+                </Button>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </div>
     </div>

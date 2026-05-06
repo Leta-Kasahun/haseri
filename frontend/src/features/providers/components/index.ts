@@ -7,3 +7,5 @@ export * from "./ProviderRecentJobs";
 export * from "./TechnicianOnboarding";
 export * from "./TechnicianMobileNav";
 export * from "./TechnicianDashboardOverview";
+export * from "./TechnicianApplicationsTable";
+export * from "./TechnicianJobBrowser";

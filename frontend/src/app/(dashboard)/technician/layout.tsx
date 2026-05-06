@@ -1,6 +1,5 @@
 "use client";
 
-import { usePathname } from "next/navigation";
 import {
   SharedTopNav,
   DashboardFooter,
@@ -13,27 +12,23 @@ export default function TechnicianDashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const pathname = usePathname();
-  const isVerifyPage = pathname === "/technician/verify";
-
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
-      {!isVerifyPage && <SharedTopNav />}
+    <div className="flex min-h-screen bg-slate-50 dark:bg-slate-950">
+      {/* Sidebar starts at the absolute top */}
+      <DashboardSidebar />
 
-      <div className="flex flex-1">
-        {!isVerifyPage && <DashboardSidebar />}
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* TopNav is now part of the content column, cut by the sidebar line */}
+        <SharedTopNav />
         
-        <main className={cn(
-          "flex-1 transition-all duration-300",
-          !isVerifyPage && "px-4 sm:px-6 lg:px-8"
-        )}>
+        <main className="flex-1 transition-all duration-300 px-4 sm:px-6 lg:px-10 py-8">
           <div className="w-full">
             {children}
           </div>
         </main>
-      </div>
 
-      {!isVerifyPage && <DashboardFooter />}
+        <DashboardFooter />
+      </div>
     </div>
   );
 }

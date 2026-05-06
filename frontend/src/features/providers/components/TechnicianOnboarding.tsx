@@ -2,14 +2,14 @@
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Container, Section, Heading, LoadingSpinner } from "@/src/features/shared/components";
-import { 
-  ShieldCheck, 
-  MapPin, 
-  Camera, 
-  ArrowRight, 
-  ArrowLeft, 
-  CheckCircle2, 
-  UploadCloud, 
+import {
+  ShieldCheck,
+  MapPin,
+  Camera,
+  ArrowRight,
+  ArrowLeft,
+  CheckCircle2,
+  UploadCloud,
   FileText,
   XCircle,
   AlertCircle
@@ -30,16 +30,16 @@ export function TechnicianOnboarding() {
   const router = useRouter();
   const { update: updateProfile, loading: profileLoading } = useProviderProfile();
   const { submit: submitVerification, loading: verificationLoading } = useProviderVerification();
-  
+
   const [step, setStep] = useState(1);
-  const [address, setAddress] = useState({ 
-    city: "", 
-    woreda: "", 
-    kebele: "", 
-    specific_location: "", 
-    label: "Workshop" 
+  const [address, setAddress] = useState({
+    city: "",
+    woreda: "",
+    kebele: "",
+    specific_location: "",
+    label: "Workshop"
   });
-  
+
   const [idFile, setIdFile] = useState<File | null>(null);
   const [docFile, setDocFile] = useState<File | null>(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
@@ -88,8 +88,8 @@ export function TechnicianOnboarding() {
     setIsCameraReady(false);
     setIsCameraOpen(true);
     try {
-      const s = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: { ideal: "environment" } } 
+      const s = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } }
       });
       setStream(s);
     } catch (err) {
@@ -126,7 +126,7 @@ export function TechnicianOnboarding() {
         fd.append("proof_document", docFile);
         fd.append("proof_document_type", "coc");
       }
-      
+
       const success = await submitVerification(fd);
       if (success) {
         toast.success("Identity verified!");
@@ -139,12 +139,12 @@ export function TechnicianOnboarding() {
     <div className="min-h-screen bg-background flex flex-col items-center justify-center relative">
       <Section className="w-full flex-grow flex flex-col justify-center py-6 sm:py-12 px-4 sm:px-6">
         <Container className="max-w-xl">
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl border border-border/50 p-6 sm:p-10 shadow-2xl shadow-primary/5 rounded-none space-y-10"
           >
-            
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <span className="text-[9px] font-black uppercase tracking-[0.4em] text-primary">Onboarding Flow</span>
@@ -155,7 +155,7 @@ export function TechnicianOnboarding() {
               </h1>
               <div className="flex gap-2">
                 {[1, 2, 3].map(s => (
-                  <div key={s} className={cn("h-1 flex-1 transition-all duration-500", 
+                  <div key={s} className={cn("h-1 flex-1 transition-all duration-500",
                     step >= s ? "bg-primary" : "bg-slate-100 dark:bg-slate-800"
                   )} />
                 ))}
@@ -170,12 +170,12 @@ export function TechnicianOnboarding() {
                     <p className="text-[10px] font-black uppercase tracking-widest text-primary">Workspace Details</p>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <Input value={address.city} onChange={e => setAddress({...address, city: e.target.value})} placeholder="City *" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
-                    <Input value={address.woreda} onChange={e => setAddress({...address, woreda: e.target.value})} placeholder="Woreda *" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
+                    <Input value={address.city} onChange={e => setAddress({ ...address, city: e.target.value })} placeholder="City *" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
+                    <Input value={address.woreda} onChange={e => setAddress({ ...address, woreda: e.target.value })} placeholder="Woreda *" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <Input value={address.kebele} onChange={e => setAddress({...address, kebele: e.target.value})} placeholder="Kebele" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
-                    <Input value={address.specific_location} onChange={e => setAddress({...address, specific_location: e.target.value})} placeholder="Location" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
+                    <Input value={address.kebele} onChange={e => setAddress({ ...address, kebele: e.target.value })} placeholder="Kebele" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
+                    <Input value={address.specific_location} onChange={e => setAddress({ ...address, specific_location: e.target.value })} placeholder="Location" className="rounded-none border border-border h-12 focus-visible:ring-0 focus-visible:border-primary transition-all bg-background/50 hover:border-primary/50 font-bold" />
                   </div>
                 </div>
               ) : step === 2 ? (
@@ -184,7 +184,7 @@ export function TechnicianOnboarding() {
                     <ShieldCheck className="w-5 h-5 text-primary" />
                     <p className="text-[10px] font-black uppercase tracking-widest text-primary">National ID Verification</p>
                   </div>
-                  
+
                   {isCameraOpen ? (
                     <div className="relative aspect-video bg-black border border-border overflow-hidden">
                       <video ref={videoRef} playsInline autoPlay className="w-full h-full object-cover" />
@@ -206,9 +206,9 @@ export function TechnicianOnboarding() {
                       </button>
                     </div>
                   )}
-                  
+
                   <input ref={idInputRef} type="file" hidden accept="image/*" onChange={e => setIdFile(e.target.files?.[0] || null)} />
-                  
+
                   {idFile && (
                     <div className="p-5 bg-primary/5 border border-primary/20 text-primary flex items-center justify-between">
                       <div className="flex items-center gap-4">
@@ -256,16 +256,16 @@ export function TechnicianOnboarding() {
 
             <div className="flex flex-col sm:flex-row gap-4 pt-10">
               {step > 1 && (
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setStep(s => s - 1)}
                   className="flex-1 h-16 rounded-none border border-border font-black uppercase tracking-[0.2em] text-[10px] hover:border-primary/50 transition-all"
                 >
                   <ArrowLeft className="w-4 h-4 mr-3" /> Back
                 </Button>
               )}
-              <Button 
-                onClick={handleNext} 
+              <Button
+                onClick={handleNext}
                 disabled={profileLoading || verificationLoading}
                 className="flex-[2] h-16 rounded-none bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-[0.2em] text-xs shadow-xl shadow-slate-950/20 transition-all active:scale-[0.98]"
               >
@@ -280,13 +280,13 @@ export function TechnicianOnboarding() {
               </Button>
             </div>
           </motion.div>
-          
+
           <div className="mt-12 text-[10px] font-black uppercase tracking-widest text-muted-foreground text-center">
             &copy; {new Date().getFullYear()} Haseri Marketplace. All rights reserved.
           </div>
         </Container>
       </Section>
-      
+
       <canvas ref={canvasRef} className="hidden" />
     </div>
   );
