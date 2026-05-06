@@ -10,7 +10,7 @@ import {
   ProfileJobsList,
   ProfileApplicationsPanel
 } from "./";
-import { Container, Section, SharedChatWidget } from "@/src/features/shared/components";
+import { Container, Section } from "@/src/features/shared/components";
 import { Phone, MapPin, Shield } from "lucide-react";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useCustomerProfile } from "@/src/features/customers/hooks/useCustomerProfile";
@@ -63,7 +63,6 @@ export function CustomerProfileDashboard() {
             <ProfileApplicationsPanel jobs={jobs} />
           </div>
           <div className="space-y-6">
-            <SharedChatWidget />
             <ProfileEditableAside
               title="Personal"
               icon={<Shield className="w-5 h-5" />}

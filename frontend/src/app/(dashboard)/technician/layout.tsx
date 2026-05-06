@@ -3,8 +3,10 @@
 import { usePathname } from "next/navigation";
 import {
   SharedTopNav,
-  DashboardFooter
+  DashboardFooter,
+  DashboardSidebar
 } from "@/src/features/shared/components";
+import { cn } from "@/src/lib/utils";
 
 export default function TechnicianDashboardLayout({
   children,
@@ -18,11 +20,18 @@ export default function TechnicianDashboardLayout({
     <div className="flex flex-col min-h-screen bg-slate-50 dark:bg-slate-950">
       {!isVerifyPage && <SharedTopNav />}
 
-      <main className="flex-grow">
-        <div className="w-full">
-          {children}
-        </div>
-      </main>
+      <div className="flex flex-1">
+        {!isVerifyPage && <DashboardSidebar />}
+        
+        <main className={cn(
+          "flex-1 transition-all duration-300",
+          !isVerifyPage && "px-4 sm:px-6 lg:px-8"
+        )}>
+          <div className="w-full">
+            {children}
+          </div>
+        </main>
+      </div>
 
       {!isVerifyPage && <DashboardFooter />}
     </div>

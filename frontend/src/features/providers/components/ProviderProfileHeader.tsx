@@ -79,7 +79,7 @@ export function ProviderProfileHeader() {
 
       <div className="w-full mt-2">
         <div className="flex items-center gap-3">
-          <Heading level={1} weight="black" uppercase className="text-2xl md:text-3xl tracking-tighter break-words text-slate-900 dark:text-white">
+          <Heading level={1} weight="black" uppercase className="text-lg md:text-xl tracking-tighter break-words text-slate-900 dark:text-white">
             {user?.first_name} {user?.last_name}
           </Heading>
           {user?.technician_verification?.status === "approved" && (

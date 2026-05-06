@@ -3,19 +3,17 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { UserMenu } from "./UserMenu";
 import {
   LayoutDashboard,
   User,
   ShieldCheck,
   Briefcase,
-  Bell,
   Settings,
   X,
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
-  Search
+  FileText
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { useUiStore } from "@/src/hooks/useUiStore";
@@ -34,6 +32,18 @@ export const DashboardSidebar = () => {
   const menuItems = [
     { label: "Overview", href: isCustomer ? "/customer" : "/technician", icon: LayoutDashboard, show: true },
     {
+      label: "Applications",
+      href: isCustomer ? "/customer/applications" : "/technician/applications",
+      icon: FileText,
+      show: isCustomer || isProvider
+    },
+    {
+      label: "My Jobs",
+      href: isCustomer ? "/customer/jobs" : "/technician/jobs",
+      icon: Briefcase,
+      show: isCustomer || isProvider
+    },
+    {
       label: "My Profile",
       href: isCustomer ? "/customer/profile" : "/technician/profile",
       icon: User,
@@ -45,8 +55,6 @@ export const DashboardSidebar = () => {
       icon: ShieldCheck,
       show: isCustomer || isProvider
     },
-    { label: "My Jobs", href: "/dashboard/jobs", icon: Briefcase, show: true },
-    { label: "Notifications", href: "/dashboard/notifications", icon: Bell, show: true },
     { label: "Settings", href: "/dashboard/settings", icon: Settings, show: true },
   ];
 
@@ -71,20 +79,11 @@ export const DashboardSidebar = () => {
           width: sidebarOpen ? (sidebarCollapsed ? 80 : 280) : (typeof window !== 'undefined' && window.innerWidth >= 1024 ? (sidebarCollapsed ? 80 : 280) : 0)
         }}
         className={cn(
-          "fixed lg:sticky top-0 left-0 h-screen bg-white dark:bg-slate-950 border-r-2 border-slate-900 z-50 overflow-hidden flex flex-col transition-all duration-300",
-          !sidebarOpen && "lg:w-0 lg:border-none"
+          "fixed lg:sticky top-0 left-0 h-screen bg-white dark:bg-slate-950 z-50 overflow-hidden flex flex-col transition-all duration-300",
+          !sidebarOpen && "lg:w-0"
         )}
       >
-        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-100 dark:border-slate-800">
-          <Link href="/" className={cn("flex items-center gap-2 group transition-all", sidebarCollapsed && "scale-0 w-0 opacity-0")}>
-            <div className="w-8 h-8 bg-primary flex items-center justify-center border border-primary group-hover:rotate-90 transition-transform">
-              <span className="text-white font-black text-lg italic">H</span>
-            </div>
-            <span className="text-xl font-black tracking-tighter uppercase italic">
-              Haseri<span className="text-primary">.</span>
-            </span>
-          </Link>
-
+        <div className="h-20 flex items-center justify-end px-6">
           <div className="flex items-center gap-1">
             <button
               onClick={toggleSidebarCollapsed}
@@ -102,15 +101,6 @@ export const DashboardSidebar = () => {
         </div>
 
         <nav className="flex-1 overflow-y-auto py-8 px-3 space-y-2">
-          {!sidebarCollapsed && (
-            <div className="hidden lg:block px-4 mb-6 space-y-4">
-              <div className="flex items-center gap-3 px-3 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-400">
-                <Search className="w-4 h-4" />
-                <span className="text-[9px] font-black uppercase tracking-widest">Search...</span>
-              </div>
-            </div>
-          )}
-
           <TooltipProvider delayDuration={0}>
             {menuItems.filter(item => item.show).map((item) => {
               const isActive = pathname === item.href;
@@ -154,13 +144,6 @@ export const DashboardSidebar = () => {
             })}
           </TooltipProvider>
         </nav>
-
-        <div className={cn(
-          "p-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 transition-all",
-          sidebarCollapsed ? "items-center" : "items-start"
-        )}>
-          <UserMenu />
-        </div>
       </motion.aside>
     </>
   );
