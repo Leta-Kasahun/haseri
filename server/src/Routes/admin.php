@@ -7,6 +7,7 @@ use Haseri\Backend\Shared\Exceptions\HttpException;
 use Haseri\Backend\Modules\Admin\Controllers\DashboardController;
 use Haseri\Backend\Modules\Admin\Controllers\UserManagementController;
 use Haseri\Backend\Modules\Admin\Controllers\SettingsController;
+use Haseri\Backend\Modules\Notifications\Controllers\AdminNotificationController;
 
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $method = $_SERVER['REQUEST_METHOD'];
@@ -121,5 +122,41 @@ if ($uri === '/api/admin/settings/fees' && $method === 'PUT') {
 if ($uri === '/api/admin/analytics' && $method === 'GET') {
     $admin = AuthMiddleware::handleAdmin();
     (new SettingsController())->analytics($admin);
+    exit;
+}
+
+if ($uri === '/api/admin/notifications' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new AdminNotificationController())->index($admin);
+    exit;
+}
+
+if ($uri === '/api/admin/notifications/unread' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new AdminNotificationController())->unread($admin);
+    exit;
+}
+
+if ($uri === '/api/admin/notifications/count' && $method === 'GET') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new AdminNotificationController())->count($admin);
+    exit;
+}
+
+if (preg_match('/^\/api\/admin\/notifications\/(\d+)\/read$/', $uri, $m) && $method === 'PUT') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new AdminNotificationController())->markAsRead($admin, $m[1]);
+    exit;
+}
+
+if ($uri === '/api/admin/notifications/read-all' && $method === 'PUT') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new AdminNotificationController())->markAllAsRead($admin);
+    exit;
+}
+
+if (preg_match('/^\/api\/admin\/notifications\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+    $admin = AuthMiddleware::handleAdmin();
+    (new AdminNotificationController())->destroy($admin, $m[1]);
     exit;
 }

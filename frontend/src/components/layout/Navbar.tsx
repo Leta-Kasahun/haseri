@@ -78,7 +78,7 @@ export const Navbar = () => {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
-              <NotificationCenter />
+              <NotificationCenter scope="user" />
               <UserMenu />
             </div>
           ) : (

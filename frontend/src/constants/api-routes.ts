@@ -86,5 +86,13 @@ export const API_ROUTES = {
     VERIFICATIONS_REJECT: "/admin/verifications/reject",
     SETTINGS_FEES: "/admin/settings/fees",
     ANALYTICS: "/admin/analytics",
+    NOTIFICATIONS: {
+      BASE: "/admin/notifications",
+      UNREAD: "/admin/notifications/unread",
+      COUNT: "/admin/notifications/count",
+      READ_ALL: "/admin/notifications/read-all",
+      MARK_READ: (id: string) => `/admin/notifications/${id}/read`,
+      DELETE: (id: string) => `/admin/notifications/${id}`,
+    },
   },
 } as const;

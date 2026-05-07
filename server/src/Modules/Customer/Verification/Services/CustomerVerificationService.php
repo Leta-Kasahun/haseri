@@ -3,6 +3,9 @@ namespace Haseri\Backend\Modules\Customer\Verification\Services;
 
 use Haseri\Backend\Shared\Models\CustomerVerification;
 use Haseri\Backend\Shared\Models\User;
+use Haseri\Backend\Shared\Models\Notification;
+use Haseri\Backend\Shared\Enums\NotificationType;
+use Haseri\Backend\Modules\Notifications\Services\AdminNotifier;
 use Haseri\Backend\Modules\Payments\Services\PaymentService;
 
 class CustomerVerificationService
@@ -33,10 +36,28 @@ class CustomerVerificationService
 
     public function confirm($userId)
     {
-        CustomerVerification::updateOrCreate(
+        $verification = CustomerVerification::updateOrCreate(
             ['user_id' => $userId],
             ['status' => 'verified', 'verified_at' => now()]
         );
+
+        Notification::create([
+            'user_id' => $userId,
+            'title' => 'Verification Completed',
+            'message' => 'Your customer verification has been completed successfully.',
+            'type' => NotificationType::PAYMENT_SUCCESS,
+            'reference_id' => $verification->id,
+        ]);
+
+        $user = User::find($userId);
+        if ($user) {
+            AdminNotifier::notifyAll(
+                'Customer Verification Completed',
+                $user->first_name . ' ' . $user->last_name . ' completed customer verification payment.',
+                'customer_verification_completed',
+                $verification->id
+            );
+        }
 
         return ['verified' => true];
     }

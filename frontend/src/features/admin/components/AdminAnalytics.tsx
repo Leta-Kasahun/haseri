@@ -100,6 +100,7 @@ export function AdminAnalytics() {
     { name: "Sat", active: 0, new: 0 },
     { name: "Sun", active: 0, new: 0 },
   ];
+  const recentPayments = analytics?.recent_payments || [];
 
   return (
     <motion.div 
@@ -244,6 +245,67 @@ export function AdminAnalytics() {
           </div>
         </motion.div>
       </div>
+
+      <motion.div variants={itemVariants} className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">
+            Recent Payment Histories
+          </h3>
+        </div>
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.02)]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-slate-50 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800">
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Payment ID</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Payer</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Date</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400">Status</th>
+                  <th className="px-6 py-4 text-[9px] font-black uppercase tracking-widest text-slate-400 text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-50 dark:divide-slate-800">
+                {recentPayments.length > 0 ? (
+                  recentPayments.slice(0, 8).map((payment) => (
+                    <tr key={payment.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                      <td className="px-6 py-5 text-[11px] font-black uppercase tracking-tight text-slate-900 dark:text-white">
+                        {String(payment.id)}
+                      </td>
+                      <td className="px-6 py-5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        {payment.payer_name || "N/A"}
+                      </td>
+                      <td className="px-6 py-5 text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                        {new Date(payment.created_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-6 py-5">
+                        <span
+                          className={cn(
+                            "text-[8px] font-black uppercase tracking-widest px-2 py-0.5 border",
+                            payment.status.toLowerCase() === "successful" || payment.status.toLowerCase() === "paid"
+                              ? "bg-emerald-50 text-emerald-600 border-emerald-100"
+                              : "bg-slate-50 text-slate-500 border-slate-100"
+                          )}
+                        >
+                          {payment.status}
+                        </span>
+                      </td>
+                      <td className="px-6 py-5 text-right text-[11px] font-black text-slate-900 dark:text-white italic">
+                        {(payment.currency || "ETB")} {Number(payment.amount || 0).toLocaleString()}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-6 py-16 text-center text-[10px] font-bold uppercase tracking-widest text-slate-300 italic">
+                      No recent payments available
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </motion.div>
     </motion.div>
   );
 }
@@ -255,7 +317,7 @@ function KpiCard({ title, value, change, icon, positive, index }: { title: strin
       whileHover={{ y: -5 }}
       className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl p-4 md:p-6 flex flex-col justify-between shadow-[0_4px_20px_rgb(0,0,0,0.02)] transition-all duration-300 relative group"
     >
-      <div className="absolute top-0 right-0 w-12 h-12 md:w-16 md:h-16 bg-slate-50 dark:bg-slate-800/50 rounded-bl-full -z-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      <div className="absolute top-0 right-0 w-12 h-12 md:w-16 md:h-16 bg-slate-50 dark:bg-slate-800/50 rounded-bl-full z-0 opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="flex items-center justify-between space-y-0 pb-3 md:pb-6 relative z-10">
         <h3 className="text-[8px] md:text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
           {title}

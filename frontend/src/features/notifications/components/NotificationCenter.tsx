@@ -13,7 +13,12 @@ import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/src/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
-export function NotificationCenter() {
+interface NotificationCenterProps {
+  disabled?: boolean;
+  scope?: "user" | "admin";
+}
+
+export function NotificationCenter({ disabled = false, scope = "user" }: NotificationCenterProps) {
   const [open, setOpen] = useState(false);
   const { 
     notifications, 
@@ -24,21 +29,23 @@ export function NotificationCenter() {
     markAsRead, 
     markAllAsRead, 
     remove 
-  } = useNotifications();
+  } = useNotifications(scope);
 
   // Initial fetch and polling
   useEffect(() => {
+    if (disabled) return;
     getCount();
     const interval = setInterval(getCount, 60000);
     return () => clearInterval(interval);
-  }, [getCount]);
+  }, [disabled, getCount]);
 
   // Fetch all when opened
   useEffect(() => {
+    if (disabled) return;
     if (open) {
       getAll();
     }
-  }, [open, getAll]);
+  }, [disabled, open, getAll]);
 
   const sortedNotifications = useMemo(
     () => [...notifications].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()),

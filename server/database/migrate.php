@@ -13,5 +13,6 @@ require __DIR__ . '/migrations/010_create_jobs_table.php';
 require __DIR__ . '/migrations/011_create_job_applications_table.php';
 require __DIR__ . '/migrations/012_create_reviews_table.php';
 require __DIR__ . '/migrations/013_create_notifications_table.php';
+require __DIR__ . '/migrations/014_create_admin_notifications_table.php';
 
 echo "\nAll tables migrated!\n";

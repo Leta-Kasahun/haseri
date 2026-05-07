@@ -57,4 +57,12 @@ export type AdminAnalytics = {
   pending_verifications: number;
   revenue_history?: { name: string; total: number; trend: number }[];
   user_activity?: { name: string; active: number; new: number }[];
+  recent_payments?: {
+    id: number | string;
+    amount: number;
+    currency?: string;
+    status: string;
+    payer_name?: string;
+    created_at: string;
+  }[];
 };

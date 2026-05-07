@@ -38,7 +38,7 @@ export const useGoogleRoleSelection = (storageKey = "haseri:register:google") =>
         setUser(res.data.data.user as any);
         sessionStorage.removeItem(storageKey);
         if (role === "provider") {
-          router.push("/technician/verify");
+          router.push("/technician/onboarding");
         } else {
           router.push("/dashboard");
         }

@@ -23,7 +23,7 @@ export const useRegister = () => {
       }
       setUser(res.data.data.user);
       if (res.data.data.user.role === "provider") {
-        router.push("/technician/verify");
+        router.push("/technician/onboarding");
       } else {
         router.push("/dashboard");
       }

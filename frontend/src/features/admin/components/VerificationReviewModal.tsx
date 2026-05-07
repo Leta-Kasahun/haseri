@@ -15,13 +15,14 @@ import {
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import type { PendingVerification } from "../types";
+import { resolveAssetUrl } from "@/src/utils/resolve-asset-url";
 
 interface Props {
   verification: PendingVerification | null;
   isOpen: boolean;
   onClose: () => void;
-  onApprove: (id: number) => Promise<void>;
-  onReject: (id: number, reason: string) => Promise<void>;
+  onApprove: (id: number) => Promise<boolean>;
+  onReject: (id: number, reason: string) => Promise<boolean>;
 }
 
 export function VerificationReviewModal({ verification, isOpen, onClose, onApprove, onReject }: Props) {
@@ -35,9 +36,11 @@ export function VerificationReviewModal({ verification, isOpen, onClose, onAppro
     if (type === 'reject' && !rejectReason.trim()) return;
     setIsSubmitting(true);
     try {
-      if (type === 'approve') await onApprove(verification.id);
-      else await onReject(verification.id, rejectReason);
-      onClose();
+      const success =
+        type === 'approve'
+          ? await onApprove(verification.id)
+          : await onReject(verification.id, rejectReason);
+      if (success) onClose();
     } finally {
       setIsSubmitting(false);
     }
@@ -221,21 +224,41 @@ function InfoItem({ label, value, icon, lowercase = false }: { label: string, va
 }
 
 function DocCard({ label, path, isImg }: { label: string, path?: string | null, isImg: boolean }) {
+  // Defensive check for path being null or "null" string
+  const actualPath = (path === "null" || !path) ? null : path;
+  const resolvedPath = resolveAssetUrl(actualPath);
+  const isPdf = actualPath?.toLowerCase().endsWith(".pdf");
+
   return (
     <div className="group rounded-xl border border-slate-100 dark:border-slate-800 p-3 bg-slate-50/50 dark:bg-slate-900/50 flex flex-col gap-3 transition-all hover:border-slate-300 dark:hover:border-slate-600">
       <div className="flex items-center justify-between">
         <p className="text-[8px] font-black uppercase tracking-widest text-slate-500">{label}</p>
-        {path && (
-          <a href={path} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors text-primary" title="Open">
+        {resolvedPath && (
+          <a href={resolvedPath} target="_blank" rel="noopener noreferrer" className="p-1 hover:bg-white dark:hover:bg-slate-800 rounded-lg transition-colors text-primary" title="Open in New Tab">
             <ExternalLink size={12} />
           </a>
         )}
       </div>
 
       <div className="aspect-video relative rounded-lg overflow-hidden bg-slate-200 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center">
-        {path ? (
+        {resolvedPath ? (
           isImg ? (
-            <img src={path} alt={label} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+            <img 
+              src={resolvedPath} 
+              alt={label} 
+              className="w-full h-full object-cover transition-transform group-hover:scale-105"
+              onError={(e) => {
+                const img = e.currentTarget;
+                img.style.display = 'none';
+                img.parentElement!.innerHTML = '<div class="flex flex-col items-center gap-1.5"><svg class="lucide lucide-alert-circle w-6 h-6 text-red-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg><span class="text-[7px] font-bold uppercase tracking-widest text-red-500">Load Error</span></div>';
+              }}
+            />
+          ) : isPdf ? (
+            <iframe 
+              src={`${resolvedPath}#toolbar=0&navpanes=0&scrollbar=0`} 
+              className="w-full h-full border-none rounded-lg"
+              title={label}
+            />
           ) : (
             <div className="flex flex-col items-center gap-1.5">
               <FileText className="w-6 h-6 text-slate-400" />

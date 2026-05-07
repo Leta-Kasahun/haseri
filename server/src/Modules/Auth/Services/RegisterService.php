@@ -5,6 +5,7 @@ use Haseri\Backend\Shared\Models\RefreshToken;
 use Haseri\Backend\Shared\Helpers\JWT;
 use Haseri\Backend\Shared\Exceptions\ConflictException;
 use Haseri\Backend\Shared\Enums\UserRole;
+use Haseri\Backend\Modules\Notifications\Services\AdminNotifier;
 
 #user registration service
 class RegisterService
@@ -31,6 +32,13 @@ class RegisterService
             'password'   => password_hash($data['password'], PASSWORD_DEFAULT),
             'role'       => $data['role'],
         ]);
+
+        AdminNotifier::notifyAll(
+            'New User Registered',
+            $user->first_name . ' ' . $user->last_name . ' joined as ' . $user->role . '.',
+            'new_user',
+            $user->id
+        );
  #refresh token and acces  toekn
         $accessToken  = JWT::generateAccessToken($user->id, $user->role);
         $refreshToken = JWT::generateRefreshToken($user->id, $user->role);

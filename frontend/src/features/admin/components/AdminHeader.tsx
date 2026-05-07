@@ -1,43 +1,62 @@
 "use client";
 
 import React from "react";
-import { Menu, Search, Bell } from "lucide-react";
-import { cn } from "@/src/lib/utils";
+import Link from "next/link";
+import { Menu, Search, X } from "lucide-react";
 import { AdminUserMenu } from "./AdminUserMenu";
 import { NotificationCenter } from "@/src/features/notifications";
+import { useUiStore } from "@/src/hooks/useUiStore";
+import { Button } from "@/src/components/ui/button";
 
-interface AdminHeaderProps {
-  toggleMobileSidebar: () => void;
-}
-
-export function AdminHeader({ toggleMobileSidebar }: AdminHeaderProps) {
+export function AdminHeader() {
+  const { setSidebarOpen, sidebarOpen } = useUiStore();
   return (
-    <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-slate-200/60 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md px-4 md:px-8 shadow-[0_2px_15px_-3px_rgb(0,0,0,0.02)] w-full">
-      <div className="flex items-center gap-3 flex-1 min-w-0">
-        <button
-          onClick={toggleMobileSidebar}
-          className="md:hidden p-2 rounded-xl text-slate-400 hover:text-slate-900 hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100 shrink-0"
-          aria-label="Toggle Menu"
-        >
-          <Menu size={20} />
-        </button>
+    <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
+      <div className="w-full px-4 sm:px-6 lg:px-10">
+        <div className="flex items-center justify-between h-16 lg:h-20">
+          <div className="flex items-center gap-4">
+            <button
+              className="lg:hidden p-2 text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-none transition-colors"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              aria-label="Toggle Sidebar"
+            >
+              {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
 
-        <form className="flex-1 max-w-md group min-w-0">
-          <div className="relative w-full group">
-            <Search className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400 group-focus-within:text-primary transition-colors" />
-            <input
-              type="search"
-              placeholder="SEARCH..."
-              className="w-full bg-slate-50/50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-800 rounded-xl pl-10 md:pl-11 pr-4 py-2.5 text-[10px] font-black tracking-widest outline-none focus:border-slate-900 dark:focus:border-white focus:bg-white dark:focus:bg-slate-950 transition-all uppercase placeholder:text-slate-400 shadow-inner"
-            />
+            {!sidebarOpen && (
+              <div className="flex lg:hidden items-center gap-2">
+                <Link href="/admin/dashboard" className="flex items-center gap-2 group">
+                  <div className="w-8 h-8 bg-primary flex items-center justify-center transform group-hover:rotate-90 transition-transform duration-500 shadow-sm">
+                    <span className="text-white font-black text-lg italic">H</span>
+                  </div>
+                  <span className="text-xl font-black tracking-tighter uppercase italic text-foreground">
+                    Haseri<span className="text-primary">.</span>
+                  </span>
+                </Link>
+              </div>
+            )}
           </div>
-        </form>
-      </div>
-
-      <div className="flex items-center gap-3 md:gap-4 ml-4 shrink-0">
-        <NotificationCenter />
-        
-        <AdminUserMenu side="bottom" align="end" />
+          <div className="hidden sm:flex flex-1 max-w-[400px] mx-4 lg:mx-0 justify-center">
+            <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-400 w-full rounded-xl focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+              <Search className="w-4 h-4 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-widest w-full text-slate-900 dark:text-white"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-3 sm:gap-6">
+            <div className="flex items-center gap-3 sm:gap-5">
+              <Button variant="ghost" size="icon" className="sm:hidden text-slate-500">
+                <Search className="w-5 h-5" />
+              </Button>
+              <NotificationCenter scope="admin" />
+              <div className="hidden sm:block h-5 w-px bg-slate-100 dark:bg-slate-800" />
+              <AdminUserMenu side="bottom" align="end" />
+            </div>
+          </div>
+        </div>
       </div>
     </header>
   );

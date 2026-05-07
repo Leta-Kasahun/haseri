@@ -25,9 +25,11 @@ export const useAdminVerifications = () => {
     try {
       await adminApi.approveVerification(id);
       toast.success("Technician approved successfully");
-      fetchPending();
+      await fetchPending();
+      return true;
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to approve technician");
+      return false;
     }
   };
 
@@ -35,9 +37,11 @@ export const useAdminVerifications = () => {
     try {
       await adminApi.rejectVerification(id, reason);
       toast.success("Technician rejected");
-      fetchPending();
+      await fetchPending();
+      return true;
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to reject technician");
+      return false;
     }
   };
 

@@ -72,11 +72,20 @@ clientApi.interceptors.response.use(
     if (!error.config) return Promise.reject(new Error("An unexpected error occurred"));
 
     const config = error.config as CustomAxiosConfig;
+    const url = config.url || "";
+    const isRefreshRequest = url.includes("/refresh");
+    const isLoginRequest = url.includes("/login");
+    const isAdminRequest = url.startsWith("/admin") || url.startsWith("admin");
+    const isAdminPage =
+      typeof window !== "undefined" && window.location.pathname.startsWith("/admin");
+    const isAdminContext = isAdminRequest || isAdminPage;
 
-    if (error.response?.status === 401 && !config._retry) {
+    if (error.response?.status === 401 && !config._retry && !isRefreshRequest && !isLoginRequest) {
       config._retry = true;
       try {
-        const refreshResponse = await clientApi.post("/auth/refresh");
+        const refreshResponse = await clientApi.post(
+          isAdminContext ? "/admin/refresh" : "/auth/refresh"
+        );
         const newToken = extractAccessToken(refreshResponse.data);
         if (newToken) {
           setStoredAuth(newToken);
@@ -86,7 +95,7 @@ clientApi.interceptors.response.use(
       } catch {
         setStoredAuth(null);
         if (typeof window !== "undefined") {
-          window.location.href = "/login";
+          window.location.href = isAdminContext ? "/admin/login" : "/login";
         }
         return Promise.reject(new Error("Session expired"));
       }

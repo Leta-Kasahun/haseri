@@ -4,6 +4,9 @@ namespace Haseri\Backend\Modules\Jobs\Services;
 use Haseri\Backend\Modules\Jobs\Repositories\JobRepository;
 use Haseri\Backend\Shared\Models\Job;
 use Haseri\Backend\Shared\Models\Address;
+use Haseri\Backend\Shared\Models\Notification;
+use Haseri\Backend\Shared\Enums\NotificationType;
+use Haseri\Backend\Modules\Notifications\Services\AdminNotifier;
 use Haseri\Backend\Modules\Payments\Services\PaymentService;
 use Haseri\Backend\Shared\Exceptions\NotFoundException;
 
@@ -37,7 +40,7 @@ class JobService
             $addressId = $primary ? $primary->id : null;
         }
 
-        return Job::create([
+        $job = Job::create([
             'customer_id' => $userId,
             'category_id' => $data['category_id'],
             'address_id' => $addressId,
@@ -47,6 +50,15 @@ class JobService
             'commission' => $data['price'] * 0.15,
             'status' => 'open',
         ]);
+
+        AdminNotifier::notifyAll(
+            'New Job Posted',
+            'A new job "' . $job->title . '" has been posted.',
+            'job_posted',
+            $job->id
+        );
+
+        return $job;
     }
 
     public function getAll(array $filters = [])
@@ -76,6 +88,32 @@ class JobService
         $job = Job::find($jobId);
         if (!$job) throw new NotFoundException('Job not found');
         $job->update(['status' => 'completed', 'completed_at' => now()]);
+
+        Notification::create([
+            'user_id' => $job->customer_id,
+            'title' => 'Job Completed',
+            'message' => 'Your job "' . $job->title . '" has been marked as completed.',
+            'type' => NotificationType::JOB_COMPLETED,
+            'reference_id' => $job->id,
+        ]);
+
+        if (!empty($job->technician_id)) {
+            Notification::create([
+                'user_id' => $job->technician_id,
+                'title' => 'Job Completed',
+                'message' => 'Job "' . $job->title . '" has been completed.',
+                'type' => NotificationType::JOB_COMPLETED,
+                'reference_id' => $job->id,
+            ]);
+        }
+
+        AdminNotifier::notifyAll(
+            'Job Completed',
+            'Job "' . $job->title . '" has been completed.',
+            'job_completed',
+            $job->id
+        );
+
         return $job;
     }
 
@@ -84,6 +122,32 @@ class JobService
         $job = Job::find($jobId);
         if (!$job) throw new NotFoundException('Job not found');
         $job->update(['status' => 'cancelled']);
+
+        Notification::create([
+            'user_id' => $job->customer_id,
+            'title' => 'Job Cancelled',
+            'message' => 'Your job "' . $job->title . '" was cancelled.',
+            'type' => NotificationType::SYSTEM,
+            'reference_id' => $job->id,
+        ]);
+
+        if (!empty($job->technician_id)) {
+            Notification::create([
+                'user_id' => $job->technician_id,
+                'title' => 'Job Cancelled',
+                'message' => 'Job "' . $job->title . '" was cancelled.',
+                'type' => NotificationType::SYSTEM,
+                'reference_id' => $job->id,
+            ]);
+        }
+
+        AdminNotifier::notifyAll(
+            'Job Cancelled',
+            'Job "' . $job->title . '" has been cancelled.',
+            'job_cancelled',
+            $job->id
+        );
+
         return $job;
     }
 }

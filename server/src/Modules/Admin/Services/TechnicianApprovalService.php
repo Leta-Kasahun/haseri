@@ -9,10 +9,18 @@ class TechnicianApprovalService
 {
     public function pending()
     {
-        return TechnicianVerification::with('user', 'address')
+        $verifications = TechnicianVerification::with('user', 'user.address', 'address')
             ->where('status', 'pending')
             ->orderBy('created_at', 'desc')
             ->get();
+
+        foreach ($verifications as $verification) {
+            if (!$verification->address && $verification->user && $verification->user->address) {
+                $verification->setRelation('address', $verification->user->address);
+            }
+        }
+
+        return $verifications;
     }
 
     public function approve($verificationId, $adminId)

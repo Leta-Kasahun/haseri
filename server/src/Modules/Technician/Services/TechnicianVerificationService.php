@@ -3,6 +3,7 @@ namespace Haseri\Backend\Modules\Technician\Services;
 
 use Haseri\Backend\Shared\Models\TechnicianVerification;
 use Haseri\Backend\Shared\Models\User;
+use Haseri\Backend\Modules\Notifications\Services\AdminNotifier;
 use Haseri\Backend\Shared\Helpers\Upload\ImageUploader;
 use Haseri\Backend\Shared\Helpers\Upload\FileUploader;
 use Haseri\Backend\Shared\Exceptions\ValidationException;
@@ -35,7 +36,9 @@ class TechnicianVerificationService
             $proofType = $data['proof_document_type'] ?? null;
         }
 
-        TechnicianVerification::updateOrCreate(
+        $existing = TechnicianVerification::where('user_id', $userId)->first();
+
+        $verification = TechnicianVerification::updateOrCreate(
             ['user_id' => $userId],
             [
                 'national_id_path' => $nationalIdPath,
@@ -44,6 +47,14 @@ class TechnicianVerificationService
                 'status' => 'pending',
             ]
         );
+
+        $user = User::find($userId);
+        if ($user) {
+            $title = $existing ? 'Verification Updated' : 'New Verification Submitted';
+            $message = $user->first_name . ' ' . $user->last_name . ' submitted technician verification documents.';
+
+            AdminNotifier::notifyAll($title, $message, 'verification_submitted', $verification->id);
+        }
 
         return ['message' => 'Verification submitted for review'];
     }

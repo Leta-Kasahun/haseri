@@ -29,7 +29,20 @@ export function TechnicianOnboarding() {
   const { user } = useAuth();
   const router = useRouter();
   const { update: updateProfile, loading: profileLoading } = useProviderProfile();
-  const { submit: submitVerification, loading: verificationLoading } = useProviderVerification();
+  const { submit: submitVerification, checkStatus, loading: verificationLoading } = useProviderVerification();
+  const [checkingStatus, setCheckingStatus] = useState(true);
+
+  useEffect(() => {
+    const init = async () => {
+      const status = await checkStatus();
+      if (status && (status.status === "pending" || status.status === "approved")) {
+        router.push("/technician/profile");
+      } else {
+        setCheckingStatus(false);
+      }
+    };
+    init();
+  }, [checkStatus, router]);
 
   const [step, setStep] = useState(1);
   const [address, setAddress] = useState({
@@ -134,6 +147,14 @@ export function TechnicianOnboarding() {
       }
     }
   };
+
+  if (checkingStatus) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <LoadingSpinner size="lg" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center relative">
