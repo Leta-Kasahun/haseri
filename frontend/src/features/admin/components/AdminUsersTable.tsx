@@ -19,13 +19,6 @@ export function AdminUsersTable() {
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
-      <div className="p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-        <div>
-          <h2 className="text-sm md:text-base font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">User Management</h2>
-          <p className="text-[9px] md:text-[10px] font-semibold uppercase tracking-widest text-slate-400 mt-1">Manage all customers and technicians</p>
-        </div>
-        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">{users.length} users</div>
-      </div>
 
       <Table>
         <TableHeader>

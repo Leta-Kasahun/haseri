@@ -8,7 +8,7 @@ import { Button } from "@/src/components/ui/button";
 import { Eye, Edit2, Trash2, Calendar, DollarSign, Briefcase, Users } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
-import Link from "next/link";
+import { PostJobModal } from "@/src/features/jobs/components";
 
 export function CustomerJobsTable() {
   const { jobs, loading, getMyJobs } = useJobs();
@@ -39,11 +39,14 @@ export function CustomerJobsTable() {
           <h2 className="text-sm md:text-base font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">My Posted Jobs</h2>
           <p className="text-[10px] font-semibold uppercase tracking-widest text-slate-400 mt-1">Manage and track your service requests</p>
         </div>
-        <Link href="/customer/jobs/post">
-          <Button className="h-10 px-6 bg-slate-900 text-white hover:bg-primary rounded-none font-black uppercase tracking-widest text-[9px] transition-all">
-            Post New Job
-          </Button>
-        </Link>
+        <PostJobModal 
+          trigger={
+            <Button className="h-10 px-6 bg-slate-900 text-white hover:bg-primary rounded-none font-black uppercase tracking-widest text-[9px] transition-all">
+              Post New Job
+            </Button>
+          }
+          onSuccess={getMyJobs}
+        />
       </div>
 
       <div className="overflow-x-auto">
@@ -84,7 +87,7 @@ export function CustomerJobsTable() {
                       <div className="flex items-center gap-1.5">
                         <Briefcase className="w-3 h-3 text-slate-400" />
                         <span className="text-[9px] font-bold uppercase tracking-widest text-slate-400">
-                          {job.category || "Professional Service"}
+                          {typeof job.category === 'object' ? (job.category as any)?.name : job.category || "Professional Service"}
                         </span>
                       </div>
                     </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Container, Section, Heading } from "@/src/features/shared/components";
+import { Container, Section } from "@/src/features/shared/components";
 import { CustomerJobsTable } from "@/src/features/customers/components/CustomerJobsTable";
 
 export default function CustomerJobsPage() {

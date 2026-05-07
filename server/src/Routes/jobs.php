@@ -16,24 +16,6 @@ try {
         exit;
     }
 
-    if ($uri === '/api/jobs/categories' && $method === 'POST') {
-        $user = AuthMiddleware::handle();
-        (new JobCategoryController())->store($user);
-        exit;
-    }
-
-    if (preg_match('/^\/api\/jobs\/categories\/(\d+)$/', $uri, $m) && $method === 'PUT') {
-        $user = AuthMiddleware::handle();
-        (new JobCategoryController())->update($user, $m[1]);
-        exit;
-    }
-
-    if (preg_match('/^\/api\/jobs\/categories\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
-        $user = AuthMiddleware::handle();
-        (new JobCategoryController())->destroy($user, $m[1]);
-        exit;
-    }
-
     // Jobs
     if ($uri === '/api/jobs' && $method === 'GET') {
         (new JobController())->index();

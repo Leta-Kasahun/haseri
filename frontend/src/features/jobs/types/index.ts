@@ -11,7 +11,7 @@ export type Job = {
   price: number;
   commission: number;
   status: "open" | "assigned" | "in_progress" | "completed" | "cancelled";
-  category: string | null;
+  category: string | JobCategory | null;
   customer: {
     id: number;
     name: string;
@@ -22,7 +22,8 @@ export type Job = {
   } | null;
   address: {
     city: string;
-    sub_city: string | null;
+    woreda: string | null;
+    kebele: string | null;
     specific_location: string | null;
   } | null;
   created_at: string;
@@ -34,7 +35,8 @@ export type CreateJobInput = {
   category_id: number;
   price: number;
   city?: string;
-  sub_city?: string;
+  woreda?: string;
+  kebele?: string;
   specific_location?: string;
 };
 

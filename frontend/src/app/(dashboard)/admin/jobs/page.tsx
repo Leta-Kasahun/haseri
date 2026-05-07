@@ -17,17 +17,22 @@ export default function AdminJobsPage() {
 
   return (
     <div className="p-4 md:p-10 space-y-10 min-h-screen bg-slate-50/30 dark:bg-slate-950/20">
-      {/* Page Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">Job Ecosystem</h2>
-          <p className="text-[10px] md:text-[11px] font-black tracking-[0.3em] md:tracking-[0.4em] text-slate-400 uppercase mt-1 md:mt-2">
-            Manage Service Categories & Monitor Live Requirements
-          </p>
+      {/* Refined Page Header - Smaller text, red bar instead of icon, aligned style */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-100 dark:border-slate-800 pb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-1.5 h-10 bg-primary shrink-0" />
+          <div className="space-y-0.5">
+            <h1 className="text-2xl md:text-3xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white leading-none whitespace-nowrap">
+              Job <span className="text-primary">Ecosystem</span>
+            </h1>
+            <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+              Manage Service Categories & Monitor Live Requirements
+            </p>
+          </div>
         </div>
 
-        {/* Brutalist Tabs */}
-        <div className="flex border-2 border-slate-900 dark:border-white p-1 bg-white dark:bg-slate-900 self-start md:self-auto">
+        {/* Brutalist Tabs - Equal Sizes */}
+        <div className="flex w-full md:w-[400px] border-2 border-slate-900 dark:border-white p-1 bg-white dark:bg-slate-900">
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -37,7 +42,7 @@ export default function AdminJobsPage() {
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
                 className={cn(
-                  "flex items-center gap-2 px-6 py-2.5 transition-all duration-200 font-black uppercase tracking-widest text-[9px]",
+                  "flex-1 flex items-center justify-center gap-2 px-6 py-3 transition-all duration-200 font-black uppercase tracking-widest text-[10px]",
                   isActive 
                     ? "bg-slate-900 dark:bg-white text-white dark:text-slate-900" 
                     : "text-slate-400 hover:text-slate-900 dark:hover:text-white"

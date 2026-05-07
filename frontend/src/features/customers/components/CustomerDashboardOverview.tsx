@@ -2,9 +2,9 @@
 
 import React, { useEffect } from "react";
 import { Heading } from "@/src/features/shared/components";
-import { 
-  Briefcase, 
-  Clock, 
+import {
+  Briefcase,
+  Clock,
   ArrowRight,
   Plus,
   CheckCircle2,
@@ -15,6 +15,7 @@ import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useJobs } from "@/src/features/jobs/hooks";
+import { PostJobModal } from "@/src/features/jobs/components";
 import { formatDate } from "@/src/utils/date-utils";
 import { cn } from "@/src/lib/utils";
 import { motion } from "framer-motion";
@@ -39,7 +40,7 @@ export function CustomerDashboardOverview() {
 
   return (
     <div className="space-y-12">
-      
+
       {/* Refined Welcome Header - Synchronized with Technician Layout */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="space-y-1.5">
@@ -54,18 +55,21 @@ export function CustomerDashboardOverview() {
           </p>
         </div>
 
-        <Link href="/customer/jobs/post">
-          <Button className="h-12 md:h-14 px-8 md:px-10 bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-primary hover:text-white rounded-none font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all hover:translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(225,29,72,1)] active:scale-95">
-            <Plus className="w-4 h-4 mr-2" />
-            Post New Job
-          </Button>
-        </Link>
+        <PostJobModal
+          onSuccess={getMyJobs}
+          trigger={
+            <Button className="h-12 md:h-14 px-8 md:px-10 bg-slate-900 dark:bg-white dark:text-slate-900 text-white hover:bg-primary hover:text-white rounded-none font-black uppercase tracking-widest text-[9px] md:text-[10px] transition-all hover:translate-x-1 hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(225,29,72,1)] active:scale-95">
+              <Plus className="w-4 h-4 mr-2" />
+              Post New Job
+            </Button>
+          }
+        />
       </div>
 
       {/* KPI Stats Grid - No Changes Requested Here */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <motion.div 
+          <motion.div
             key={i}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -120,7 +124,9 @@ export function CustomerDashboardOverview() {
                         <td className="px-6 py-5">
                           <div className="flex flex-col gap-0.5">
                             <span className="text-[11px] font-black uppercase tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors">{job.title}</span>
-                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{job.category || "Service"}</span>
+                            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
+                              {typeof job.category === 'object' ? (job.category as any)?.name : job.category || "Service"}
+                            </span>
                           </div>
                         </td>
                         <td className="px-6 py-5 text-[10px] font-bold text-slate-500 uppercase">{formatDate(job.created_at)}</td>
@@ -154,7 +160,7 @@ export function CustomerDashboardOverview() {
             <Search className="w-4 h-4 text-primary" />
             <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">Professional Actions</h3>
           </div>
-          
+
           <div className="space-y-4">
             <Link href="/providers" className="block">
               <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 flex items-center justify-between hover:bg-slate-50 transition-all shadow-sm group">

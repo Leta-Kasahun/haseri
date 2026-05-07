@@ -86,6 +86,7 @@ export const API_ROUTES = {
     VERIFICATIONS_REJECT: "/admin/verifications/reject",
     SETTINGS_FEES: "/admin/settings/fees",
     ANALYTICS: "/admin/analytics",
+    CATEGORIES: "/admin/jobs/categories",
     NOTIFICATIONS: {
       BASE: "/admin/notifications",
       UNREAD: "/admin/notifications/unread",

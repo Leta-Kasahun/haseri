@@ -12,8 +12,10 @@ import {
   Search,
   Tag,
   AlertCircle,
-  X
+  X,
+  Loader2
 } from "lucide-react";
+import { JobCategory } from "../../jobs/types";
 import { cn } from "@/src/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -22,6 +24,7 @@ export function AdminCategoriesTable() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({ name: "", description: "" });
 
   useEffect(() => {
@@ -30,7 +33,7 @@ export function AdminCategoriesTable() {
 
   const filteredCategories = categories.filter(cat => 
     cat.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    cat.description?.toLowerCase().includes(searchTerm.toLowerCase())
+    (cat.description || "").toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,10 +52,19 @@ export function AdminCategoriesTable() {
     }
   };
 
-  const handleEdit = (cat: any) => {
+  const handleEdit = (cat: JobCategory) => {
     setEditingId(cat.id);
     setFormData({ name: cat.name, description: cat.description || "" });
     setShowForm(true);
+  };
+
+  const handleDelete = async (id: number) => {
+    setDeletingId(id);
+    try {
+      await deleteCategory(id);
+    } finally {
+      setDeletingId(null);
+    }
   };
 
   return (
@@ -82,7 +94,7 @@ export function AdminCategoriesTable() {
               setEditingId(null);
               setFormData({ name: "", description: "" });
             }}
-            className="h-12 px-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-none font-black uppercase tracking-[0.2em] text-[10px] hover:shadow-[4px_4px_0px_0px_rgba(225,29,72,1)] transition-all gap-2"
+            className="h-12 px-6 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-none font-black uppercase tracking-[0.2em] text-[10px] hover:shadow-[4px_4px_0px_0px_rgba(15,23,42,0.1)] transition-all gap-2"
           >
             <Plus size={16} />
             Add Category
@@ -96,7 +108,6 @@ export function AdminCategoriesTable() {
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="border-b-2 border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/50">
-                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">ID</th>
                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Category Name</th>
                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Description</th>
                 <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Actions</th>
@@ -106,7 +117,6 @@ export function AdminCategoriesTable() {
               {filteredCategories.length > 0 ? (
                 filteredCategories.map((cat) => (
                   <tr key={cat.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                    <td className="px-6 py-4 text-[10px] font-black text-slate-400">#{cat.id}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-900 dark:text-white">
@@ -126,19 +136,26 @@ export function AdminCategoriesTable() {
                       <div className="flex items-center justify-end gap-2">
                         <Button 
                           variant="ghost" 
-                          size="sm"
+                          size="icon"
                           onClick={() => handleEdit(cat)}
-                          className="h-8 w-8 p-0 rounded-none hover:bg-slate-900 hover:text-white transition-all"
+                          className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all"
+                          title="Edit Category"
                         >
-                          <Edit2 size={12} />
+                          <Edit2 size={14} />
                         </Button>
                         <Button 
                           variant="ghost" 
-                          size="sm"
-                          onClick={() => deleteCategory(cat.id)}
-                          className="h-8 w-8 p-0 rounded-none hover:bg-red-500 hover:text-white transition-all"
+                          size="icon"
+                          onClick={() => handleDelete(cat.id)}
+                          disabled={deletingId === cat.id}
+                          className="h-9 w-9 rounded-none border border-slate-200 hover:border-rose-600 hover:bg-rose-600 hover:text-white transition-all group disabled:opacity-50"
+                          title="Delete Category"
                         >
-                          <Trash2 size={12} />
+                          {deletingId === cat.id ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Trash2 size={14} />
+                          )}
                         </Button>
                       </div>
                     </td>
@@ -174,7 +191,7 @@ export function AdminCategoriesTable() {
               initial={{ scale: 0.95, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 20 }}
-              className="relative w-full max-w-md bg-white dark:bg-slate-900 border-4 border-slate-900 dark:border-white p-8 shadow-[12px_12px_0px_0px_rgba(225,29,72,1)]"
+              className="relative w-full max-w-md bg-white dark:bg-slate-900 border-4 border-slate-900 dark:border-white p-8 shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)]"
             >
               <button 
                 onClick={() => setShowForm(false)}

@@ -52,111 +52,139 @@ try {
         (new TechnicianApprovalController())->reject($admin);
         exit;
     }
+
+    // Dashboard
+    if ($uri === '/api/admin/dashboard' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new DashboardController())->stats($admin);
+        exit;
+    }
+
+    if ($uri === '/api/admin/dashboard/recent-jobs' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new DashboardController())->recentJobs($admin);
+        exit;
+    }
+
+    if ($uri === '/api/admin/dashboard/recent-payments' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new DashboardController())->recentPayments($admin);
+        exit;
+    }
+
+    // User Management
+    if ($uri === '/api/admin/users' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new UserManagementController())->index($admin);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/users\/(\d+)$/', $uri, $m) && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new UserManagementController())->show($admin, $m[1]);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/users\/(\d+)\/deactivate$/', $uri, $m) && $method === 'PUT') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new UserManagementController())->deactivate($admin, $m[1]);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/users\/(\d+)\/activate$/', $uri, $m) && $method === 'PUT') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new UserManagementController())->activate($admin, $m[1]);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/users\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new UserManagementController())->destroy($admin, $m[1]);
+        exit;
+    }
+
+    // Job Categories Management
+    if ($uri === '/api/admin/jobs/categories' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new \Haseri\Backend\Modules\Jobs\Controllers\JobCategoryController())->index();
+        exit;
+    }
+
+    if ($uri === '/api/admin/jobs/categories' && $method === 'POST') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new \Haseri\Backend\Modules\Jobs\Controllers\JobCategoryController())->store($admin);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/jobs\/categories\/(\d+)$/', $uri, $m) && $method === 'PUT') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new \Haseri\Backend\Modules\Jobs\Controllers\JobCategoryController())->update($admin, $m[1]);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/jobs\/categories\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new \Haseri\Backend\Modules\Jobs\Controllers\JobCategoryController())->destroy($admin, $m[1]);
+        exit;
+    }
+
+    // Settings & Analytics
+    if ($uri === '/api/admin/settings/fees' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new SettingsController())->fees($admin);
+        exit;
+    }
+
+    if ($uri === '/api/admin/settings/fees' && $method === 'PUT') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new SettingsController())->updateFees($admin);
+        exit;
+    }
+
+    if ($uri === '/api/admin/analytics' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new SettingsController())->analytics($admin);
+        exit;
+    }
+
+    // Notifications
+    if ($uri === '/api/admin/notifications' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new AdminNotificationController())->index($admin);
+        exit;
+    }
+
+    if ($uri === '/api/admin/notifications/unread' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new AdminNotificationController())->unread($admin);
+        exit;
+    }
+
+    if ($uri === '/api/admin/notifications/count' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new AdminNotificationController())->count($admin);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/notifications\/(\d+)\/read$/', $uri, $m) && $method === 'PUT') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new AdminNotificationController())->markAsRead($admin, $m[1]);
+        exit;
+    }
+
+    if ($uri === '/api/admin/notifications/read-all' && $method === 'PUT') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new AdminNotificationController())->markAllAsRead($admin);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/notifications\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new AdminNotificationController())->destroy($admin, $m[1]);
+        exit;
+    }
 } catch (HttpException $e) {
     Response::error($e->getMessage(), $e->getStatusCode());
-}
-
-
-if ($uri === '/api/admin/dashboard' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new DashboardController())->stats($admin);
-    exit;
-}
-
-if ($uri === '/api/admin/dashboard/recent-jobs' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new DashboardController())->recentJobs($admin);
-    exit;
-}
-
-if ($uri === '/api/admin/dashboard/recent-payments' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new DashboardController())->recentPayments($admin);
-    exit;
-}
-
-
-if ($uri === '/api/admin/users' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new UserManagementController())->index($admin);
-    exit;
-}
-
-if (preg_match('/^\/api\/admin\/users\/(\d+)$/', $uri, $m) && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new UserManagementController())->show($admin, $m[1]);
-    exit;
-}
-
-if (preg_match('/^\/api\/admin\/users\/(\d+)\/deactivate$/', $uri, $m) && $method === 'PUT') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new UserManagementController())->deactivate($admin, $m[1]);
-    exit;
-}
-
-if (preg_match('/^\/api\/admin\/users\/(\d+)\/activate$/', $uri, $m) && $method === 'PUT') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new UserManagementController())->activate($admin, $m[1]);
-    exit;
-}
-
-if (preg_match('/^\/api\/admin\/users\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new UserManagementController())->destroy($admin, $m[1]);
-    exit;
-}
-
-
-if ($uri === '/api/admin/settings/fees' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new SettingsController())->fees($admin);
-    exit;
-}
-
-if ($uri === '/api/admin/settings/fees' && $method === 'PUT') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new SettingsController())->updateFees($admin);
-    exit;
-}
-
-if ($uri === '/api/admin/analytics' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new SettingsController())->analytics($admin);
-    exit;
-}
-
-if ($uri === '/api/admin/notifications' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new AdminNotificationController())->index($admin);
-    exit;
-}
-
-if ($uri === '/api/admin/notifications/unread' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new AdminNotificationController())->unread($admin);
-    exit;
-}
-
-if ($uri === '/api/admin/notifications/count' && $method === 'GET') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new AdminNotificationController())->count($admin);
-    exit;
-}
-
-if (preg_match('/^\/api\/admin\/notifications\/(\d+)\/read$/', $uri, $m) && $method === 'PUT') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new AdminNotificationController())->markAsRead($admin, $m[1]);
-    exit;
-}
-
-if ($uri === '/api/admin/notifications/read-all' && $method === 'PUT') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new AdminNotificationController())->markAllAsRead($admin);
-    exit;
-}
-
-if (preg_match('/^\/api\/admin\/notifications\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
-    $admin = AuthMiddleware::handleAdmin();
-    (new AdminNotificationController())->destroy($admin, $m[1]);
-    exit;
+} catch (\Throwable $e) {
+    Response::error($e->getMessage(), 500);
 }

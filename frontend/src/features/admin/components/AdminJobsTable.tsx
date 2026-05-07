@@ -4,12 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useJobs } from "../../jobs/hooks/useJobs";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
-import { 
-  Search, 
-  RefreshCcw, 
-  Briefcase, 
-  Clock, 
-  CheckCircle2, 
+import {
+  Search,
+  RefreshCcw,
+  Briefcase,
+  Clock,
+  CheckCircle2,
   XCircle,
   MoreVertical,
   ExternalLink,
@@ -28,7 +28,7 @@ export function AdminJobsTable() {
     getJobs();
   }, [getJobs]);
 
-  const filteredJobs = jobs.filter(job => 
+  const filteredJobs = jobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     job.customer?.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -56,14 +56,14 @@ export function AdminJobsTable() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="relative flex-1 max-w-md group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
-          <Input 
-            placeholder="SEARCH JOBS BY TITLE OR CUSTOMER..." 
+          <Input
+            placeholder="SEARCH JOBS BY TITLE OR CUSTOMER..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="pl-12 h-12 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-none focus:border-slate-900 dark:focus:border-white transition-all font-black uppercase tracking-widest text-[10px]"
           />
         </div>
-        <Button 
+        <Button
           onClick={() => getJobs()}
           variant="outline"
           className="h-12 w-12 p-0 border-2 border-slate-100 hover:border-slate-900 rounded-none bg-white dark:bg-slate-900 self-end md:self-auto"
@@ -91,7 +91,7 @@ export function AdminJobsTable() {
                 filteredJobs.map((job) => {
                   const status = getStatusConfig(job.status);
                   const Icon = status.icon;
-                  
+
                   return (
                     <tr key={job.id} className="group hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                       <td className="px-6 py-4">
@@ -99,15 +99,12 @@ export function AdminJobsTable() {
                           <span className="text-xs font-black uppercase tracking-widest text-slate-900 dark:text-white line-clamp-1">
                             {job.title}
                           </span>
-                          <span className="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                            REF: #{job.id} • {format(new Date(job.created_at), "MMM d, yyyy")}
-                          </span>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
                           <div className="w-7 h-7 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-[10px] font-black text-slate-600 uppercase">
-                            {job.customer?.name.charAt(0)}
+                            {job.customer?.name?.[0] || "?"}
                           </div>
                           <span className="text-[10px] font-black uppercase tracking-wider text-slate-700 dark:text-slate-300">
                             {job.customer?.name || "Anonymous"}
@@ -118,7 +115,9 @@ export function AdminJobsTable() {
                         <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-1.5">
                             <Briefcase size={10} className="text-slate-400" />
-                            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">{job.category || "General"}</span>
+                            <span className="text-[10px] font-bold text-slate-600 uppercase tracking-wide">
+                              {typeof job.category === 'object' ? (job.category as any)?.name : job.category || "General"}
+                            </span>
                           </div>
                           <div className="flex items-center gap-1.5">
                             <MapPin size={10} className="text-slate-400" />
@@ -149,8 +148,8 @@ export function AdminJobsTable() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Button 
-                          variant="ghost" 
+                        <Button
+                          variant="ghost"
                           size="sm"
                           className="h-9 w-9 p-0 rounded-none hover:bg-slate-900 hover:text-white transition-all"
                         >
@@ -180,15 +179,15 @@ export function AdminJobsTable() {
 
 // Missing import fix
 const Activity = (props: any) => (
-  <svg 
-    {...props} 
-    xmlns="http://www.w3.org/2000/svg" 
-    width="24" height="24" 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
+  <svg
+    {...props}
+    xmlns="http://www.w3.org/2000/svg"
+    width="24" height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
     strokeLinejoin="round"
   >
     <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />

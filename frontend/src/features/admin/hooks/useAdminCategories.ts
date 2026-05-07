@@ -10,7 +10,7 @@ export function useAdminCategories() {
   const fetchCategories = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await jobsApi.getCategories();
+      const response = await jobsApi.adminGetCategories();
       if (response.data.success) {
         setCategories(response.data.data);
       }
@@ -25,7 +25,7 @@ export function useAdminCategories() {
   const createCategory = async (data: { name: string; description?: string }) => {
     setLoading(true);
     try {
-      await jobsApi.createCategory(data);
+      await jobsApi.adminCreateCategory(data);
       toast.success("Category created successfully");
       fetchCategories();
       return true;
@@ -41,7 +41,7 @@ export function useAdminCategories() {
   const updateCategory = async (id: number, data: { name?: string; description?: string }) => {
     setLoading(true);
     try {
-      await jobsApi.updateCategory(id, data);
+      await jobsApi.adminUpdateCategory(id, data);
       toast.success("Category updated successfully");
       fetchCategories();
       return true;
@@ -59,7 +59,7 @@ export function useAdminCategories() {
     
     setLoading(true);
     try {
-      await jobsApi.deleteCategory(id);
+      await jobsApi.adminDeleteCategory(id);
       toast.success("Category deleted successfully");
       fetchCategories();
       return true;

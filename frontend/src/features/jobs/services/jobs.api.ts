@@ -16,6 +16,19 @@ export const jobsApi = {
   deleteCategory: (id: number) =>
     clientApi.delete(API_ROUTES.JOBS.CATEGORIES + `/${id}`),
 
+  // Admin Categories
+  adminGetCategories: () =>
+    clientApi.get<{ success: boolean; data: JobCategory[] }>(API_ROUTES.ADMIN.CATEGORIES),
+
+  adminCreateCategory: (data: { name: string; description?: string }) =>
+    clientApi.post(API_ROUTES.ADMIN.CATEGORIES, data),
+
+  adminUpdateCategory: (id: number, data: { name?: string; description?: string }) =>
+    clientApi.put(API_ROUTES.ADMIN.CATEGORIES + `/${id}`, data),
+
+  adminDeleteCategory: (id: number) =>
+    clientApi.delete(API_ROUTES.ADMIN.CATEGORIES + `/${id}`),
+
   // Jobs
   getAll: (filters?: JobFilters) =>
     clientApi.get<{ success: boolean; data: Job[] }>(API_ROUTES.JOBS.BASE, { params: filters }),

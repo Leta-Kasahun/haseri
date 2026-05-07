@@ -35,7 +35,7 @@ export function ProviderRecentJobs() {
                   <Heading level={3} className="text-sm font-bold text-slate-900 dark:text-white">
                     {job.title}
                   </Heading>
-                  
+
                   <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-[11px] font-semibold text-slate-500 uppercase tracking-widest">
                     <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {job.city || "N/A"}</span>
                     <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {formatDate(job.created_at)}</span>
@@ -44,7 +44,7 @@ export function ProviderRecentJobs() {
                   {job.category ? (
                     <div className="flex flex-wrap gap-2 pt-2">
                       <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded-full text-[9px] font-black uppercase tracking-widest">
-                        {job.category}
+                        {typeof job.category === 'object' ? (job.category as any)?.name : job.category}
                       </span>
                     </div>
                   ) : null}

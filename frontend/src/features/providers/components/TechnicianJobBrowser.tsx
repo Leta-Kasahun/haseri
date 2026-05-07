@@ -153,7 +153,7 @@ export function TechnicianJobBrowser() {
                         </span>
                         <div className="flex items-center gap-2">
                           <span className="text-[9px] font-black uppercase tracking-widest text-primary bg-primary/5 px-2 py-0.5 border border-primary/10">
-                            {job.category || "Professional"}
+                            {typeof job.category === 'object' ? (job.category as any)?.name : job.category || "Professional"}
                           </span>
                         </div>
                       </div>

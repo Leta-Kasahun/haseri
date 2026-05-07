@@ -106,7 +106,7 @@ export function AdminSidebar() {
                     "flex items-center group transition-all duration-200 border-2",
                     sidebarCollapsed ? "justify-center p-3" : "justify-between px-4 py-4",
                     isActive
-                      ? "bg-slate-900 border-slate-900 text-white shadow-[4px_4px_0px_0px_rgba(225,29,72,1)]"
+                      ? "bg-slate-900 border-slate-900 text-white shadow-[4px_4px_0px_0px_rgba(15,23,42,0.1)]"
                       : "bg-transparent border-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white"
                   )}
                   title={sidebarCollapsed ? item.name : undefined}

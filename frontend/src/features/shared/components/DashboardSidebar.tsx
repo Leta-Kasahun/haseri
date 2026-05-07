@@ -12,8 +12,11 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
-  FileText
+  FileText,
+  Plus
 } from "lucide-react";
+import { Button } from "@/src/components/ui/button";
+import { PostJobModal } from "@/src/features/jobs/components";
 import { cn } from "@/src/lib/utils";
 import { useUiStore } from "@/src/hooks/useUiStore";
 import { useAuth } from "@/src/hooks/useAuth";
@@ -83,8 +86,8 @@ export const DashboardSidebar = () => {
         initial={false}
         animate={{
           x: sidebarOpen ? 0 : (isMobile ? -300 : 0),
-          width: sidebarOpen || !isMobile 
-            ? (sidebarCollapsed ? 80 : 280) 
+          width: sidebarOpen || !isMobile
+            ? (sidebarCollapsed ? 80 : 280)
             : 0
         }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
@@ -117,7 +120,7 @@ export const DashboardSidebar = () => {
           </button>
 
           {/* Mobile Close Button */}
-          <button 
+          <button
             onClick={() => setSidebarOpen(false)}
             className="lg:hidden p-2 text-slate-400 hover:text-slate-900 transition-colors"
           >
@@ -138,7 +141,7 @@ export const DashboardSidebar = () => {
                     "flex items-center group transition-all duration-200 border-2",
                     sidebarCollapsed ? "justify-center p-3" : "justify-between px-4 py-4",
                     isActive
-                      ? "bg-slate-900 border-slate-900 text-white shadow-[4px_4px_0px_0px_rgba(225,29,72,1)]"
+                      ? "bg-slate-900 border-slate-900 text-white"
                       : "bg-transparent border-transparent text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-slate-900 dark:hover:text-white"
                   )}
                 >
@@ -150,7 +153,7 @@ export const DashboardSidebar = () => {
                         isActive ? "text-primary" : "text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"
                       )} />
                     )}
-                    
+
                     {!sidebarCollapsed && (
                       <span className={cn(
                         "text-[11px] font-black uppercase tracking-widest whitespace-nowrap",

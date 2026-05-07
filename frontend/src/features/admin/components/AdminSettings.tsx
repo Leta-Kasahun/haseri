@@ -50,24 +50,6 @@ export function AdminSettings() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 pb-10">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 className="text-2xl md:text-3xl font-black tracking-tighter uppercase text-slate-900 dark:text-white">Fee Setting</h2>
-          <p className="text-[10px] md:text-[11px] font-black tracking-[0.3em] md:tracking-[0.4em] text-slate-400 uppercase mt-1 md:mt-2">
-            Verification Fee & Platform Parameters
-          </p>
-        </div>
-        <Button 
-          variant="ghost" 
-          size="sm"
-          onClick={() => fetchFees()}
-          disabled={loading}
-          className="h-9 px-4 rounded-none border border-slate-200 hover:border-slate-900 gap-2 text-[10px] font-black uppercase tracking-widest self-start md:self-auto"
-        >
-          <RefreshCcw className={cn("w-3.5 h-3.5", loading && "animate-spin")} />
-          Reset to current
-        </Button>
-      </div>
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Verification Fee Card */}
