@@ -47,7 +47,7 @@ class CustomerProfileService
         $uploader = new ImageUploader();
         $path = $uploader->upload($file, 'profiles');
         User::find($userId)->update(['avatar' => $path]);
-        return ['avatar' => $path];
+        return User::with('address')->find($userId);
     }
 
     public function updateCover($userId, $file)
@@ -55,7 +55,7 @@ class CustomerProfileService
         $uploader = new ImageUploader();
         $path = $uploader->upload($file, 'covers');
         User::find($userId)->update(['cover_image' => $path]);
-        return ['cover_image' => $path];
+        return User::with('address')->find($userId);
     }
 
     public function delete($userId)

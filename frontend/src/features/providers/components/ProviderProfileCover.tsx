@@ -26,7 +26,7 @@ export function ProviderProfileCover() {
     setLoading(true);
     try {
       const formData = new FormData();
-      formData.append("cover_image", file);
+      formData.append("cover", file);
       const res = await providersApi.updateCover(formData);
       const userData = resolveUser(res.data);
       if (userData) setUser(userData);

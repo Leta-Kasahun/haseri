@@ -49,7 +49,7 @@ class TechnicianService
         $uploader = new ImageUploader();
         $path = $uploader->upload($file, 'profiles');
         User::find($userId)->update(['avatar' => $path]);
-        return ['avatar' => $path];
+        return User::with(['address', 'technicianVerification', 'skills'])->find($userId);
     }
 
     public function updateCover($userId, $file)
@@ -57,7 +57,7 @@ class TechnicianService
         $uploader = new ImageUploader();
         $path = $uploader->upload($file, 'covers');
         User::find($userId)->update(['cover_image' => $path]);
-        return ['cover_image' => $path];
+        return User::with(['address', 'technicianVerification', 'skills'])->find($userId);
     }
 
     public function updateSkills($userId, array $skills)
