@@ -76,15 +76,6 @@ export function AdminUsersTable() {
                     <Button
                       type="button"
                       variant="ghost"
-                      className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900"
-                      aria-label="Edit user"
-                      disabled
-                    >
-                      <Pencil className="h-4 w-4 text-slate-400" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
                       className="h-9 w-9 rounded-none border border-slate-200 hover:border-primary"
                       aria-label={user.is_active ? "Deactivate user" : "Activate user"}
                       onClick={() => (user.is_active ? deactivate(String(user.id)) : activate(String(user.id)))}
