@@ -32,6 +32,50 @@ class AnalyticsService
 
     public function adminStats()
     {
+        // Generate Revenue History (Last 6 Months)
+        $revenue_history = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $date = \Carbon\Carbon::now()->subMonths($i);
+            $total = Payment::where('status', 'paid')
+                ->whereYear('created_at', $date->year)
+                ->whereMonth('created_at', $date->month)
+                ->sum('amount');
+            $revenue_history[] = [
+                'name' => $date->format('M'),
+                'total' => (float) $total,
+                'trend' => 0
+            ];
+        }
+
+        // Generate User Activity (Last 7 Days)
+        $user_activity = [];
+        for ($i = 6; $i >= 0; $i--) {
+            $date = \Carbon\Carbon::now()->subDays($i);
+            $new = User::whereDate('created_at', $date->toDateString())->count();
+            $active = User::whereDate('updated_at', $date->toDateString())->count();
+            $user_activity[] = [
+                'name' => $date->format('D'),
+                'new' => $new,
+                'active' => $active
+            ];
+        }
+
+        // Recent Payments
+        $recent_payments = Payment::with('user')
+            ->orderBy('created_at', 'desc')
+            ->take(8)
+            ->get()
+            ->map(function ($payment) {
+                return [
+                    'id' => $payment->id,
+                    'payer_name' => $payment->user ? trim($payment->user->first_name . ' ' . $payment->user->last_name) : 'Unknown',
+                    'created_at' => $payment->created_at->toIso8601String(),
+                    'status' => $payment->status,
+                    'amount' => (float) $payment->amount,
+                    'currency' => 'ETB'
+                ];
+            });
+
         return [
             'total_users' => User::count(),
             'new_users_today' => User::whereDate('created_at', today())->count(),
@@ -40,6 +84,9 @@ class AnalyticsService
             'revenue_today' => Payment::where('status', 'paid')->whereDate('created_at', today())->sum('amount'),
             'total_revenue' => Payment::where('status', 'paid')->sum('amount'),
             'pending_verifications' => \Haseri\Backend\Shared\Models\TechnicianVerification::where('status', 'pending')->count(),
+            'revenue_history' => $revenue_history,
+            'user_activity' => $user_activity,
+            'recent_payments' => $recent_payments,
         ];
     }
 
