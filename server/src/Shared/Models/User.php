@@ -33,7 +33,22 @@ class User extends Model
         return $this->hasOne(TechnicianVerification::class);
     }
     public function skills()
-{
-    return $this->hasMany(TechnicianSkill::class);
-}
+    {
+        return $this->hasMany(TechnicianSkill::class);
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(Review::class, 'reviewed_user_id');
+    }
+
+    public function getAverageRatingAttribute()
+    {
+        return round($this->reviews()->avg('rating') ?: 0, 1);
+    }
+
+    public function getReviewCountAttribute()
+    {
+        return $this->reviews()->count();
+    }
 }

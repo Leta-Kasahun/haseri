@@ -5,9 +5,10 @@ import { useTechnicianApplications } from "@/src/features/jobs/hooks/useTechnici
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-import { Eye, Edit2, Trash2, Calendar, Briefcase } from "lucide-react";
+import { Eye, Edit2, Trash2, Calendar, Briefcase, Star } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
+import { ReviewModal } from "@/src/features/reviews/components";
 
 export function TechnicianApplicationsTable() {
   const { applications, loading, fetchMyApplications, deleteApplication } = useTechnicianApplications();
@@ -106,6 +107,19 @@ export function TechnicianApplicationsTable() {
                   </TableCell>
                   <TableCell className="text-right px-6">
                     <div className="flex items-center justify-end gap-2">
+                      {app.job?.status === "completed" && (
+                        <ReviewModal
+                          jobId={app.job_id}
+                          reviewedUserId={app.job.customer_id}
+                          reviewedUserName={app.job.customer?.first_name || "Customer"}
+                          onSuccess={fetchMyApplications}
+                          trigger={
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border border-green-200 bg-green-50 text-green-600 hover:border-green-600 hover:bg-green-600 hover:text-white transition-all group" title="Review Customer">
+                              <Star className="w-4 h-4" />
+                            </Button>
+                          }
+                        />
+                      )}
                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border border-slate-200 hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all group" title="View Details">
                         <Eye className="w-4 h-4" />
                       </Button>

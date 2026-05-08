@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Heading } from "@/src/features/shared/components";
-import { Camera, MapPin, Phone, Mail, Shield, Loader2, Pencil } from "lucide-react";
+import { Camera, MapPin, Phone, Mail, Shield, Loader2, Pencil, Star } from "lucide-react";
 import { useAuth } from "@/src/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { providersApi } from "../services";
@@ -83,6 +83,17 @@ export function ProviderProfileHeader() {
 
         {/* Skill Tags - Replacing Subtitle with Horizontal Skills List */}
         <div className="flex flex-wrap items-center gap-2 mt-2">
+          {/* Rating Display moved here */}
+          <div className="flex items-center gap-1.5 mr-2 pr-2 border-r border-slate-200 dark:border-slate-800">
+            <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+            <span className="text-[10px] font-black tracking-tighter text-slate-900 dark:text-white">
+              {(user as any)?.average_rating || "0.0"}
+            </span>
+            <span className="text-[9px] font-bold text-slate-400">
+              ({(user as any)?.review_count || 0})
+            </span>
+          </div>
+
           {skills.length > 0 ? (
             skills.map((skill, idx) => (
               <span

@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Heading } from "@/src/features/shared/components";
-import { Camera, MapPin, Phone, Mail, Shield, Loader2 } from "lucide-react";
+import { Camera, MapPin, Phone, Mail, Shield, Loader2, Star } from "lucide-react";
 import { useAuth } from "@/src/hooks/useAuth";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { useCustomerProfile } from "../hooks/useCustomerProfile";
@@ -66,10 +66,19 @@ export function ProfileHeader() {
             </div>
           )}
         </div>
-        
         <p className="text-xs font-semibold text-slate-600 dark:text-slate-400 max-w-lg mt-1 italic">
           Customer at Haseri Marketplace
         </p>
+
+        <div className="flex items-center gap-1.5 mt-2">
+          <Star className="w-3.5 h-3.5 text-yellow-400 fill-yellow-400" />
+          <span className="text-[10px] font-black tracking-tighter text-slate-900 dark:text-white">
+            {(user as any)?.average_rating || "0.0"}
+          </span>
+          <span className="text-[9px] font-bold text-slate-400">
+            ({(user as any)?.review_count || 0})
+          </span>
+        </div>
 
         <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-y-2 gap-x-6 mt-4">
           <div className="flex items-center gap-1.5 text-slate-500">

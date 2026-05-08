@@ -5,10 +5,11 @@ import { useJobs } from "@/src/features/jobs/hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-import { Eye, Edit2, Trash2, Calendar, Briefcase, Users } from "lucide-react";
+import { Eye, Edit2, Trash2, Calendar, Briefcase, Users, Star } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 import { PostJobModal, JobApplicantsModal } from "@/src/features/jobs/components";
+import { ReviewModal } from "@/src/features/reviews/components";
 
 export function CustomerJobsTable() {
   const { jobs, loading, getMyJobs } = useJobs();
@@ -114,6 +115,19 @@ export function CustomerJobsTable() {
                   </TableCell>
                   <TableCell className="text-right px-8">
                     <div className="flex items-center justify-end gap-2">
+                      {job.status === "completed" && job.technician_id && (
+                        <ReviewModal
+                          jobId={job.id}
+                          reviewedUserId={job.technician_id}
+                          reviewedUserName={job.technician?.first_name || "Technician"}
+                          onSuccess={getMyJobs}
+                          trigger={
+                            <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-green-200 bg-green-50 text-green-600 hover:border-green-600 hover:bg-green-600 hover:text-white transition-all group" title="Review Technician">
+                              <Star className="w-4 h-4" />
+                            </Button>
+                          }
+                        />
+                      )}
                       <JobApplicantsModal 
                         jobId={job.id.toString()}
                         jobTitle={job.title}
