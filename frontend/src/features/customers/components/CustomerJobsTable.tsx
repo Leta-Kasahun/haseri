@@ -5,11 +5,13 @@ import { useJobs } from "@/src/features/jobs/hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-import { Eye, Edit2, Trash2, Calendar, Briefcase, Users, Star } from "lucide-react";
+import { Eye, Edit2, Trash2, Calendar, Briefcase, Users, Star, CheckSquare } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 import { PostJobModal, JobApplicantsModal } from "@/src/features/jobs/components";
 import { ReviewModal } from "@/src/features/reviews/components";
+import { toast } from "react-hot-toast";
+import { jobsApi } from "@/src/features/jobs/services";
 
 export function CustomerJobsTable() {
   const { jobs, loading, getMyJobs } = useJobs();
@@ -128,20 +130,54 @@ export function CustomerJobsTable() {
                           }
                         />
                       )}
-                      <JobApplicantsModal 
-                        jobId={job.id.toString()}
-                        jobTitle={job.title}
+                      {(job.status === "open" || job.status === "assigned" || job.status === "in_progress") && (
+                        <Button
+                          onClick={async () => {
+                            if (window.confirm("Mark this job as completed?")) {
+                              try {
+                                await jobsApi.complete(job.id.toString());
+                                toast.success("Job marked as completed");
+                                getMyJobs();
+                              } catch (err: any) {
+                                toast.error(err.response?.data?.message || "Failed to complete job");
+                              }
+                            }
+                          }}
+                          variant="ghost"
+                          size="icon"
+                          className="h-9 w-9 rounded-none border border-slate-200 hover:border-primary hover:bg-primary/5 text-slate-400 hover:text-primary transition-all"
+                          title="Mark as Completed"
+                        >
+                          <CheckSquare className="w-4 h-4" />
+                        </Button>
+                      )}
+                      <PostJobModal
+                        job={job}
+                        onSuccess={getMyJobs}
                         trigger={
-                          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all" title="View Applicants">
-                            <Users className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all" title="Edit Job">
+                            <Edit2 className="w-3.5 h-3.5 text-slate-400 hover:text-slate-900" />
                           </Button>
                         }
                       />
-                      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all" title="Edit Job">
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-rose-600 hover:bg-rose-600 hover:text-white transition-all group" title="Delete">
-                        <Trash2 className="w-3.5 h-3.5" />
+                      <Button 
+                        onClick={async () => {
+                          if (window.confirm("Are you sure you want to delete this job?")) {
+                            try {
+                              await jobsApi.delete(job.id.toString());
+                              toast.success("Job deleted successfully");
+                              getMyJobs();
+                            } catch (err: any) {
+                              toast.error(err.response?.data?.message || "Failed to delete job");
+                            }
+                          }
+                        }}
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-9 w-9 rounded-none border border-slate-200 hover:border-rose-600 hover:bg-rose-600 hover:text-white transition-all group" 
+                        title="Delete"
+                      >
+                        <Trash2 className="w-3.5 h-3.5 text-slate-400 group-hover:text-white" />
                       </Button>
                     </div>
                   </TableCell>

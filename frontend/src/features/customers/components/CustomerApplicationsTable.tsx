@@ -6,15 +6,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
-import { Eye, Check, X as CloseIcon, MessageSquare, Briefcase, Calendar, User } from "lucide-react";
+import { Eye, Check, X as CloseIcon, Briefcase, Calendar, User } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 import { resolveAssetUrl } from "@/src/utils/resolve-asset-url";
+import { TechnicianDetailsModal } from "./TechnicianDetailsModal";
 
 export function CustomerApplicationsTable() {
   const { jobs, getMyJobs } = useJobs();
   const { applications, getApplications, accept, reject, loading } = useJobApplications();
   const [selectedJobId, setSelectedJobId] = useState<string>("");
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
 
   useEffect(() => {
     getMyJobs();
@@ -53,7 +55,7 @@ export function CustomerApplicationsTable() {
           <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">Select Job Posting</h2>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reviewing applications for specific services</p>
         </div>
-        <select 
+        <select
           value={selectedJobId}
           onChange={(e) => setSelectedJobId(e.target.value)}
           className="h-12 px-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-800 rounded-none font-black text-[11px] uppercase tracking-widest outline-none focus:border-primary transition-all min-w-[280px]"
@@ -109,7 +111,7 @@ export function CustomerApplicationsTable() {
                             {app.provider?.name || "Professional Technician"}
                           </span>
                           <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
-                             <User className="w-2.5 h-2.5" /> Verified Provider
+                            <User className="w-2.5 h-2.5" /> Verified Provider
                           </span>
                         </div>
                       </div>
@@ -136,17 +138,23 @@ export function CustomerApplicationsTable() {
                     </TableCell>
                     <TableCell className="text-right px-8">
                       <div className="flex items-center justify-end gap-2">
-                        <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all group" title="Chat">
-                          <MessageSquare className="w-4 h-4 text-slate-400 group-hover:text-primary" />
-                        </Button>
                         <Button 
+                          onClick={() => setSelectedApplication(app)}
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all group" 
+                          title="View Details"
+                        >
+                          <Eye className="w-4 h-4 text-slate-400 group-hover:text-slate-900" />
+                        </Button>
+                        <Button
                           onClick={() => accept(String(app.id))}
                           disabled={app.status !== "pending"}
                           className="h-9 px-4 bg-emerald-600 text-white hover:bg-emerald-700 rounded-none font-black uppercase tracking-widest text-[9px] transition-all disabled:opacity-50"
                         >
                           Accept
                         </Button>
-                        <Button 
+                        <Button
                           onClick={() => reject(String(app.id))}
                           disabled={app.status !== "pending"}
                           className="h-9 px-4 bg-rose-600 text-white hover:bg-rose-700 rounded-none font-black uppercase tracking-widest text-[9px] transition-all disabled:opacity-50"
@@ -162,6 +170,12 @@ export function CustomerApplicationsTable() {
           </Table>
         </div>
       </div>
+
+      <TechnicianDetailsModal
+        application={selectedApplication}
+        isOpen={!!selectedApplication}
+        onClose={() => setSelectedApplication(null)}
+      />
     </div>
   );
 }

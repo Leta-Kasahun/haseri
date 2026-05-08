@@ -78,6 +78,7 @@ export const API_ROUTES = {
   ADMIN: {
     DASHBOARD: "/admin/dashboard",
     USERS: "/admin/users",
+    JOBS: "/admin/jobs",
     USER_DETAIL: (id: string) => `/admin/users/${id}`,
     USER_ACTIVATE: (id: string) => `/admin/users/${id}/activate`,
     USER_DEACTIVATE: (id: string) => `/admin/users/${id}/deactivate`,

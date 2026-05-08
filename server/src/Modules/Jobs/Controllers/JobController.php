@@ -69,4 +69,38 @@ class JobController
             Response::error($e->getMessage(), $e->getStatusCode());
         }
     }
+
+    public function destroy($id)
+    {
+        try {
+            $this->service->delete($id);
+            Response::success(['message' => 'Job deleted successfully']);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
+
+    public function destroyByUser($user, $id)
+    {
+        try {
+            $this->service->deleteByUser($user->id, $id);
+            Response::success(['message' => 'Job deleted successfully']);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
+
+    public function update($user, $id)
+    {
+        try {
+            $data = $_POST;
+            if (empty($data)) {
+                $data = json_decode(file_get_contents('php://input'), true);
+            }
+            $result = $this->service->update($user->id, $id, $data);
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
 }

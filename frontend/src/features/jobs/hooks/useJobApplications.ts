@@ -29,11 +29,11 @@ export const useJobApplications = () => {
     setError(null);
     try {
       const res = await jobsApi.apply(jobId, data);
-      return res.data.data;
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to apply";
+      return { success: true, data: res.data.data };
+    } catch (err: any) {
+      const message = err.response?.data?.error || err.message || "Failed to apply";
       setError(message);
-      return null;
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }

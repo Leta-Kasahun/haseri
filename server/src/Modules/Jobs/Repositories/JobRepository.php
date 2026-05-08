@@ -51,7 +51,7 @@ class JobRepository
 
     public function findById($id)
     {
-        return Job::with(['customer', 'category', 'address', 'applications.provider'])->find($id);
+        return Job::with(['customer', 'category', 'address', 'applications.provider.address', 'applications.provider.reviews'])->find($id);
     }
 
     public function findByCustomer($userId)

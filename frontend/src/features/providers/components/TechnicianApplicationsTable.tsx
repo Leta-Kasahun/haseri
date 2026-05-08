@@ -9,9 +9,11 @@ import { Eye, Edit2, Trash2, Calendar, Briefcase, Star } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 import { ReviewModal } from "@/src/features/reviews/components";
+import { JobApplyModal } from "@/src/features/jobs/components";
+import { toast } from "react-hot-toast";
 
 export function TechnicianApplicationsTable() {
-  const { applications, loading, fetchMyApplications, deleteApplication } = useTechnicianApplications();
+  const { applications, loading, fetchMyApplications, withdrawApplication } = useTechnicianApplications();
 
   useEffect(() => {
     fetchMyApplications();
@@ -120,18 +122,34 @@ export function TechnicianApplicationsTable() {
                           }
                         />
                       )}
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border border-slate-200 hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all group" title="View Details">
-                        <Eye className="w-4 h-4" />
-                      </Button>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border border-slate-200 hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all group" title="Edit Application">
-                        <Edit2 className="w-3.5 h-3.5" />
-                      </Button>
-                      <Button 
-                        variant="ghost" 
-                        size="icon" 
-                        className="h-8 w-8 rounded-none border border-slate-200 hover:border-rose-600 hover:bg-rose-600 hover:text-white transition-all group" 
-                        title="Delete"
-                        onClick={() => deleteApplication(app.id.toString())}
+                      <JobApplyModal
+                        application={app}
+                        isEdit={true}
+                        onSuccess={fetchMyApplications}
+                        trigger={
+                          <Button 
+                            variant="ghost" 
+                            size="icon" 
+                            className="h-8 w-8 rounded-none border border-slate-200 hover:border-slate-900 hover:bg-slate-900 hover:text-white transition-all group" 
+                            title="Edit Application"
+                            disabled={app.status !== 'pending'}
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </Button>
+                        }
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-none border border-slate-200 hover:border-rose-600 hover:bg-rose-600 hover:text-white transition-all group"
+                        title="Withdraw Application"
+                        disabled={app.status === 'accepted'}
+                        onClick={async () => {
+                          if (confirm("Are you sure you want to withdraw this application?")) {
+                            const success = await withdrawApplication(app.id.toString());
+                            if (success) toast.success("Application withdrawn");
+                          }
+                        }}
                       >
                         <Trash2 className="w-3.5 h-3.5" />
                       </Button>

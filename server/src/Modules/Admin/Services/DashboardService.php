@@ -31,6 +31,13 @@ class DashboardService
             ->get();
     }
 
+    public function allJobs()
+    {
+        return Job::with(['customer', 'technician', 'category', 'address'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
+
     public function recentPayments()
     {
         return Payment::with('user')

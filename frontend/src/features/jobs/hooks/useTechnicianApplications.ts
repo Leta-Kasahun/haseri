@@ -24,18 +24,43 @@ export const useTechnicianApplications = () => {
     }
   }, []);
 
-  const deleteApplication = async (id: string) => {
-    // This would need a backend endpoint, for now we simulate or use a generic one if exists
-    // Assuming we might have a delete endpoint in the future
-    setApplications(prev => prev.filter(app => app.id.toString() !== id));
-    return true;
+  const updateApplication = async (id: string, data: { message?: string; proposed_price?: number }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await jobsApi.updateApplication(id, data);
+      setApplications(prev => prev.map(app => app.id.toString() === id ? res.data.data : app));
+      return { success: true, data: res.data.data };
+    } catch (err: any) {
+      const message = err.response?.data?.error || err.message || "Failed to update application";
+      setError(message);
+      return { success: false, error: message };
+    } finally {
+      setLoading(false);
+    }
   };
 
-  return { 
-    applications, 
-    loading, 
-    error, 
+  const withdrawApplication = async (id: string) => {
+    setLoading(true);
+    setError(null);
+    try {
+      await jobsApi.withdrawApplication(id);
+      setApplications(prev => prev.filter(app => app.id.toString() !== id));
+      return true;
+    } catch (err: any) {
+      setError(err.response?.data?.message || "Failed to withdraw application");
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return {
+    applications,
+    loading,
+    error,
     fetchMyApplications,
-    deleteApplication 
+    updateApplication,
+    withdrawApplication
   };
 };

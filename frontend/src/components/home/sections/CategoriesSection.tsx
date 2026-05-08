@@ -38,8 +38,8 @@ export const CategoriesSection = () => {
 
           <div className="relative w-full md:w-96">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
-            <Input 
-              placeholder="What are you looking for?" 
+            <Input
+              placeholder="What are you looking for?"
               className="rounded-none border-border h-14 pl-12 bg-slate-50 dark:bg-slate-900 focus-visible:border-primary transition-all shadow-sm"
             />
           </div>
@@ -55,8 +55,8 @@ export const CategoriesSection = () => {
               transition={{ delay: idx * 0.05 }}
               onClick={() => setActiveCategory(cat.name)}
               className={`flex flex-col items-center justify-center p-6 border transition-all duration-300 group
-                ${activeCategory === cat.name 
-                  ? "border-primary bg-primary text-white shadow-xl shadow-primary/20" 
+                ${activeCategory === cat.name
+                  ? "border-primary bg-primary text-white shadow-xl shadow-primary/20"
                   : "border-border hover:border-primary hover:bg-primary/5"}`}
             >
               <cat.icon className={`w-8 h-8 mb-4 transition-transform group-hover:scale-110 ${activeCategory === cat.name ? "text-white" : "text-primary"}`} />

@@ -25,6 +25,12 @@ class DashboardController
         Response::success($result);
     }
 
+    public function allJobs($admin)
+    {
+        $result = $this->service->allJobs();
+        Response::success($result);
+    }
+
     public function recentPayments($admin)
     {
         $result = $this->service->recentPayments();

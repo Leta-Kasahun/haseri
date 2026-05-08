@@ -29,7 +29,7 @@ import {
 } from "lucide-react";
 import { useCreateJob } from "../hooks";
 import { jobsApi } from "../services";
-import { JobCategory } from "../types";
+import { Job, JobCategory } from "../types";
 import { useAuth } from "@/src/hooks/useAuth";
 import { toast } from "react-hot-toast";
 import { cn } from "@/src/lib/utils";
@@ -37,23 +37,41 @@ import { cn } from "@/src/lib/utils";
 interface PostJobModalProps {
   trigger?: React.ReactNode;
   onSuccess?: () => void;
+  job?: Job;
 }
 
-export function PostJobModal({ trigger, onSuccess }: PostJobModalProps) {
+export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
+  const isEdit = !!job;
   const { user } = useAuth();
-  const { create, loading } = useCreateJob();
+  const { create, loading: creating } = useCreateJob();
+  const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [categories, setCategories] = useState<JobCategory[]>([]);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    category_id: "",
-    price: "",
-    city: user?.address?.city || user?.city || "",
-    woreda: "",
-    kebele: "",
-    specific_location: user?.address?.specific_location || "",
+    title: job?.title || "",
+    description: job?.description || "",
+    category_id: (typeof job?.category === 'object' ? (job.category as any)?.id : job?.category_id)?.toString() || "",
+    price: job?.price?.toString() || "",
+    city: job?.address?.city || user?.address?.city || user?.city || "",
+    woreda: job?.address?.woreda || "",
+    kebele: job?.address?.kebele || "",
+    specific_location: job?.address?.specific_location || user?.address?.specific_location || "",
   });
+
+  useEffect(() => {
+    if (job) {
+      setFormData({
+        title: job.title,
+        description: job.description,
+        category_id: (typeof job.category === 'object' ? (job.category as any)?.id : job.category)?.toString() || "",
+        price: job.price.toString(),
+        city: job.address?.city || "",
+        woreda: job.address?.woreda || "",
+        kebele: job.address?.kebele || "",
+        specific_location: job.address?.specific_location || "",
+      });
+    }
+  }, [job, open]);
 
   useEffect(() => {
     if (open) {
@@ -87,33 +105,53 @@ export function PostJobModal({ trigger, onSuccess }: PostJobModalProps) {
       return;
     }
 
-    const result = await create({
-      title: formData.title,
-      description: formData.description,
-      category_id: parseInt(formData.category_id),
-      price: parseFloat(formData.price),
-      city: formData.city,
-      woreda: formData.woreda,
-      kebele: formData.kebele,
-      specific_location: formData.specific_location,
-    });
-
-    if (result) {
-      toast.success("Job posted successfully!");
+    setLoading(true);
+    try {
+      if (isEdit && job) {
+        await jobsApi.update(job.id.toString(), {
+          title: formData.title,
+          description: formData.description,
+          category_id: parseInt(formData.category_id),
+          price: parseFloat(formData.price),
+          city: formData.city,
+          woreda: formData.woreda,
+          kebele: formData.kebele,
+          specific_location: formData.specific_location,
+        });
+        toast.success("Job updated successfully!");
+      } else {
+        const result = await create({
+          title: formData.title,
+          description: formData.description,
+          category_id: parseInt(formData.category_id),
+          price: parseFloat(formData.price),
+          city: formData.city,
+          woreda: formData.woreda,
+          kebele: formData.kebele,
+          specific_location: formData.specific_location,
+        });
+        if (!result) throw new Error("Failed to create job");
+        toast.success("Job posted successfully!");
+      }
+      
       setOpen(false);
-      setFormData({
-        title: "",
-        description: "",
-        category_id: "",
-        price: "",
-        city: user?.address?.city || user?.city || "",
-        woreda: "",
-        kebele: "",
-        specific_location: user?.address?.specific_location || "",
-      });
+      if (!isEdit) {
+        setFormData({
+          title: "",
+          description: "",
+          category_id: "",
+          price: "",
+          city: user?.address?.city || user?.city || "",
+          woreda: "",
+          kebele: "",
+          specific_location: user?.address?.specific_location || "",
+        });
+      }
       onSuccess?.();
-    } else {
-      toast.error("Failed to post job. Please try again.");
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -131,7 +169,7 @@ export function PostJobModal({ trigger, onSuccess }: PostJobModalProps) {
         <div className="bg-slate-900 p-5 md:p-6 text-white relative shrink-0">
           <DialogHeader>
             <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tighter italic leading-none">
-              Post <span className="text-primary">New Job</span>
+              {isEdit ? "Edit" : "Post"} <span className="text-primary">{isEdit ? "Job Details" : "New Job"}</span>
             </DialogTitle>
           </DialogHeader>
         </div>
@@ -262,7 +300,7 @@ export function PostJobModal({ trigger, onSuccess }: PostJobModalProps) {
                   Processing...
                 </>
               ) : (
-                "Post Job Now"
+                isEdit ? "Update Job" : "Post Job Now"
               )}
             </Button>
           </div>

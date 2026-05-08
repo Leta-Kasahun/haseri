@@ -3,6 +3,7 @@ namespace Haseri\Backend\Modules\Jobs\Services;
 
 use Haseri\Backend\Shared\Models\JobApplication;
 use Haseri\Backend\Shared\Models\Job;
+use Haseri\Backend\Shared\Models\User;
 use Haseri\Backend\Shared\Models\Notification;
 use Haseri\Backend\Shared\Exceptions\NotFoundException;
 use Haseri\Backend\Shared\Exceptions\ConflictException;
@@ -12,6 +13,14 @@ class JobApplicationService
 {
     public function apply($providerId, $jobId, array $data)
     {
+        $user = User::with('technicianVerification')->find($providerId);
+        if (!$user) throw new NotFoundException('User not found');
+        
+        $verification = $user->technicianVerification;
+        if (!$verification || $verification->status !== 'approved') {
+            throw new ConflictException('First verify your identity');
+        }
+
         $job = Job::find($jobId);
         if (!$job) throw new NotFoundException('Job not found');
         if ($job->status !== 'open') throw new ConflictException('Job is not open');
@@ -42,7 +51,7 @@ class JobApplicationService
 
     public function getByJob($jobId)
     {
-        return JobApplication::with('provider')
+        return JobApplication::with(['provider.address', 'provider.reviews'])
             ->where('job_id', $jobId)
             ->orderBy('created_at', 'desc')
             ->get();
@@ -100,5 +109,34 @@ class JobApplicationService
         ]);
 
         return ['message' => 'Application rejected'];
+    }
+
+    public function update($applicationId, $providerId, array $data)
+    {
+        $application = JobApplication::find($applicationId);
+
+        if (!$application) throw new NotFoundException('Application not found');
+        if ($application->provider_id != $providerId) throw new UnauthorizedException('Not authorized');
+        if ($application->status !== 'pending') throw new ConflictException('Can only update pending applications');
+
+        $application->update([
+            'message' => $data['message'] ?? $application->message,
+            'proposed_price' => $data['proposed_price'] ?? $application->proposed_price,
+        ]);
+
+        return $application;
+    }
+
+    public function delete($applicationId, $providerId)
+    {
+        $application = JobApplication::find($applicationId);
+
+        if (!$application) throw new NotFoundException('Application not found');
+        if ($application->provider_id != $providerId) throw new UnauthorizedException('Not authorized');
+        if ($application->status === 'accepted') throw new ConflictException('Cannot withdraw accepted applications');
+
+        $application->delete();
+
+        return ['message' => 'Application withdrawn successfully'];
     }
 }

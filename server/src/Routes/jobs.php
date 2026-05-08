@@ -27,6 +27,12 @@ try {
         exit;
     }
 
+    if (preg_match('/^\/api\/jobs\/(\d+)$/', $uri, $m) && $method === 'PUT') {
+        $user = AuthMiddleware::handle();
+        (new JobController())->update($user, $m[1]);
+        exit;
+    }
+
     if ($uri === '/api/jobs' && $method === 'POST') {
         $user = AuthMiddleware::handle();
         (new JobController())->store($user);
@@ -51,6 +57,12 @@ try {
         exit;
     }
 
+    if (preg_match('/^\/api\/jobs\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+        $user = AuthMiddleware::handle();
+        (new JobController())->destroyByUser($user, $m[1]);
+        exit;
+    }
+
     // Applications
     if (preg_match('/^\/api\/jobs\/(\d+)\/apply$/', $uri, $m) && $method === 'POST') {
         $user = AuthMiddleware::handle();
@@ -61,6 +73,12 @@ try {
     if (preg_match('/^\/api\/jobs\/(\d+)\/applications$/', $uri, $m) && $method === 'GET') {
         $user = AuthMiddleware::handle();
         (new JobApplicationController())->jobApplications($user, $m[1]);
+        exit;
+    }
+
+    if ($uri === '/api/applications/status' && $method === 'GET') {
+        $user = AuthMiddleware::handle();
+        (new JobApplicationController())->status($user);
         exit;
     }
 
@@ -79,6 +97,18 @@ try {
     if (preg_match('/^\/api\/applications\/(\d+)\/reject$/', $uri, $m) && $method === 'PUT') {
         $user = AuthMiddleware::handle();
         (new JobApplicationController())->reject($user, $m[1]);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/applications\/(\d+)$/', $uri, $m) && $method === 'PUT') {
+        $user = AuthMiddleware::handle();
+        (new JobApplicationController())->update($user, $m[1]);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/applications\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+        $user = AuthMiddleware::handle();
+        (new JobApplicationController())->destroy($user, $m[1]);
         exit;
     }
 } catch (HttpException $e) {

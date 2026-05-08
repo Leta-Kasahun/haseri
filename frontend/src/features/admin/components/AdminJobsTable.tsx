@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useJobs } from "../../jobs/hooks/useJobs";
+import { useAdminJobs } from "../hooks/useAdminJobs";
+import { Job } from "../../jobs/types";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import {
@@ -14,18 +15,23 @@ import {
   MoreVertical,
   ExternalLink,
   MapPin,
-  Calendar
+  Calendar,
+  Trash2,
+  CheckSquare
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
+import { toast } from "react-hot-toast";
+import { JobDetailsModal } from "./JobDetailsModal";
 
 export function AdminJobsTable() {
-  const { jobs, loading, getJobs } = useJobs();
+  const { jobs, loading, fetchJobs, deleteJob } = useAdminJobs();
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedJob, setSelectedJob] = useState<Job | null>(null);
 
   useEffect(() => {
-    getJobs();
-  }, [getJobs]);
+    fetchJobs();
+  }, [fetchJobs]);
 
   const filteredJobs = jobs.filter(job =>
     job.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,7 +69,7 @@ export function AdminJobsTable() {
           />
         </div>
         <Button
-          onClick={() => getJobs()}
+          onClick={() => fetchJobs()}
           variant="outline"
           className="h-12 w-12 p-0 border-2 border-slate-100 hover:border-slate-900 rounded-none bg-white dark:bg-slate-900 self-end md:self-auto"
         >
@@ -146,13 +152,24 @@ export function AdminJobsTable() {
                         </div>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-9 w-9 p-0 rounded-none hover:bg-slate-900 hover:text-white transition-all"
-                        >
-                          <ExternalLink size={14} />
-                        </Button>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            onClick={() => setSelectedJob(job)}
+                            variant="ghost"
+                            className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900"
+                            title="View Details"
+                          >
+                            <ExternalLink className="h-4 w-4 text-slate-400" />
+                          </Button>
+                          <Button
+                            onClick={() => deleteJob(String(job.id))}
+                            variant="ghost"
+                            className="h-9 w-9 rounded-none border border-slate-200 hover:border-destructive group/del"
+                            title="Delete Job"
+                          >
+                            <Trash2 className="h-4 w-4 text-slate-400 group-hover/del:text-destructive" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   );
@@ -171,6 +188,12 @@ export function AdminJobsTable() {
           </table>
         </div>
       </div>
+
+      <JobDetailsModal
+        job={selectedJob}
+        isOpen={!!selectedJob}
+        onClose={() => setSelectedJob(null)}
+      />
     </div>
   );
 }

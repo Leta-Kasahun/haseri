@@ -72,13 +72,19 @@ try {
         exit;
     }
 
+    if ($uri === '/api/admin/jobs' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new DashboardController())->allJobs($admin);
+        exit;
+    }
+
     if ($uri === '/api/admin/dashboard/recent-payments' && $method === 'GET') {
         $admin = AuthMiddleware::handleAdmin();
         (new DashboardController())->recentPayments($admin);
         exit;
     }
 
-    // User Management
+    
     if ($uri === '/api/admin/users' && $method === 'GET') {
         $admin = AuthMiddleware::handleAdmin();
         (new UserManagementController())->index($admin);
@@ -106,6 +112,12 @@ try {
     if (preg_match('/^\/api\/admin\/users\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
         $admin = AuthMiddleware::handleAdmin();
         (new UserManagementController())->destroy($admin, $m[1]);
+        exit;
+    }
+
+    if (preg_match('/^\/api\/admin\/jobs\/(\d+)$/', $uri, $m) && $method === 'DELETE') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new \Haseri\Backend\Modules\Jobs\Controllers\JobController())->destroy($m[1]);
         exit;
     }
 

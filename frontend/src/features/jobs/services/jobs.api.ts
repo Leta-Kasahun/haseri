@@ -33,8 +33,20 @@ export const jobsApi = {
   getAll: (filters?: JobFilters) =>
     clientApi.get<{ success: boolean; data: Job[] }>(API_ROUTES.JOBS.BASE, { params: filters }),
 
+  adminGetAll: () =>
+    clientApi.get<{ success: boolean; data: Job[] }>(API_ROUTES.ADMIN.JOBS),
+
+  adminDelete: (id: string) =>
+    clientApi.delete(API_ROUTES.ADMIN.JOBS + `/${id}`),
+
   getById: (id: string) =>
     clientApi.get<{ success: boolean; data: Job }>(API_ROUTES.JOBS.DETAIL(id)),
+
+  update: (id: string, data: Partial<CreateJobInput>) =>
+    clientApi.put<{ success: boolean; data: Job }>(API_ROUTES.JOBS.DETAIL(id), data),
+
+  delete: (id: string) =>
+    clientApi.delete(API_ROUTES.JOBS.DETAIL(id)),
 
   create: (data: CreateJobInput) =>
     clientApi.post<{ success: boolean; data: Job }>(API_ROUTES.JOBS.BASE, data),
@@ -63,4 +75,10 @@ export const jobsApi = {
 
   rejectApplication: (id: string) =>
     clientApi.put(API_ROUTES.APPLICATIONS.REJECT(id)),
+
+  updateApplication: (id: string, data: { message?: string; proposed_price?: number }) =>
+    clientApi.put<{ success: boolean; data: any }>(`/applications/${id}`, data),
+
+  withdrawApplication: (id: string) =>
+    clientApi.delete<{ success: boolean; data: any }>(`/applications/${id}`),
 };

@@ -150,4 +150,36 @@ class JobService
 
         return $job;
     }
+
+    public function delete($jobId)
+    {
+        $job = Job::find($jobId);
+        if (!$job) throw new NotFoundException('Job not found');
+        return $job->delete();
+    }
+
+    public function deleteByUser($userId, $jobId)
+    {
+        $job = Job::where('id', $jobId)->where('customer_id', $userId)->first();
+        if (!$job) throw new NotFoundException('Job not found or unauthorized');
+        return $job->delete();
+    }
+
+    public function update($userId, $jobId, array $data)
+    {
+        $job = Job::where('id', $jobId)->where('customer_id', $userId)->first();
+        if (!$job) throw new NotFoundException('Job not found or unauthorized');
+
+        $updateData = [];
+        if (isset($data['title'])) $updateData['title'] = $data['title'];
+        if (isset($data['description'])) $updateData['description'] = $data['description'];
+        if (isset($data['price'])) {
+            $updateData['price'] = $data['price'];
+            $updateData['commission'] = $data['price'] * 0.15;
+        }
+        if (isset($data['category_id'])) $updateData['category_id'] = $data['category_id'];
+
+        $job->update($updateData);
+        return $job;
+    }
 }
