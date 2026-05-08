@@ -2,7 +2,7 @@
 
 import React from "react";
 import { motion } from "framer-motion";
-import { Clock, MapPin, DollarSign, ChevronRight } from "lucide-react";
+import { Clock, MapPin, ChevronRight } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 
 const jobs = [
@@ -82,8 +82,9 @@ export const ExploreJobsSection = () => {
                     <span>{job.location}</span>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <DollarSign className="w-4 h-4" />
-                    <span>{job.budget}</span>
+                    <span className="text-[11px] font-black tracking-tight text-slate-900">
+                      ETB {job.price?.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Clock className="w-4 h-4" />

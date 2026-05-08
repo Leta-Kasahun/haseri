@@ -13,7 +13,6 @@ import {
   XCircle,
   MoreVertical,
   ExternalLink,
-  DollarSign,
   MapPin,
   Calendar
 } from "lucide-react";
@@ -130,7 +129,6 @@ export function AdminJobsTable() {
                       <td className="px-6 py-4">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-1">
-                            <DollarSign size={12} className="text-slate-900 dark:text-white" />
                             <span className="text-xs font-black text-slate-900 dark:text-white">{job.price.toLocaleString()}</span>
                           </div>
                           <span className="text-[8px] font-black text-slate-400 uppercase tracking-widest">

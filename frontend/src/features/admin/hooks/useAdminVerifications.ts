@@ -9,10 +9,10 @@ export const useAdminVerifications = () => {
   const [verifications, setVerifications] = useState<PendingVerification[]>([]);
   const [loading, setLoading] = useState(false);
 
-  const fetchPending = useCallback(async () => {
+  const fetchAll = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await adminApi.getPendingVerifications();
+      const res = await adminApi.getAllVerifications();
       setVerifications(res.data.data);
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to fetch verifications");
@@ -25,7 +25,7 @@ export const useAdminVerifications = () => {
     try {
       await adminApi.approveVerification(id);
       toast.success("Technician approved successfully");
-      await fetchPending();
+      await fetchAll();
       return true;
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to approve technician");
@@ -37,7 +37,7 @@ export const useAdminVerifications = () => {
     try {
       await adminApi.rejectVerification(id, reason);
       toast.success("Technician rejected");
-      await fetchPending();
+      await fetchAll();
       return true;
     } catch (error: any) {
       toast.error(error.response?.data?.message || "Failed to reject technician");
@@ -45,5 +45,5 @@ export const useAdminVerifications = () => {
     }
   };
 
-  return { verifications, loading, fetchPending, approve, reject };
+  return { verifications, loading, fetchAll, approve, reject };
 };

@@ -8,24 +8,34 @@ import { Button } from "@/src/components/ui/button";
 import { Eye, Clock } from "lucide-react";
 import { VerificationReviewModal } from "@/src/features/admin/components/VerificationReviewModal";
 import type { PendingVerification } from "../types";
+import { cn } from "@/src/lib/utils";
 
 export function AdminVerificationsTable() {
-  const { verifications, loading, fetchPending, approve, reject } = useAdminVerifications();
+  const { verifications, loading, fetchAll, approve, reject } = useAdminVerifications();
   const [selectedVerification, setSelectedVerification] = useState<PendingVerification | null>(null);
 
   useEffect(() => {
-    fetchPending();
-  }, [fetchPending]);
+    fetchAll();
+  }, [fetchAll]);
+
+  // Filter and sort verifications: Pending first, hide rejected
+  const displayVerifications = verifications
+    .filter(v => v.status !== 'rejected')
+    .sort((a, b) => {
+      if (a.status === 'pending' && b.status !== 'pending') return -1;
+      if (a.status !== 'pending' && b.status === 'pending') return 1;
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200/60 dark:border-slate-800 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.02)] overflow-hidden">
       <div className="p-4 sm:p-5 md:p-6 border-b border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-sm md:text-base font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">Pending Verifications</h2>
+          <h2 className="text-sm md:text-base font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">Technician Verifications</h2>
           <p className="text-[9px] md:text-[10px] font-semibold uppercase tracking-widest text-slate-400 mt-1">Review technician credentials and documents</p>
         </div>
         <div className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-full self-start sm:self-auto">
-          {verifications.length} pending
+          {displayVerifications.length} visible
         </div>
       </div>
 
@@ -48,14 +58,14 @@ export function AdminVerificationsTable() {
                   Loading verifications...
                 </TableCell>
               </TableRow>
-            ) : verifications.length === 0 ? (
+            ) : displayVerifications.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="py-10 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
-                  No pending verifications
+                  No verifications found
                 </TableCell>
               </TableRow>
             ) : (
-              verifications.map((v) => (
+              displayVerifications.map((v) => (
                 <TableRow key={v.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
                   <TableCell className="text-[11px] font-bold uppercase tracking-wide text-slate-900 dark:text-white">
                     {v.user.first_name} {v.user.last_name}
@@ -73,7 +83,12 @@ export function AdminVerificationsTable() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge className="rounded-none text-[9px] font-black uppercase tracking-widest border bg-amber-50 text-amber-600 border-amber-200">
+                    <Badge className={cn(
+                      "rounded-none text-[9px] font-black uppercase tracking-widest border",
+                      v.status === 'pending' ? "bg-amber-50 text-amber-600 border-amber-200" :
+                      v.status === 'approved' ? "bg-green-50 text-green-600 border-green-200" :
+                      "bg-rose-50 text-rose-600 border-rose-200"
+                    )}>
                       {v.status}
                     </Badge>
                   </TableCell>
@@ -85,7 +100,7 @@ export function AdminVerificationsTable() {
                       onClick={() => setSelectedVerification(v)}
                     >
                       <Eye className="h-4 w-4" />
-                      Review
+                      {v.status === 'pending' ? 'Review' : 'Update'}
                     </Button>
                   </TableCell>
                 </TableRow>

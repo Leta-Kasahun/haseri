@@ -5,7 +5,7 @@ import { useTechnicianApplications } from "@/src/features/jobs/hooks/useTechnici
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-import { Eye, Edit2, Trash2, Calendar, DollarSign, Briefcase } from "lucide-react";
+import { Eye, Edit2, Trash2, Calendar, Briefcase } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 
@@ -94,7 +94,6 @@ export function TechnicianApplicationsTable() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5 text-primary" />
                       <span className="text-[11px] font-black tracking-tight text-slate-900 dark:text-white">
                         {app.proposed_price ? `ETB ${app.proposed_price.toLocaleString()}` : "Market Rate"}
                       </span>

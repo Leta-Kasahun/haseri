@@ -9,10 +9,23 @@ class TechnicianApprovalService
 {
     public function pending()
     {
-        $verifications = TechnicianVerification::with('user', 'user.address', 'address')
-            ->where('status', 'pending')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        return $this->getVerifications('pending');
+    }
+
+    public function all()
+    {
+        return $this->getVerifications();
+    }
+
+    private function getVerifications($status = null)
+    {
+        $query = TechnicianVerification::with('user', 'user.address', 'address');
+        
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        $verifications = $query->orderBy('created_at', 'desc')->get();
 
         foreach ($verifications as $verification) {
             if (!$verification->address && $verification->user && $verification->user->address) {

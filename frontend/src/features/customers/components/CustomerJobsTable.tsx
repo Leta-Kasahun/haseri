@@ -5,10 +5,10 @@ import { useJobs } from "@/src/features/jobs/hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
-import { Eye, Edit2, Trash2, Calendar, DollarSign, Briefcase, Users } from "lucide-react";
+import { Eye, Edit2, Trash2, Calendar, Briefcase, Users } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
-import { PostJobModal } from "@/src/features/jobs/components";
+import { PostJobModal, JobApplicantsModal } from "@/src/features/jobs/components";
 
 export function CustomerJobsTable() {
   const { jobs, loading, getMyJobs } = useJobs();
@@ -102,7 +102,6 @@ export function CustomerJobsTable() {
                   </TableCell>
                   <TableCell>
                     <div className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5 text-primary" />
                       <span className="text-[11px] font-black tracking-tight text-slate-900 dark:text-white">
                         ETB {job.price?.toLocaleString() || "Market Rate"}
                       </span>
@@ -115,9 +114,15 @@ export function CustomerJobsTable() {
                   </TableCell>
                   <TableCell className="text-right px-8">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all" title="View Applicants">
-                        <Users className="w-4 h-4" />
-                      </Button>
+                      <JobApplicantsModal 
+                        jobId={job.id.toString()}
+                        jobTitle={job.title}
+                        trigger={
+                          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all" title="View Applicants">
+                            <Users className="w-4 h-4" />
+                          </Button>
+                        }
+                      />
                       <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all" title="Edit Job">
                         <Edit2 className="w-3.5 h-3.5" />
                       </Button>

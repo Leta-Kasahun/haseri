@@ -23,7 +23,6 @@ import {
   Plus,
   Loader2,
   Briefcase,
-  DollarSign,
   MapPin,
   Layers,
   AlertCircle
@@ -188,13 +187,12 @@ export function PostJobModal({ trigger, onSuccess }: PostJobModalProps) {
             <div className="space-y-2">
               <Label htmlFor="price" className="text-[10px] font-black uppercase tracking-widest text-slate-500">Budget (ETB)</Label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-[9px] font-black uppercase text-slate-400">Birr</span>
                 <Input
                   id="price"
                   type="number"
                   placeholder="0.00"
                   required
-                  className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs h-12 pl-12 bg-slate-50/50"
+                  className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs h-12 px-4 bg-slate-50/50"
                   value={formData.price}
                   onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                 />

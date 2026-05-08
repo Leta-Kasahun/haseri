@@ -46,6 +46,7 @@ export type JobApplication = {
   message: string | null;
   proposed_price: number | null;
   status: "pending" | "accepted" | "rejected" | "withdrawn";
+  job: Job | null;
   provider: {
     id: number;
     name: string;

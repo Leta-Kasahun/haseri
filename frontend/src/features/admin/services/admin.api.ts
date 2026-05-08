@@ -33,6 +33,11 @@ export const adminApi = {
     clientApi.delete(API_ROUTES.ADMIN.USER_DETAIL(id)),
 
   // Verifications
+  getAllVerifications: () =>
+    clientApi.get<{ success: boolean; data: PendingVerification[] }>(
+      API_ROUTES.ADMIN.VERIFICATIONS_ALL
+    ),
+
   getPendingVerifications: () =>
     clientApi.get<{ success: boolean; data: PendingVerification[] }>(
       API_ROUTES.ADMIN.VERIFICATIONS_PENDING

@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { 
   LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, AreaChart, Area
 } from "recharts";
-import { Users, CreditCard, Activity, DollarSign, ArrowUpRight, Briefcase, CheckSquare, TrendingUp } from "lucide-react";
+import { Users, CreditCard, Activity, ArrowUpRight, Briefcase, CheckSquare, TrendingUp } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { motion } from "framer-motion";
 
@@ -52,9 +52,9 @@ export function AdminAnalytics() {
   const kpis = [
     {
       title: "Total Revenue",
-      value: analytics?.total_revenue ? `$${analytics.total_revenue.toLocaleString()}` : "$0.00",
-      change: analytics?.revenue_today ? `+$${analytics.revenue_today}` : "No change",
-      icon: <DollarSign size={18} />,
+      value: analytics?.total_revenue ? `ETB ${analytics.total_revenue.toLocaleString()}` : "ETB 0.00",
+      change: analytics?.revenue_today ? `+ETB ${analytics.revenue_today}` : "No change",
+      icon: <CreditCard size={18} />,
       positive: true
     },
     {
@@ -171,7 +171,7 @@ export function AdminAnalytics() {
                   tickLine={false} 
                   axisLine={false} 
                   fontSize={9} 
-                  tickFormatter={(value) => `$${value}`} 
+                  tickFormatter={(value) => `ETB ${value}`} 
                   tick={{ fill: '#94A3B8', fontWeight: 700 }}
                 />
                 <Tooltip 

@@ -81,6 +81,7 @@ export const API_ROUTES = {
     USER_DETAIL: (id: string) => `/admin/users/${id}`,
     USER_ACTIVATE: (id: string) => `/admin/users/${id}/activate`,
     USER_DEACTIVATE: (id: string) => `/admin/users/${id}/deactivate`,
+    VERIFICATIONS_ALL: "/admin/verifications",
     VERIFICATIONS_PENDING: "/admin/verifications/pending",
     VERIFICATIONS_APPROVE: "/admin/verifications/approve",
     VERIFICATIONS_REJECT: "/admin/verifications/reject",

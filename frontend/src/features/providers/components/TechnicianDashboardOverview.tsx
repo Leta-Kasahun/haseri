@@ -14,8 +14,7 @@ import {
   TrendingUp,
   MapPin,
   Clock,
-  ArrowUpRight,
-  DollarSign
+  ArrowUpRight
 } from "lucide-react";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useProviderVerification } from "@/src/features/providers/hooks/useProviderVerification";
@@ -215,8 +214,7 @@ export function TechnicianDashboardOverview() {
                     <span>Bole, Addis Ababa</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-slate-900 dark:text-slate-200">
-                    <DollarSign className="w-3.5 h-3.5 text-primary" />
-                    <span>ETB 5k - 10k</span>
+                    <span className="font-black">ETB 5k - 10k</span>
                   </div>
                 </div>
               </div>

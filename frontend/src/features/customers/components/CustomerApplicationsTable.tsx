@@ -124,7 +124,6 @@ export function CustomerApplicationsTable() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5">
-                        <DollarSign className="w-3.5 h-3.5 text-primary" />
                         <span className="text-[11px] font-black tracking-tight text-slate-900 dark:text-white">
                           ETB {app.proposed_price?.toLocaleString() || "Quote Pending"}
                         </span>

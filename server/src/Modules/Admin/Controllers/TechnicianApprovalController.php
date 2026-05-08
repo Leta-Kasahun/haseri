@@ -14,6 +14,16 @@ class TechnicianApprovalController
         $this->service = new TechnicianApprovalService();
     }
 
+    public function index($admin)
+    {
+        try {
+            $result = $this->service->all();
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
+
     public function pending($admin)
     {
         try {

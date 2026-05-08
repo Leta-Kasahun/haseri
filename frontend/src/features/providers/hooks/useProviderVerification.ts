@@ -1,13 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { providersApi } from "../services";
 
 export const useProviderVerification = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const submit = async (formData: FormData) => {
+  const submit = useCallback(async (formData: FormData) => {
     setLoading(true);
     setError(null);
     try {
@@ -20,16 +20,16 @@ export const useProviderVerification = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
-  const checkStatus = async () => {
+  const checkStatus = useCallback(async () => {
     try {
       const res = await providersApi.getVerificationStatus();
       return res.data.data;
     } catch {
       return null;
     }
-  };
+  }, []);
 
   return { submit, checkStatus, loading, error };
 };

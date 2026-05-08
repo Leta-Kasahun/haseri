@@ -4,13 +4,13 @@ import React, { useEffect, useState } from "react";
 import { useJobs } from "@/src/features/jobs/hooks/useJobs";
 import { jobsApi } from "@/src/features/jobs/services";
 import { useJobApplications } from "@/src/features/jobs/hooks/useJobApplications";
+import { JobApplyModal } from "@/src/features/jobs/components/JobApplyModal";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { 
   Search, 
   MapPin, 
-  DollarSign, 
   Clock, 
   ArrowRight,
   Briefcase,
@@ -168,7 +168,6 @@ export function TechnicianJobBrowser() {
                     </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-1.5">
-                        <DollarSign className="w-3.5 h-3.5 text-primary" />
                         <span className="text-[11px] font-black tracking-tight text-slate-900 dark:text-white">
                           ETB {job.price?.toLocaleString()}
                         </span>
@@ -187,14 +186,19 @@ export function TechnicianJobBrowser() {
                         <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all" title="View Details">
                           <Eye className="w-4 h-4" />
                         </Button>
-                        <Button 
-                          onClick={() => handleApply(job.id.toString())}
-                          disabled={applying}
-                          className="h-10 px-6 bg-primary text-white hover:bg-rose-700 rounded-none font-black uppercase tracking-widest text-[9px] transition-all"
-                        >
-                          {applying ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <ArrowRight className="w-3.5 h-3.5 mr-2" />}
-                          Apply
-                        </Button>
+                        <JobApplyModal 
+                          job={job}
+                          onSuccess={getJobs}
+                          trigger={
+                            <Button 
+                              disabled={applying}
+                              className="h-10 px-6 bg-primary text-white hover:bg-rose-700 rounded-none font-black uppercase tracking-widest text-[9px] transition-all"
+                            >
+                              {applying ? <Loader2 className="w-3 h-3 animate-spin mr-2" /> : <ArrowRight className="w-3.5 h-3.5 mr-2" />}
+                              Apply
+                            </Button>
+                          }
+                        />
                       </div>
                     </TableCell>
                   </TableRow>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { jobsApi } from "../services";
 import type { JobApplication } from "../types";
 
@@ -9,7 +9,7 @@ export const useJobApplications = () => {
   const [error, setError] = useState<string | null>(null);
   const [applications, setApplications] = useState<JobApplication[]>([]);
 
-  const getApplications = async (jobId: string) => {
+  const getApplications = useCallback(async (jobId: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -22,7 +22,7 @@ export const useJobApplications = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   const apply = async (jobId: string, data?: { message?: string; proposed_price?: number }) => {
     setLoading(true);

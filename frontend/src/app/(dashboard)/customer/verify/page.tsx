@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { Container, Section, Heading } from "@/src/features/shared/components";
-import { ShieldCheck, ShieldAlert, CheckCircle2, DollarSign, Zap, Star, Shield, AlertTriangle } from "lucide-react";
+import { ShieldCheck, ShieldAlert, CheckCircle2, Zap, Star, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { useAuth } from "@/src/hooks/useAuth";
 import { motion } from "framer-motion";

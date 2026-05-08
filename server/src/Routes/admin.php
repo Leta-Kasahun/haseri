@@ -35,6 +35,12 @@ try {
     }
 
     // Technician Approvals
+    if ($uri === '/api/admin/verifications' && $method === 'GET') {
+        $admin = AuthMiddleware::handleAdmin();
+        (new TechnicianApprovalController())->index($admin);
+        exit;
+    }
+
     if ($uri === '/api/admin/verifications/pending' && $method === 'GET') {
         $admin = AuthMiddleware::handleAdmin();
         (new TechnicianApprovalController())->pending($admin);

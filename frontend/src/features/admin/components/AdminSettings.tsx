@@ -5,7 +5,6 @@ import { useAdminSettings } from "../hooks/useAdminSettings";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import { 
-  DollarSign, 
   Save, 
   RefreshCcw, 
   ShieldCheck, 
@@ -66,13 +65,12 @@ export function AdminSettings() {
 
           <div className="space-y-4">
             <div className="relative group">
-              <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
               <Input
                 type="number"
                 name="verification_fee"
                 value={formData.verification_fee}
                 onChange={handleInputChange}
-                className="pl-12 h-14 bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 rounded-xl text-base font-black tracking-tight focus:ring-0 focus:border-slate-900 dark:focus:border-white transition-all"
+                className="h-14 bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 rounded-xl text-base font-black tracking-tight focus:ring-0 focus:border-slate-900 dark:focus:border-white transition-all"
                 placeholder="0.00"
                 step="0.01"
                 min="0"
@@ -95,13 +93,12 @@ export function AdminSettings() {
 
           <div className="space-y-4">
             <div className="relative group">
-              <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
               <Input
                 type="number"
                 name="job_post_fee"
                 value={formData.job_post_fee}
                 onChange={handleInputChange}
-                className="pl-12 h-14 bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 rounded-xl text-base font-black tracking-tight focus:ring-0 focus:border-slate-900 dark:focus:border-white transition-all"
+                className="h-14 bg-slate-50/50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 rounded-xl text-base font-black tracking-tight focus:ring-0 focus:border-slate-900 dark:focus:border-white transition-all"
                 placeholder="0.00"
                 step="0.01"
                 min="0"

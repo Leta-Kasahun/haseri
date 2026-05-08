@@ -66,6 +66,9 @@ class TechnicianVerificationService
         return [
             'status' => $verification ? $verification->status : 'not_submitted',
             'rejection_reason' => $verification ? $verification->rejection_reason : null,
+            'national_id_path' => $verification ? $verification->national_id_path : null,
+            'proof_document_path' => $verification ? $verification->proof_document_path : null,
+            'proof_document_type' => $verification ? $verification->proof_document_type : null,
         ];
     }
 }

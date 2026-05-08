@@ -1,123 +1,181 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from "@/src/components/ui/dialog";
-import { useJobApplications } from "../hooks/useJobApplications";
-import { Loader2, User, Check, X, Mail, Phone } from "lucide-react";
-import Image from "next/image";
 import { Button } from "@/src/components/ui/button";
-import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
-import { formatDate } from "@/src/utils/date-utils";
+import { 
+  Users, 
+  Loader2, 
+  CheckCircle2, 
+  XCircle, 
+  User,
+  MessageSquare,
+  Star
+} from "lucide-react";
+import { useJobApplications } from "../hooks/useJobApplications";
+import { Badge } from "@/src/components/ui/badge";
+import { cn } from "@/src/lib/utils";
 import { toast } from "react-hot-toast";
 
 interface JobApplicantsModalProps {
-  jobId: number | null;
-  isOpen: boolean;
-  onClose: () => void;
+  jobId: string;
   jobTitle: string;
+  trigger?: React.ReactNode;
 }
 
-export function JobApplicantsModal({ jobId, isOpen, onClose, jobTitle }: JobApplicantsModalProps) {
+export function JobApplicantsModal({ jobId, jobTitle, trigger }: JobApplicantsModalProps) {
+  const [open, setOpen] = useState(false);
   const { applications, getApplications, accept, reject, loading } = useJobApplications();
 
   useEffect(() => {
-    if (isOpen && jobId) {
-      getApplications(jobId.toString());
+    if (open) {
+      getApplications(jobId);
     }
-  }, [isOpen, jobId]);
+  }, [open, jobId, getApplications]);
 
-  const handleAccept = async (id: number) => {
-    await accept(id.toString());
-    toast.success("Application accepted");
+  const handleAccept = async (id: string) => {
+    try {
+      await accept(id);
+      toast.success("Technician hired successfully!");
+    } catch (err) {
+      toast.error("Failed to accept application");
+    }
   };
 
-  const handleReject = async (id: number) => {
-    await reject(id.toString());
-    toast.error("Application rejected");
+  const handleReject = async (id: string) => {
+    try {
+      await reject(id);
+      toast.success("Application rejected");
+    } catch (err) {
+      toast.error("Failed to reject application");
+    }
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-black uppercase tracking-widest italic">
-            Applicants: {jobTitle}
-          </DialogTitle>
-        </DialogHeader>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        {trigger || (
+          <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-slate-200 hover:border-slate-900 transition-all">
+            <Users className="w-4 h-4" />
+          </Button>
+        )}
+      </DialogTrigger>
+      <DialogContent className="max-w-3xl bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)]">
+        <div className="bg-slate-900 p-5 text-white">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-black uppercase tracking-tighter italic leading-none">
+              Applicants For <span className="text-primary">{jobTitle}</span>
+            </DialogTitle>
+          </DialogHeader>
+        </div>
 
-        <div className="mt-4 space-y-4">
+        <div className="p-6 max-h-[70vh] overflow-y-auto">
           {loading && applications.length === 0 ? (
-            <div className="flex justify-center py-10">
-              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <div className="py-20 text-center">
+              <Loader2 className="w-8 h-8 text-primary animate-spin mx-auto mb-4" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Loading potential experts...</p>
             </div>
-          ) : applications.length > 0 ? (
-            applications.map((app) => (
-              <div key={app.id} className="border border-slate-100 dark:border-slate-800 rounded-xl p-4 bg-slate-50/50 dark:bg-slate-900/50">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex gap-3">
-                    <Avatar className="h-12 w-12 rounded-full border border-slate-200 relative overflow-hidden">
+          ) : applications.length === 0 ? (
+            <div className="py-20 text-center bg-slate-50 dark:bg-slate-900/50 border-2 border-dashed border-slate-200 dark:border-slate-800">
+              <Users className="w-10 h-10 text-slate-200 dark:text-slate-700 mx-auto mb-4" />
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">No applications received yet</p>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {applications.map((app) => (
+                <div key={app.id} className="border-2 border-slate-900 dark:border-white bg-white dark:bg-slate-900 p-6 flex flex-col md:flex-row gap-6 relative">
+                  {/* Avatar Section */}
+                  <div className="flex flex-row md:flex-col items-center gap-4">
+                    <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 border-2 border-slate-900 dark:border-white overflow-hidden shrink-0">
                       {app.provider?.avatar ? (
-                        <Image 
-                          src={app.provider.avatar} 
-                          alt={app.provider.name || "Provider"} 
-                          fill 
-                          className="object-cover" 
-                        />
-                      ) : null}
-                      <AvatarFallback className="bg-slate-900 text-white font-bold text-sm">
-                        {app.provider?.name?.[0] || <User className="w-5 h-5" />}
-                      </AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <h4 className="font-bold text-slate-900 dark:text-white">{app.provider?.name}</h4>
-                      <p className="text-[10px] text-slate-500 uppercase font-bold tracking-widest">
-                        Applied on {formatDate(app.created_at)}
-                      </p>
-                      <div className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
-                        {app.message || "No message provided."}
-                      </div>
-                      <div className="mt-2 flex items-center gap-3">
-                         <span className="text-xs font-bold text-primary">Proposed: ETB {app.proposed_price || "Original"}</span>
-                         <span className={`px-2 py-0.5 rounded text-[8px] font-black uppercase tracking-widest ${
-                           app.status === 'accepted' ? 'bg-green-100 text-green-700' : 
-                           app.status === 'rejected' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'
-                         }`}>
-                           {app.status}
-                         </span>
-                      </div>
+                        <img src={app.provider.avatar} alt="" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <User className="w-8 h-8 text-slate-300" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex flex-col items-center">
+                       <div className="flex items-center gap-0.5">
+                          {[1, 2, 3, 4, 5].map(s => (
+                            <Star key={s} className={cn("w-2.5 h-2.5 fill-amber-400 text-amber-400")} />
+                          ))}
+                       </div>
+                       <span className="text-[8px] font-black uppercase tracking-tighter mt-1">PRO VERIFIED</span>
                     </div>
                   </div>
 
-                  {app.status === 'pending' && (
-                    <div className="flex gap-2">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleReject(app.id)}
-                        className="h-8 w-8 p-0 rounded-full border-red-200 text-red-600 hover:bg-red-50"
-                      >
-                        <X className="w-4 h-4" />
-                      </Button>
-                      <Button 
-                        size="sm" 
-                        onClick={() => handleAccept(app.id)}
-                        className="h-8 w-8 p-0 rounded-full bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        <Check className="w-4 h-4" />
-                      </Button>
+                  {/* Info Section */}
+                  <div className="flex-1 space-y-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div>
+                        <h4 className="text-sm font-black uppercase tracking-tight text-slate-900 dark:text-white">
+                          {app.provider?.name || "Professional Technician"}
+                        </h4>
+                        <div className="flex items-center gap-4 mt-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[11px] font-black tracking-tight text-slate-900 dark:text-white">
+                              PROPOSED: ETB {app.proposed_price?.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <Badge className={cn(
+                        "rounded-none text-[8px] font-black uppercase tracking-widest px-2 py-0.5 border shadow-none",
+                        app.status === 'accepted' ? "bg-green-50 text-green-600 border-green-200" :
+                        app.status === 'rejected' ? "bg-rose-50 text-rose-600 border-rose-200" :
+                        "bg-amber-50 text-amber-600 border-amber-200"
+                      )}>
+                        {app.status}
+                      </Badge>
                     </div>
-                  )}
+
+                    <div className="bg-slate-50 dark:bg-slate-800/50 p-4 border-l-4 border-slate-900 dark:border-white">
+                      <div className="flex gap-2 mb-2">
+                        <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="text-[9px] font-black uppercase tracking-widest text-slate-400">Proposal</span>
+                      </div>
+                      <p className="text-[11px] font-bold text-slate-600 dark:text-slate-300 leading-relaxed italic">
+                        "{app.message}"
+                      </p>
+                    </div>
+
+                    <div className="flex items-center gap-3 pt-2">
+                      {app.status === 'pending' && (
+                        <>
+                          <Button 
+                            onClick={() => handleAccept(app.id.toString())}
+                            className="h-10 px-6 bg-slate-900 text-white hover:bg-green-600 rounded-none font-black uppercase tracking-widest text-[9px] transition-all flex-1"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5 mr-2" />
+                            Hire Technician
+                          </Button>
+                          <Button 
+                            onClick={() => handleReject(app.id.toString())}
+                            variant="outline"
+                            className="h-10 px-6 border-2 border-slate-900 dark:border-white rounded-none font-black uppercase tracking-widest text-[9px] hover:bg-rose-600 hover:text-white transition-all"
+                          >
+                            <XCircle className="w-3.5 h-3.5 mr-2" />
+                            Decline
+                          </Button>
+                        </>
+                      )}
+                      {app.status === 'accepted' && (
+                        <div className="flex items-center gap-2 text-green-600">
+                          <CheckCircle2 className="w-4 h-4" />
+                          <span className="text-[10px] font-black uppercase tracking-widest">Technician Hired</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 </div>
-              </div>
-            ))
-          ) : (
-            <div className="text-center py-10 text-slate-500 italic text-sm">
-              No applications yet for this job.
+              ))}
             </div>
           )}
         </div>
