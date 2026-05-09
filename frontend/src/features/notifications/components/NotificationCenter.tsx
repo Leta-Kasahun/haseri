@@ -128,8 +128,8 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                       className={cn(
                         "group p-4 rounded-2xl transition-all relative border-none",
                         "bg-white dark:bg-slate-900",
-                        "hover:shadow-lg hover:shadow-slate-200/40 dark:hover:shadow-slate-900/60 hover:-translate-y-0.5",
-                        !isRead ? "ring-1 ring-primary/5" : "opacity-60"
+                        "hover:shadow-2xl hover:shadow-primary/10 dark:hover:shadow-primary/20 hover:-translate-y-1 hover:ring-2 hover:ring-primary/20 hover:bg-primary/[0.01] dark:hover:bg-primary/[0.03]",
+                        !isRead ? "ring-2 ring-primary/10 shadow-md" : "opacity-95"
                       )}
                     >
                       <div className="flex gap-4">
@@ -145,8 +145,8 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className={cn(
-                              "text-[10px] md:text-[11px] font-black uppercase tracking-wider truncate pr-2",
-                              !isRead ? "text-slate-900 dark:text-white" : "text-slate-500"
+                              "text-[10px] md:text-[11px] font-black uppercase tracking-wider truncate pr-2 transition-colors",
+                              !isRead ? "text-slate-900 dark:text-white" : "text-slate-600 dark:text-slate-400 group-hover:text-slate-900 dark:group-hover:text-white"
                             )}>
                               {title}
                             </span>
@@ -155,7 +155,7 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                               {formatDistanceToNow(new Date(createdAt), { addSuffix: true })}
                             </span>
                           </div>
-                          <p className="text-[10px] font-bold text-slate-500 dark:text-slate-400 leading-relaxed tracking-wide mb-3">
+                          <p className="text-[10.5px] font-medium text-slate-700 dark:text-slate-300 leading-relaxed tracking-wide mb-3 transition-colors group-hover:text-slate-900 dark:group-hover:text-slate-100">
                             {message}
                           </p>
                           
