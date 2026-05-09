@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Section, Heading } from "@/src/features/shared/components";
 import { ShieldCheck, ShieldAlert, CheckCircle2, Zap, Star, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
@@ -12,11 +12,20 @@ import { toast } from "react-hot-toast";
 
 export default function CustomerVerifyPage() {
   const { user } = useAuth();
-  const { initiate } = useCustomerVerification();
+  const { initiate, checkStatus } = useCustomerVerification();
   const [loading, setLoading] = useState(false);
+  const [verificationData, setVerificationData] = useState<{ verified: boolean } | null>(null);
+
+  useEffect(() => {
+    const fetchStatus = async () => {
+      const data = await checkStatus();
+      setVerificationData(data);
+    };
+    fetchStatus();
+  }, [checkStatus]);
 
   // Verification status check (Mock logic based on user data)
-  const isVerified = (user as any)?.verification_status === "approved" || (user as any)?.verification_status === "verified";
+  const isVerified = verificationData?.verified || (user as any)?.verification_status === "approved" || (user as any)?.verification_status === "verified";
   const isPending = (user as any)?.verification_status === "pending";
 
   const handleVerify = async () => {
