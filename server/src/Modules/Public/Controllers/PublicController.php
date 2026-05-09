@@ -47,23 +47,17 @@ class PublicController
             ->find($id);
 
         if (!$tech) {
-            return Response::success(null);
+            return Response::json(['success' => false, 'error' => 'Technician not found'], 404);
         }
 
         $trustService = new TrustScoreService();
         $trust = $trustService->calculate($id);
 
-        Response::success([
-            'id' => $tech->id,
-            'name' => $tech->first_name . ' ' . $tech->last_name,
-            'avatar' => $tech->avatar,
-            'cover' => $tech->cover_image,
-            'skills' => $tech->skills->pluck('skill_name'),
-            'rating' => $trust['trust_score'],
-            'total_reviews' => $trust['total_reviews'],
-            'completed_jobs' => $trust['completed_jobs'],
-            'city' => $tech->address ? $tech->address->city : null,
-            'verified' => $tech->technicianVerification && $tech->technicianVerification->status === 'approved',
-        ]);
+        // Append trust data to tech object for frontend compatibility
+        $tech->average_rating = $trust['trust_score'];
+        $tech->review_count = $trust['total_reviews'];
+        $tech->completed_jobs_count = $trust['completed_jobs'];
+
+        Response::success($tech);
     }
 }
