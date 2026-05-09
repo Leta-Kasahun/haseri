@@ -22,6 +22,9 @@ class CustomerVerificationService
         $user = User::find($userId);
         $config = require __DIR__ . '/../../../../Config/chapa.php';
 
+        $txRef = 'cust-verify-' . uniqid();
+        $returnUrl = env('FRONTEND_URL', 'http://localhost:3000') . '/customer/verify/success';
+
         return $this->paymentService->initiate([
             'user_id' => $userId,
             'amount' => $config['verification_fee'],
@@ -31,6 +34,8 @@ class CustomerVerificationService
             'payment_type' => 'customer_verification',
             'title' => 'Customer Verification',
             'description' => 'Identity verification for reviews',
+            'tx_ref' => $txRef,
+            'return_url' => $returnUrl,
         ]);
     }
 

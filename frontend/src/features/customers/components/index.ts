@@ -16,3 +16,4 @@ export * from "./ProfileHeader";
 export * from "./ProfileJobsList";
 export * from "./ProfileSidebar";
 export * from "./VerificationPanel";
+export * from "./CustomerOnboarding";

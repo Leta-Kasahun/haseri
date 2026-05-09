@@ -23,6 +23,26 @@ class JobService
 
     public function create($userId, array $data)
     {
+        $user = \Haseri\Backend\Shared\Models\User::find($userId);
+        $jobsCount = \Haseri\Backend\Shared\Models\Job::where('customer_id', $userId)->count();
+        $isVerified = $user && ($user->verification_status === 'verified' || $user->verification_status === 'approved');
+        
+        $limit = $isVerified ? 4 : 2;
+
+        if ($jobsCount >= $limit) {
+            if (!$isVerified) {
+                throw new \Haseri\Backend\Shared\Exceptions\ValidationException([
+                    'verification_required' => true,
+                    'message' => 'Free trial exhausted. Please verify your account to post more jobs.'
+                ]);
+            } else {
+                throw new \Haseri\Backend\Shared\Exceptions\ValidationException([
+                    'limit_reached' => true,
+                    'message' => 'You have reached your maximum free job posting limit.'
+                ]);
+            }
+        }
+
         if (!empty($data['city'])) {
             $address = Address::updateOrCreate(
                 ['user_id' => $userId, 'is_primary' => true],

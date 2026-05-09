@@ -33,6 +33,7 @@ import { Job, JobCategory } from "../types";
 import { useAuth } from "@/src/hooks/useAuth";
 import { toast } from "react-hot-toast";
 import { cn } from "@/src/lib/utils";
+import { useRouter } from "next/navigation";
 
 interface PostJobModalProps {
   trigger?: React.ReactNode;
@@ -43,6 +44,7 @@ interface PostJobModalProps {
 export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
   const isEdit = !!job;
   const { user } = useAuth();
+  const router = useRouter();
   const { create, loading: creating } = useCreateJob();
   const [loading, setLoading] = useState(false);
   const [open, setOpen] = useState(false);
@@ -133,7 +135,7 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
         if (!result) throw new Error("Failed to create job");
         toast.success("Job posted successfully!");
       }
-      
+
       setOpen(false);
       if (!isEdit) {
         setFormData({
@@ -149,7 +151,15 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
       }
       onSuccess?.();
     } catch (err: any) {
-      toast.error(err.response?.data?.message || "Something went wrong. Please try again.");
+      if (err.response?.data?.errors?.verification_required) {
+        toast.error(err.response?.data?.errors?.message || "Free trial exhausted. Redirecting to verification...");
+        setOpen(false);
+        router.push("/customer/verify");
+      } else if (err.response?.data?.errors?.limit_reached) {
+        toast.error(err.response?.data?.errors?.message || "Job posting limit reached.");
+      } else {
+        toast.error(err.response?.data?.error || err.response?.data?.message || "Something went wrong. Please try again.");
+      }
     } finally {
       setLoading(false);
     }

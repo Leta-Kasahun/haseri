@@ -17,7 +17,7 @@ export const useCreateJob = () => {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to post job";
       setError(message);
-      return null;
+      throw err;
     } finally {
       setLoading(false);
     }

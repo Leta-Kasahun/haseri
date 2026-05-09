@@ -25,7 +25,7 @@ export const useRegister = () => {
       if (res.data.data.user.role === "provider") {
         router.push("/technician/onboarding");
       } else {
-        router.push("/dashboard");
+        router.push("/customer/onboarding");
       }
     } catch (err: any) {
       setError(err?.message || "Registration failed. Please try again.");

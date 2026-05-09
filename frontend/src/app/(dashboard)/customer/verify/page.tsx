@@ -5,16 +5,45 @@ import { Container, Section, Heading } from "@/src/features/shared/components";
 import { ShieldCheck, ShieldAlert, CheckCircle2, Zap, Star, Shield, AlertTriangle } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { useAuth } from "@/src/hooks/useAuth";
+import { useCustomerVerification } from "@/src/features/customers/hooks/useCustomerVerification";
 import { motion } from "framer-motion";
 import { cn } from "@/src/lib/utils";
+import { toast } from "react-hot-toast";
 
 export default function CustomerVerifyPage() {
   const { user } = useAuth();
+  const { initiate } = useCustomerVerification();
   const [loading, setLoading] = useState(false);
 
   // Verification status check (Mock logic based on user data)
-  const isVerified = (user as any)?.verification_status === "approved";
+  const isVerified = (user as any)?.verification_status === "approved" || (user as any)?.verification_status === "verified";
   const isPending = (user as any)?.verification_status === "pending";
+
+  const handleVerify = async () => {
+    try {
+      setLoading(true);
+      const data = await initiate();
+      const checkoutUrl =
+        (data as any)?.checkout_url ||
+        (data as any)?.checkoutUrl ||
+        (data as any)?.url ||
+        (data as any)?.data?.checkout_url ||
+        (data as any)?.data?.checkoutUrl ||
+        null;
+
+      if (checkoutUrl) {
+        toast.loading("Redirecting to Chapa...", { duration: 2000 });
+        window.location.href = checkoutUrl;
+      } else {
+        toast.error("Failed to get checkout URL");
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("An error occurred. Please try again.");
+      setLoading(false);
+    }
+  };
 
   return (
     <Section padding="none" className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20 pt-10">
@@ -124,10 +153,11 @@ export default function CustomerVerifyPage() {
 
               <div className="space-y-6 pt-10">
                 <Button 
-                  disabled={isVerified || isPending}
+                  onClick={handleVerify}
+                  disabled={isVerified || isPending || loading}
                   className="w-full h-14 bg-primary hover:bg-rose-700 text-white font-black uppercase tracking-widest text-[10px] rounded-none shadow-none transition-all active:scale-95 disabled:opacity-50"
                 >
-                  {isVerified ? "Already Verified" : isPending ? "Review in Progress" : "Verify & Pay Now"}
+                  {loading ? "Redirecting..." : isVerified ? "Already Verified" : isPending ? "Review in Progress" : "Verify & Pay Now"}
                 </Button>
                 <p className="text-[9px] text-center text-slate-500 uppercase font-black tracking-widest">
                   Payments are processed securely via local partners.
