@@ -202,7 +202,7 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="max-w-[740px] w-[95vw] md:w-full bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)] max-h-[92vh] flex flex-col">
+        <DialogContent className="max-w-[740px] w-[95vw] bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)] max-h-[90vh] flex flex-col">
           <div className="bg-slate-900 p-5 md:p-6 text-white relative shrink-0">
             <DialogHeader>
               <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tighter italic leading-none">
@@ -251,8 +251,8 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
                 id="description"
                 placeholder="DESCRIBE THE TASK IN DETAIL..."
                 required
-                rows={4}
-                className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs bg-slate-50/50 resize-none"
+                rows={8}
+                className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs bg-slate-50/50 resize-none min-h-[160px]"
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               />
@@ -264,9 +264,8 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
                 <div className="relative">
                   <Input
                     id="price"
-                    type="number"
-                    placeholder="0.00"
-                    required
+                    min="0"
+                    step="0.01"
                     className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs h-12 px-4 bg-slate-50/50"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}

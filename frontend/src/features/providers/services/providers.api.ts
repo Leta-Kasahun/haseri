@@ -31,4 +31,7 @@ export const providersApi = {
 
   getVerificationStatus: () =>
     clientApi.get(API_ROUTES.TECHNICIAN.VERIFICATION_STATUS),
+
+  getStats: () =>
+    clientApi.get(API_ROUTES.TECHNICIAN.STATS),
 };

@@ -99,7 +99,7 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
           </Button>
         )}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[450px] bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)] flex flex-col">
+      <DialogContent className="max-w-[95vw] sm:max-w-[740px] bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)] flex flex-col">
         <div className="bg-slate-900 p-5 md:p-6 text-white relative shrink-0">
           <DialogHeader>
             <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tighter italic leading-none flex items-center gap-3">
@@ -129,8 +129,8 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
               id="message"
               placeholder="ENTER YOUR PROPOSAL..."
               required
-              rows={4}
-              className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs bg-slate-50/50 resize-none"
+              rows={8}
+              className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs bg-slate-50/50 resize-none min-h-[200px]"
               value={formData.message}
               onChange={(e) => setFormData({ ...formData, message: e.target.value })}
             />

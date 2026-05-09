@@ -4,7 +4,6 @@ import React, { useEffect, useState } from "react";
 import { Heading } from "@/src/features/shared/components";
 import {
   Briefcase,
-  ShieldCheck,
   ShieldAlert,
   CheckCircle2,
   AlertCircle,
@@ -14,7 +13,8 @@ import {
   TrendingUp,
   MapPin,
   Clock,
-  ArrowUpRight
+  ArrowUpRight,
+  Loader2
 } from "lucide-react";
 import { useAuth } from "@/src/hooks/useAuth";
 import { useProviderVerification } from "@/src/features/providers/hooks/useProviderVerification";
@@ -22,6 +22,10 @@ import { Button } from "@/src/components/ui/button";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
 import { motion } from "framer-motion";
+import { useJobs } from "@/src/features/jobs/hooks";
+import { providersApi } from "@/src/features/providers/services/providers.api";
+import { JobApplyModal } from "@/src/features/jobs/components";
+import { formatDistanceToNow } from "date-fns";
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -39,45 +43,55 @@ const itemVariants = {
 export function TechnicianDashboardOverview() {
   const { user } = useAuth();
   const { checkStatus } = useProviderVerification();
+  const { jobs, loading: jobsLoading, getJobs } = useJobs();
+  
   const [status, setStatus] = useState<{ status: string; verified_at: string | null } | null>(null);
+  const [stats, setStats] = useState<any>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   useEffect(() => {
-    const getStatus = async () => {
-      const data = await checkStatus();
-      setStatus(data);
+    const init = async () => {
+      const [statusData, statsRes] = await Promise.all([
+        checkStatus(),
+        providersApi.getStats()
+      ]);
+      setStatus(statusData);
+      setStats(statsRes.data.data);
+      setStatsLoading(false);
+      getJobs({ limit: 4 });
     };
-    getStatus();
-  }, [checkStatus]);
+    init();
+  }, [checkStatus, getJobs]);
 
   const isVerified = status?.status === "approved";
   const isPending = status?.status === "pending";
 
-  const stats = [
+  const dashboardStats = [
     {
       title: "Completed Jobs",
-      value: "12",
-      change: "+2 this week",
+      value: stats?.completed_jobs || "0",
+      change: "Lifetime total",
       icon: <CheckCircle2 size={18} />,
       positive: true
     },
     {
       title: "Active Requests",
-      value: "3",
-      change: "On track",
+      value: stats?.active_requests || "0",
+      change: "Jobs in progress",
       icon: <Briefcase size={18} />,
       positive: true
     },
     {
       title: "Success Rate",
-      value: "98%",
+      value: `${stats?.success_rate || 100}%`,
       change: "Excellent",
       icon: <TrendingUp size={18} />,
       positive: true
     },
     {
       title: "Client Rating",
-      value: "4.9/5",
-      change: "Top Rated",
+      value: `${stats?.rating || '0.0'}/5`,
+      change: `${stats?.review_count || 0} Reviews`,
       icon: <Star size={18} />,
       positive: true
     },
@@ -86,12 +100,12 @@ export function TechnicianDashboardOverview() {
   return (
     <div className="space-y-12">
 
-      {/* Refined Welcome Header - Targeted Updates for Technician Overview */}
+      {/* Refined Welcome Header */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-8 animate-in fade-in slide-in-from-top-4 duration-700">
         <div className="space-y-1.5">
           <div className="flex items-center gap-3">
             <div className="w-1 h-6 bg-primary" />
-            <Heading level={1} className="text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter italic leading-tight">
+            <Heading level={1} className="text-3xl md:text-4xl lg:text-5xl font-black uppercase tracking-tighter italic leading-tight text-slate-900 dark:text-white">
               Welcome, <span className="text-primary">{user?.first_name}</span>
             </Heading>
           </div>
@@ -108,7 +122,7 @@ export function TechnicianDashboardOverview() {
         </Link>
       </div>
 
-      {/* Verification Alert - No Changes Requested Here */}
+      {/* Verification Alert */}
       {!isVerified && (
         <motion.div
           initial={{ opacity: 0, scale: 0.98 }}
@@ -143,9 +157,9 @@ export function TechnicianDashboardOverview() {
         </motion.div>
       )}
 
-      {/* Admin-Style Status Cards - No Changes Requested Here */}
+      {/* Admin-Style Status Cards */}
       <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {stats.map((stat, idx) => (
+        {dashboardStats.map((stat, idx) => (
           <motion.div
             key={idx}
             variants={itemVariants}
@@ -162,7 +176,9 @@ export function TechnicianDashboardOverview() {
               </div>
             </div>
             <div className="relative z-10">
-              <div className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1 italic">{stat.value}</div>
+              <div className="text-2xl md:text-3xl font-black tracking-tight text-slate-900 dark:text-white mb-1 italic">
+                {statsLoading ? "..." : stat.value}
+              </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1">
                   <ArrowUpRight size={10} className="text-primary" />
@@ -174,14 +190,14 @@ export function TechnicianDashboardOverview() {
         ))}
       </div>
 
-      {/* Recent Jobs Section - No Changes Requested Here */}
+      {/* Recent Jobs Section */}
       <div className="space-y-6">
         <div className="flex items-center justify-between px-2">
           <div className="flex items-center gap-3">
             <div className="w-4 h-4 bg-primary flex items-center justify-center">
                <Briefcase size={10} className="text-white" />
             </div>
-            <Heading level={2} className="text-lg md:text-xl font-black uppercase tracking-tighter italic">
+            <Heading level={2} className="text-lg md:text-xl font-black uppercase tracking-tighter italic text-slate-900 dark:text-white">
               Recent Job Listings
             </Heading>
           </div>
@@ -191,39 +207,59 @@ export function TechnicianDashboardOverview() {
         </div>
 
         <div className="flex flex-col gap-4">
-          {[1, 2, 3].map((j, idx) => (
-            <motion.div
-              key={j}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.05 }}
-              className="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-primary/40 shadow-sm"
-            >
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-primary bg-primary/5 px-2 py-0.5 border border-primary/10">
-                    Home Repair
-                  </span>
-                </div>
-                <h3 className="text-lg md:text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors italic">
-                  High-End Residential Maintenance
-                </h3>
-                <div className="flex flex-wrap items-center gap-4 text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">
-                  <div className="flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>Bole, Addis Ababa</span>
+          {jobsLoading ? (
+             <div className="py-20 flex flex-col items-center justify-center text-center">
+                <Loader2 className="w-8 h-8 animate-spin text-primary mb-4" />
+                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400">Scanning for new opportunities...</p>
+             </div>
+          ) : jobs.length > 0 ? (
+            jobs.slice(0, 4).map((job, idx) => (
+              <motion.div
+                key={job.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.05 }}
+                className="group bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-6 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-primary/40 shadow-sm"
+              >
+                <div className="flex-1">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-[8px] md:text-[9px] font-black uppercase tracking-widest text-primary bg-primary/5 px-2 py-0.5 border border-primary/10">
+                      {typeof job.category === 'object' ? (job.category as any).name : (job.category || 'General Service')}
+                    </span>
+                    <span className="text-[8px] font-bold text-slate-400 uppercase tracking-widest flex items-center gap-1">
+                       <Clock size={10} /> {formatDistanceToNow(new Date(job.created_at), { addSuffix: true })}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-slate-900 dark:text-slate-200">
-                    <span className="font-black">ETB 5k - 10k</span>
+                  <h3 className="text-lg md:text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white group-hover:text-primary transition-colors italic">
+                    {job.title}
+                  </h3>
+                  <div className="flex flex-wrap items-center gap-4 text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">
+                    <div className="flex items-center gap-1.5">
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>{job.address?.city || 'Addis Ababa'}{job.address?.sub_city ? `, ${job.address.sub_city}` : ''}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 text-slate-900 dark:text-slate-200">
+                      <span className="font-black">ETB {job.price?.toLocaleString()}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <Button className="w-full md:w-auto h-11 px-8 rounded-none bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 hover:bg-primary hover:text-white hover:border-primary transition-all font-black text-[9px] tracking-widest uppercase">
-                View Details
-              </Button>
-            </motion.div>
-          ))}
+                <JobApplyModal 
+                  job={job}
+                  onSuccess={() => getJobs({ limit: 4 })}
+                  trigger={
+                    <Button className="w-full md:w-auto h-11 px-8 rounded-none bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 hover:bg-primary hover:text-white hover:border-primary transition-all font-black text-[9px] tracking-widest uppercase">
+                      View & Apply
+                    </Button>
+                  }
+                />
+              </motion.div>
+            ))
+          ) : (
+            <div className="py-20 border-2 border-dashed border-slate-100 dark:border-slate-800 text-center">
+               <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">No new jobs found in your area. Check back later!</p>
+            </div>
+          )}
         </div>
       </div>
     </div>

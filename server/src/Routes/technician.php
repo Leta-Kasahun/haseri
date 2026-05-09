@@ -61,6 +61,13 @@ try {
         (new TechnicianController())->updateSkills($user);
         exit;
     }
+
+    // Stats
+    if ($uri === '/api/technician/stats' && $method === 'GET') {
+        $user = AuthMiddleware::handle();
+        (new TechnicianController())->stats($user);
+        exit;
+    }
 } catch (HttpException $e) {
     Response::error($e->getMessage(), $e->getStatusCode());
 }

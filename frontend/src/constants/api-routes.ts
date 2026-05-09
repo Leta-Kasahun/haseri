@@ -30,6 +30,7 @@ export const API_ROUTES = {
     SKILLS: "/technician/skills",
     VERIFY: "/technician/verify",
     VERIFICATION_STATUS: "/technician/verification-status",
+    STATS: "/technician/stats",
   },
   JOBS: {
     BASE: "/jobs",

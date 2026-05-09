@@ -71,4 +71,14 @@ class TechnicianController
         $result = $this->service->getSkills($user->id);
         Response::success($result);
     }
+
+    public function stats($user)
+    {
+        try {
+            $result = $this->service->getStats($user->id);
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
 }
