@@ -51,7 +51,8 @@ class PublicService
                     'price' => $job->price,
                     'category' => $job->category ? $job->category->name : null,
                     'city' => $job->address ? $job->address->city : null,
-                    'created_at' => $job->created_at->diffForHumans(),
+                    'specific_location' => $job->address ? $job->address->specific_location : null,
+                    'created_at' => $job->created_at->toIso8601String(),
                 ];
             });
     }
@@ -70,7 +71,8 @@ class PublicService
                     'price' => $job->price,
                     'category' => $job->category ? $job->category->name : null,
                     'city' => $job->address ? $job->address->city : null,
-                    'created_at' => $job->created_at->diffForHumans(),
+                    'specific_location' => $job->address ? $job->address->specific_location : null,
+                    'created_at' => $job->created_at->toIso8601String(),
                 ];
             });
     }
