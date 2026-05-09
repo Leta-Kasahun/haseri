@@ -7,6 +7,8 @@ import { UserMenu } from "./UserMenu";
 import { Button } from "@/src/components/ui/button";
 import { useAuth } from "@/src/hooks/useAuth";
 import { PostJobModal } from "@/src/features/jobs/components";
+import { ChatCenter } from "@/src/features/chat";
+import { NotificationCenter } from "@/src/features/notifications";
 
 export const DashboardHeader = () => {
   const { toggleSidebar } = useUiStore();
@@ -34,10 +36,8 @@ export const DashboardHeader = () => {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-900 dark:hover:text-white relative">
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full" />
-        </Button>
+        <ChatCenter />
+        <NotificationCenter scope="user" />
         <UserMenu />
       </div>
     </header>

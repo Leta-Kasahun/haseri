@@ -79,7 +79,7 @@ export function CustomerProfileDetails({ onSave, isEmbedded = false }: CustomerP
       icon: <MapPin className="w-4 h-4 text-primary" />,
       fields: [
         { label: "City", value: formData.city },
-        { label: "Sub City", value: formData.sub_city },
+        { label: "Woreda", value: formData.woreda },
         { label: "Kebele", value: formData.kebele },
         { label: "Specific", value: formData.specific_location },
       ]
@@ -140,11 +140,11 @@ export function CustomerProfileDetails({ onSave, isEmbedded = false }: CustomerP
                   <Input name="city" value={formData.city} onChange={handleChange} className="h-12 rounded-none border-2 border-slate-200 focus:border-slate-900 font-bold" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Sub City</label>
-                  <Input name="sub_city" value={formData.sub_city} onChange={handleChange} className="h-12 rounded-none border-2 border-slate-200 focus:border-slate-900 font-bold" />
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Woreda</label>
+                  <Input name="woreda" value={formData.woreda} onChange={handleChange} className="h-12 rounded-none border-2 border-slate-200 focus:border-slate-900 font-bold" />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Woreda / Kebele</label>
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Kebele</label>
                   <Input name="kebele" value={formData.kebele} onChange={handleChange} className="h-12 rounded-none border-2 border-slate-200 focus:border-slate-900 font-bold" />
                 </div>
                 <div className="space-y-2">

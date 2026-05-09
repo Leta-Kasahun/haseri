@@ -59,7 +59,7 @@ class JobApplicationService
 
     public function getByProvider($providerId)
     {
-        return JobApplication::with('job')
+        return JobApplication::with(['job.customer', 'job.category'])
             ->where('provider_id', $providerId)
             ->orderBy('created_at', 'desc')
             ->get();

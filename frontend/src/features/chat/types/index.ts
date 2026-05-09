@@ -18,3 +18,14 @@ export type SendMessageInput = {
   receiver_id: number;
   message: string;
 };
+
+export type Conversation = {
+  job_id: number;
+  other_user: {
+    id: number;
+    name: string;
+    avatar: string | null;
+  };
+  last_message: Message;
+  unread_count: number;
+};

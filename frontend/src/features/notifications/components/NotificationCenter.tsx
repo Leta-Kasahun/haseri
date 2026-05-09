@@ -20,15 +20,15 @@ interface NotificationCenterProps {
 
 export function NotificationCenter({ disabled = false, scope = "user" }: NotificationCenterProps) {
   const [open, setOpen] = useState(false);
-  const { 
-    notifications, 
-    unreadCount, 
-    loading, 
-    getAll, 
-    getCount, 
-    markAsRead, 
-    markAllAsRead, 
-    remove 
+  const {
+    notifications,
+    unreadCount,
+    loading,
+    getAll,
+    getCount,
+    markAsRead,
+    markAllAsRead,
+    remove
   } = useNotifications(scope);
 
   // Initial fetch and polling
@@ -56,11 +56,11 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
     <>
       <DropdownMenu open={open} onOpenChange={setOpen}>
         <DropdownMenuTrigger asChild>
-          <button 
+          <button
             className={cn(
               "relative p-2.5 rounded-xl transition-all duration-300",
-              open 
-                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-lg" 
+              open
+                ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 shadow-lg"
                 : "text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800"
             )}
             aria-label="Notifications"
@@ -74,9 +74,9 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
           </button>
         </DropdownMenuTrigger>
 
-        <DropdownMenuContent 
-          align="end" 
-          sideOffset={12} 
+        <DropdownMenuContent
+          align="end"
+          sideOffset={12}
           className="z-50 w-[min(26rem,calc(100vw-2rem))] bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl p-0 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border-none overflow-hidden"
         >
           {/* Header */}
@@ -90,8 +90,8 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                 </p>
               </div>
               {unreadCount > 0 && (
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -122,7 +122,7 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                   const createdAt = notification.created_at ?? (notification as any).createdAt;
 
                   return (
-                    <motion.div 
+                    <motion.div
                       layout
                       key={notification.id}
                       className={cn(
@@ -141,7 +141,7 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                             {notification.type === 'error' ? <MailWarning size={16} /> : <Bell size={16} />}
                           </div>
                         </div>
-                        
+
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between mb-1.5">
                             <span className={cn(
@@ -158,11 +158,11 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                           <p className="text-[10.5px] font-medium text-slate-700 dark:text-slate-300 leading-relaxed tracking-wide mb-3 transition-colors group-hover:text-slate-900 dark:group-hover:text-slate-100">
                             {message}
                           </p>
-                          
+
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                               {!isRead ? (
-                                <button 
+                                <button
                                   onClick={() => markAsRead(notification.id.toString())}
                                   className="text-[8px] font-black uppercase tracking-[0.2em] text-primary hover:opacity-70 transition-opacity"
                                 >
@@ -174,14 +174,14 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
                                   Read
                                 </span>
                               )}
-                              <button 
+                              <button
                                 onClick={() => remove(notification.id.toString())}
                                 className="text-[8px] font-black uppercase tracking-[0.2em] text-slate-300 hover:text-red-500 transition-colors"
                               >
                                 Archive
                               </button>
                             </div>
-                            
+
                             {notification.reference_id && (
                               <div className="flex items-center gap-1 text-primary">
                                 <span className="text-[8px] font-black uppercase tracking-widest">Detail</span>
@@ -198,7 +198,7 @@ export function NotificationCenter({ disabled = false, scope = "user" }: Notific
             ) : (
               <div className="p-20 flex flex-col items-center gap-5 text-center">
                 <div className="w-20 h-20 rounded-full bg-white dark:bg-slate-900 flex items-center justify-center text-slate-200 shadow-sm">
-                  <Bell size={32} className="opacity-20" />
+                  <Bell size={36} className="opacity-20" />
                 </div>
                 <div>
                   <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-slate-900 dark:text-white mb-2">Inbox Empty</h4>

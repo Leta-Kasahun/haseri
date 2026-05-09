@@ -5,6 +5,7 @@ import { Menu, Search } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { UserMenu } from "@/src/features/shared/components/UserMenu";
 import { NotificationCenter } from "@/src/features/notifications";
+import { ChatCenter } from "@/src/features/chat";
 
 interface CustomerHeaderProps {
   toggleMobileSidebar: () => void;
@@ -35,6 +36,7 @@ export function CustomerHeader({ toggleMobileSidebar }: CustomerHeaderProps) {
       </div>
 
       <div className="flex items-center gap-3 md:gap-4 ml-4 shrink-0">
+        <ChatCenter />
         <NotificationCenter scope="user" />
         
         <div className="md:hidden">

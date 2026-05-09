@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/src/hooks/useAuth";
 import { UserMenu } from "@/src/features/shared/components";
 import { NotificationCenter } from "@/src/features/notifications";
+import { ChatCenter } from "@/src/features/chat";
 
 export const Navbar = () => {
   const { isAuthenticated } = useAuth();
@@ -78,6 +79,7 @@ export const Navbar = () => {
 
           {isAuthenticated ? (
             <div className="flex items-center gap-4">
+              <ChatCenter />
               <NotificationCenter scope="user" />
               <UserMenu />
             </div>

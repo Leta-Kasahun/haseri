@@ -11,9 +11,12 @@ import { format } from "date-fns";
 import { ReviewModal } from "@/src/features/reviews/components";
 import { JobApplyModal } from "@/src/features/jobs/components";
 import { toast } from "react-hot-toast";
+import { ChatDialog } from "@/src/features/chat";
+import { MessageSquare } from "lucide-react";
 
 export function TechnicianApplicationsTable() {
   const { applications, loading, fetchMyApplications, withdrawApplication } = useTechnicianApplications();
+  const [selectedApp, setSelectedApp] = React.useState<any>(null);
 
   useEffect(() => {
     fetchMyApplications();
@@ -122,6 +125,15 @@ export function TechnicianApplicationsTable() {
                           }
                         />
                       )}
+                      <Button 
+                        variant="ghost" 
+                        size="icon" 
+                        className="h-8 w-8 rounded-none border border-primary/20 bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all group" 
+                        title="Chat with Customer"
+                        onClick={() => setSelectedApp(app)}
+                      >
+                        <MessageSquare className="w-3.5 h-3.5" />
+                      </Button>
                       <JobApplyModal
                         application={app}
                         isEdit={true}
@@ -161,6 +173,13 @@ export function TechnicianApplicationsTable() {
           </TableBody>
         </Table>
       </div>
+
+      <ChatDialog 
+        isOpen={!!selectedApp} 
+        onClose={() => setSelectedApp(null)} 
+        jobId={selectedApp?.job_id} 
+        otherUser={selectedApp?.job?.customer} 
+      />
     </div>
   );
 }

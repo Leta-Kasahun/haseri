@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { UserMenu } from "./UserMenu";
 import { NotificationCenter } from "@/src/features/notifications";
+import { ChatCenter } from "@/src/features/chat";
 import { useUiStore } from "@/src/hooks/useUiStore";
 import {
   Bell,
@@ -69,6 +70,7 @@ export const SharedTopNav = () => {
                 <Search className="w-5 h-5" />
               </Button>
               
+              <ChatCenter />
               <NotificationCenter scope="user" />
               <div className="hidden sm:block h-5 w-px bg-slate-100 dark:bg-slate-800" />
               <UserMenu />

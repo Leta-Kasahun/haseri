@@ -15,6 +15,9 @@ import {
 } from "lucide-react";
 import { resolveAssetUrl } from "@/src/utils/resolve-asset-url";
 import { cn } from "@/src/lib/utils";
+import { ChatDialog } from "@/src/features/chat";
+import { Button } from "@/src/components/ui/button";
+import { MessageSquare } from "lucide-react";
 
 interface TechnicianDetailsModalProps {
   application: any;
@@ -23,6 +26,7 @@ interface TechnicianDetailsModalProps {
 }
 
 export function TechnicianDetailsModal({ application, isOpen, onClose }: TechnicianDetailsModalProps) {
+  const [chatOpen, setChatOpen] = React.useState(false);
   if (!application) return null;
 
   const provider = application.provider;
@@ -111,8 +115,25 @@ export function TechnicianDetailsModal({ application, isOpen, onClose }: Technic
               </div>
             </div>
           </div>
+
+          <div className="pt-6 border-t-2 border-slate-100">
+            <Button 
+              onClick={() => setChatOpen(true)}
+              className="w-full h-14 bg-slate-900 text-white hover:bg-rose-600 rounded-none font-black uppercase tracking-widest text-[11px] shadow-xl transition-all"
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Chat with Technician
+            </Button>
+          </div>
         </div>
       </DialogContent>
+
+      <ChatDialog 
+        isOpen={chatOpen} 
+        onClose={() => setChatOpen(false)} 
+        jobId={application.job_id} 
+        otherUser={provider} 
+      />
     </Dialog>
   );
 }

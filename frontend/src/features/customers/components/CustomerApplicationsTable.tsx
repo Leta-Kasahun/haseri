@@ -11,12 +11,15 @@ import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 import { resolveAssetUrl } from "@/src/utils/resolve-asset-url";
 import { TechnicianDetailsModal } from "./TechnicianDetailsModal";
+import { ChatDialog } from "@/src/features/chat";
+import { MessageSquare } from "lucide-react";
 
 export function CustomerApplicationsTable() {
   const { jobs, getMyJobs } = useJobs();
   const { applications, getApplications, accept, reject, loading } = useJobApplications();
   const [selectedJobId, setSelectedJobId] = useState<string>("");
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [chatApp, setChatApp] = useState<any>(null);
 
   useEffect(() => {
     getMyJobs();
@@ -147,6 +150,15 @@ export function CustomerApplicationsTable() {
                         >
                           <Eye className="w-4 h-4 text-slate-400 group-hover:text-slate-900" />
                         </Button>
+                        <Button 
+                          onClick={() => setChatApp(app)}
+                          variant="ghost" 
+                          size="icon" 
+                          className="h-9 w-9 rounded-none border border-primary/20 bg-primary/5 text-primary hover:bg-primary hover:text-white transition-all group" 
+                          title="Chat with Technician"
+                        >
+                          <MessageSquare className="w-4 h-4" />
+                        </Button>
                         <Button
                           onClick={() => accept(String(app.id))}
                           disabled={app.status !== "pending"}
@@ -175,6 +187,13 @@ export function CustomerApplicationsTable() {
         application={selectedApplication}
         isOpen={!!selectedApplication}
         onClose={() => setSelectedApplication(null)}
+      />
+
+      <ChatDialog 
+        isOpen={!!chatApp} 
+        onClose={() => setChatApp(null)} 
+        jobId={chatApp?.job_id} 
+        otherUser={chatApp?.provider} 
       />
     </div>
   );

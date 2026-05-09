@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Menu, Search, X } from "lucide-react";
 import { AdminUserMenu } from "./AdminUserMenu";
 import { NotificationCenter } from "@/src/features/notifications";
+import { ChatCenter } from "@/src/features/chat";
 import { useUiStore } from "@/src/hooks/useUiStore";
 import { Button } from "@/src/components/ui/button";
 
@@ -51,6 +52,7 @@ export function AdminHeader() {
               <Button variant="ghost" size="icon" className="sm:hidden text-slate-500">
                 <Search className="w-5 h-5" />
               </Button>
+              <ChatCenter />
               <NotificationCenter scope="admin" />
               <div className="hidden sm:block h-5 w-px bg-slate-100 dark:bg-slate-800" />
               <AdminUserMenu side="bottom" align="end" />

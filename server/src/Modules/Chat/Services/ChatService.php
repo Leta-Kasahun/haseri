@@ -47,10 +47,21 @@ class ChatService
     {
         return Message::where('sender_id', $userId)
             ->orWhere('receiver_id', $userId)
-            ->with(['job', 'sender', 'receiver'])
+            ->with(['job.customer', 'job.category', 'sender', 'receiver'])
             ->orderBy('created_at', 'desc')
             ->get()
-            ->groupBy('job_id');
+            ->groupBy('job_id')
+            ->map(function ($messages) use ($userId) {
+                $lastMessage = $messages->first();
+                $otherUser = $lastMessage->sender_id == $userId ? $lastMessage->receiver : $lastMessage->sender;
+                return [
+                    'job_id' => (int)$lastMessage->job_id,
+                    'last_message' => $lastMessage,
+                    'other_user' => $otherUser,
+                    'unread_count' => $messages->where('receiver_id', $userId)->where('is_read', false)->count(),
+                ];
+            })
+            ->values();
     }
 
     public function markAsRead($userId, $jobId)
