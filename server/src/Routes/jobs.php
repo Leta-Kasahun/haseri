@@ -39,6 +39,18 @@ try {
         exit;
     }
 
+    if ($uri === '/api/jobs/payment' && $method === 'POST') {
+        $user = AuthMiddleware::handle();
+        (new JobController())->initiatePayment($user);
+        exit;
+    }
+
+    if ($uri === '/api/jobs/payment/confirm' && $method === 'POST') {
+        $user = AuthMiddleware::handle();
+        (new JobController())->confirmPayment($user);
+        exit;
+    }
+
     if ($uri === '/api/jobs/mine' && $method === 'GET') {
         $user = AuthMiddleware::handle();
         (new JobController())->myJobs($user);

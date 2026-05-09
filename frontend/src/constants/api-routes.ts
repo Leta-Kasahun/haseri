@@ -39,6 +39,8 @@ export const API_ROUTES = {
     CANCEL: (id: string) => `/jobs/${id}/cancel`,
     APPLY: (id: string) => `/jobs/${id}/apply`,
     APPLICATIONS: (id: string) => `/jobs/${id}/applications`,
+    PAY: "/jobs/payment",
+    PAY_CONFIRM: "/jobs/payment/confirm",
   },
   APPLICATIONS: {
     MINE: "/applications/mine",

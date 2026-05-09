@@ -81,6 +81,104 @@ class JobService
         return $job;
     }
 
+    public function initiatePayment($userId, array $data)
+    {
+        $user = \Haseri\Backend\Shared\Models\User::find($userId);
+        
+        if (!empty($data['city'])) {
+            $address = Address::updateOrCreate(
+                ['user_id' => $userId, 'is_primary' => true],
+                [
+                    'city' => $data['city'],
+                    'sub_city' => $data['sub_city'] ?? null,
+                    'woreda' => $data['woreda'] ?? null,
+                    'kebele' => $data['kebele'] ?? null,
+                    'specific_location' => $data['specific_location'] ?? null,
+                ]
+            );
+            $addressId = $address->id;
+        } else {
+            $primary = Address::where('user_id', $userId)->where('is_primary', true)->first();
+            $addressId = $primary ? $primary->id : null;
+        }
+
+        $job = Job::create([
+            'customer_id' => $userId,
+            'category_id' => $data['category_id'],
+            'address_id' => $addressId,
+            'title' => $data['title'],
+            'description' => $data['description'] ?? '',
+            'price' => $data['price'],
+            'commission' => $data['price'] * 0.15,
+            'status' => 'pending_payment',
+        ]);
+
+        $txRef = 'job-pay-' . $job->id . '-' . uniqid();
+        $returnUrl = env('FRONTEND_URL', 'http://localhost:3000') . '/customer/jobs/payment/success?job_id=' . $job->id;
+
+        return $this->paymentService->initiate([
+            'user_id' => $userId,
+            'amount' => 50,
+            'currency' => 'ETB',
+            'email' => $user->email,
+            'first_name' => $user->first_name,
+            'last_name' => $user->last_name,
+            'payment_type' => 'job_posting',
+            'title' => 'Job Posting Fee',
+            'description' => 'Payment for posting a new job: ' . $job->title,
+            'tx_ref' => $txRef,
+            'return_url' => $returnUrl,
+        ]);
+    }
+
+    public function confirmPayment($userId, $txRef = null, $jobId = null)
+    {
+        // If we have a txRef, verify it with Chapa
+        if ($txRef) {
+            $verificationResult = $this->paymentService->verify($txRef);
+            if (!isset($verificationResult['status']) || $verificationResult['status'] !== 'success') {
+                throw new \Haseri\Backend\Shared\Exceptions\ValidationException(['tx_ref' => 'Payment verification failed with Chapa']);
+            }
+            
+            if (!$jobId) {
+                preg_match('/job-pay-(\d+)/', $txRef, $matches);
+                $jobId = $matches[1] ?? null;
+            }
+        }
+
+        if (!$jobId) {
+            throw new \Haseri\Backend\Shared\Exceptions\ValidationException(['tx_ref' => 'Job ID could not be identified']);
+        }
+
+        $job = Job::where('id', (int)$jobId)->where('customer_id', (int)$userId)->first();
+        if (!$job) {
+            throw new \Haseri\Backend\Shared\Exceptions\NotFoundException('Job not found or unauthorized');
+        }
+
+        if ($job->status === 'open') {
+            return ['verified' => true, 'job' => $job];
+        }
+
+        $job->update(['status' => 'open']);
+
+        Notification::create([
+            'user_id' => $userId,
+            'title' => 'Job Posted',
+            'message' => 'Your payment was successful and job "' . $job->title . '" has been posted.',
+            'type' => NotificationType::PAYMENT_SUCCESS,
+            'reference_id' => $job->id,
+        ]);
+
+        AdminNotifier::notifyAll(
+            'New Job Posted (Paid)',
+            'A new job "' . $job->title . '" has been posted after payment.',
+            'job_posted',
+            $job->id
+        );
+
+        return ['verified' => true, 'job' => $job];
+    }
+
     public function getAll(array $filters = [])
     {
         return $this->repository->filter($filters);

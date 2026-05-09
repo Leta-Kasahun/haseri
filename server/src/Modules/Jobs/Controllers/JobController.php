@@ -44,6 +44,36 @@ class JobController
         }
     }
 
+    public function initiatePayment($user)
+    {
+        try {
+            $request = new CreateJobRequest();
+            $data = $request->validate();
+            $result = $this->service->initiatePayment($user->id, $data);
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode(), $e->getErrors() ?? null);
+        }
+    }
+
+    public function confirmPayment($user)
+    {
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+            $txRef = $data['tx_ref'] ?? null;
+            $jobId = $data['job_id'] ?? null;
+            
+            if (!$txRef && !$jobId) {
+                throw new \Haseri\Backend\Shared\Exceptions\ValidationException(['tx_ref' => 'Transaction reference or Job ID is required']);
+            }
+            
+            $result = $this->service->confirmPayment($user->id, $txRef, $jobId);
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
+
     public function myJobs($user)
     {
         $result = $this->service->getByCustomer($user->id);
