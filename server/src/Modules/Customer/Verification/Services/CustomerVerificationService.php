@@ -46,6 +46,15 @@ class CustomerVerificationService
             ['status' => 'verified', 'verified_at' => now()]
         );
 
+        \Haseri\Backend\Shared\Models\Payment::create([
+            'user_id' => $userId,
+            'payment_type' => 'customer_verification',
+            'related_id' => $verification->id,
+            'amount' => 50,
+            'status' => 'paid',
+            'created_at' => \Carbon\Carbon::now(),
+        ]);
+
         Notification::create([
             'user_id' => $userId,
             'title' => 'Verification Completed',

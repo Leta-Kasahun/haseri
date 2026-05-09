@@ -11,6 +11,7 @@ class DashboardService
 {
     public function stats()
     {
+        // (new \Haseri\Backend\Shared\Services\AnalyticsService())->adminStats(); // This triggers sync
         return [
             'users' => User::where('role', 'customer')->count(),
             'technicians' => User::where('role', 'provider')->count(),

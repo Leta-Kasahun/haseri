@@ -161,6 +161,16 @@ class JobService
 
         $job->update(['status' => 'open']);
 
+        \Haseri\Backend\Shared\Models\Payment::create([
+            'user_id' => $userId,
+            'payment_type' => 'job_posting',
+            'related_id' => $job->id,
+            'amount' => 50,
+            'chapa_tx_ref' => $txRef,
+            'status' => 'paid',
+            'created_at' => \Carbon\Carbon::now(),
+        ]);
+
         Notification::create([
             'user_id' => $userId,
             'title' => 'Job Posted',

@@ -158,17 +158,17 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
       // with .errors and .status properties
       const errors = err.errors || {};
       const errorMsg = String(err.message || "").toLowerCase();
-      
-      const isLimitReached = errors.limit_reached || 
-                             errors.payment_required || 
-                             errors.verification_required ||
-                             errorMsg.includes("limit") || 
-                             errorMsg.includes("trial") ||
-                             errorMsg.includes("pay") ||
-                             errorMsg.includes("verification") ||
-                             errorMsg.includes("maximum") ||
-                             err.status === 402 || 
-                             err.status === 403;
+
+      const isLimitReached = errors.limit_reached ||
+        errors.payment_required ||
+        errors.verification_required ||
+        errorMsg.includes("limit") ||
+        errorMsg.includes("trial") ||
+        errorMsg.includes("pay") ||
+        errorMsg.includes("verification") ||
+        errorMsg.includes("maximum") ||
+        err.status === 402 ||
+        err.status === 403;
 
       if (isLimitReached) {
         setPendingJobData({
@@ -202,7 +202,7 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
             </Button>
           )}
         </DialogTrigger>
-        <DialogContent className="max-w-2xl bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)] max-h-[92vh] flex flex-col">
+        <DialogContent className="max-w-[740px] w-[95vw] md:w-full bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)] max-h-[92vh] flex flex-col">
           <div className="bg-slate-900 p-5 md:p-6 text-white relative shrink-0">
             <DialogHeader>
               <DialogTitle className="text-xl md:text-2xl font-black uppercase tracking-tighter italic leading-none">

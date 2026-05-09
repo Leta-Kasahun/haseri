@@ -17,25 +17,28 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { useJobs } from "@/src/features/jobs/hooks";
 import { PostJobModal } from "@/src/features/jobs/components";
 import { formatDate } from "@/src/utils/date-utils";
+import { customersApi } from "@/src/features/customers/services/customers.api";
 import { cn } from "@/src/lib/utils";
 import { motion } from "framer-motion";
 
 export function CustomerDashboardOverview() {
   const { user } = useAuth();
   const { jobs, loading: jobsLoading, getMyJobs } = useJobs();
+  const [customerStats, setCustomerStats] = React.useState<any>(null);
 
   useEffect(() => {
     getMyJobs();
+    customersApi.getStats().then(res => setCustomerStats(res.data.data)).catch(console.error);
   }, [getMyJobs]);
 
   const activeJobs = jobs.filter(j => j.status === "open").length;
   const completedJobs = jobs.filter(j => j.status === "completed").length;
 
   const stats = [
-    { label: "Posted Jobs", value: jobs.length, icon: <Briefcase className="w-4 h-4" /> },
+    { label: "Posted Jobs", value: customerStats?.jobs_posted ?? jobs.length, icon: <Briefcase className="w-4 h-4" /> },
     { label: "Active Jobs", value: activeJobs, icon: <Clock className="w-4 h-4 text-amber-500" /> },
-    { label: "Completed", value: completedJobs, icon: <CheckCircle2 className="w-4 h-4 text-green-500" /> },
-    { label: "Total Spent", value: "ETB 12.5k", icon: <Users className="w-4 h-4 text-primary" /> },
+    { label: "Completed", value: customerStats?.jobs_completed ?? completedJobs, icon: <CheckCircle2 className="w-4 h-4 text-green-500" /> },
+    { label: "Total Spent", value: customerStats?.total_spent ? `ETB ${Number(customerStats.total_spent).toLocaleString()}` : "ETB 0", icon: <Users className="w-4 h-4 text-primary" /> },
   ];
 
   return (

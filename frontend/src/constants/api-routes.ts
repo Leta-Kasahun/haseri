@@ -21,6 +21,7 @@ export const API_ROUTES = {
     VERIFY: "/customer/verify",
     VERIFY_CONFIRM: "/customer/verify/confirm",
     VERIFICATION_STATUS: "/customer/verification-status",
+    STATS: "/customer/stats",
   },
   TECHNICIAN: {
     PROFILE: "/technician/profile",

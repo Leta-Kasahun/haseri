@@ -28,6 +28,12 @@ try {
         exit;
     }
 
+    if ($uri === '/api/customer/stats' && $method === 'GET') {
+        $user = AuthMiddleware::handle();
+        (new CustomerProfileController())->stats($user);
+        exit;
+    }
+
     // Profile
     if ($uri === '/api/customer/profile' && $method === 'GET') {
         $user = AuthMiddleware::handle();

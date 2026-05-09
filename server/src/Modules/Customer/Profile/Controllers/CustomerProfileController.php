@@ -24,6 +24,17 @@ class CustomerProfileController
         }
     }
 
+    public function stats($user)
+    {
+        try {
+            $analyticsService = new \Haseri\Backend\Shared\Services\AnalyticsService();
+            $result = $analyticsService->userStats($user->id);
+            Response::success($result);
+        } catch (HttpException $e) {
+            Response::error($e->getMessage(), $e->getStatusCode());
+        }
+    }
+
     public function update($user)
     {
         try {

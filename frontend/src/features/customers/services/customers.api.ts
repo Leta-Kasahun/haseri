@@ -8,6 +8,9 @@ export const customersApi = {
       API_ROUTES.CUSTOMER.VERIFICATION_STATUS
     ),
 
+  getStats: () =>
+    clientApi.get<{ success: boolean; data: any }>(API_ROUTES.CUSTOMER.STATS),
+
   initiateVerification: () =>
     clientApi.post<{ success: boolean; data: CustomerVerificationResponse }>(
       API_ROUTES.CUSTOMER.VERIFY
