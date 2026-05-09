@@ -16,7 +16,12 @@ export default function VerificationSuccessPage() {
   
   const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
 
+  const hasAttempted = React.useRef(false);
+
   useEffect(() => {
+    if (hasAttempted.current) return;
+    hasAttempted.current = true;
+
     const confirmPayment = async () => {
       try {
         const response = await confirm();
@@ -72,11 +77,11 @@ export default function VerificationSuccessPage() {
                 </p>
               </div>
               <Button 
-                onClick={() => router.push("/customer/profile")}
-                className="w-full h-14 bg-slate-900 hover:bg-slate-800 text-white font-black uppercase tracking-widest text-[10px] rounded-none mt-4"
+                onClick={() => router.push("/dashboard")}
+                variant="outline"
+                className="w-full h-14 font-black uppercase tracking-widest text-[10px] rounded-none mt-4"
               >
-                Return to Dashboard
-                <ArrowRight className="w-4 h-4 ml-2" />
+                Cancel
               </Button>
             </div>
           )}
