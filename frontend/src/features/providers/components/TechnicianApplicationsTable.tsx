@@ -13,8 +13,10 @@ import { JobApplyModal } from "@/src/features/jobs/components";
 import { toast } from "react-hot-toast";
 import { ChatDialog } from "@/src/features/chat";
 import { MessageSquare } from "lucide-react";
+import { useAuth } from "@/src/hooks/useAuth";
 
 export function TechnicianApplicationsTable() {
+  const { user } = useAuth();
   const { applications, loading, fetchMyApplications, withdrawApplication } = useTechnicianApplications();
   const [selectedApp, setSelectedApp] = React.useState<any>(null);
 
@@ -112,11 +114,11 @@ export function TechnicianApplicationsTable() {
                   </TableCell>
                   <TableCell className="text-right px-6">
                     <div className="flex items-center justify-end gap-2">
-                      {app.job?.status === "completed" && (
+                      {app.job?.status === "completed" && app.job?.technician_id === user?.id && (
                         <ReviewModal
                           jobId={app.job_id}
                           reviewedUserId={app.job.customer_id}
-                          reviewedUserName={app.job.customer?.first_name || "Customer"}
+                          reviewedUserName={app.job.customer?.name || app.job.customer?.first_name || "Customer"}
                           onSuccess={fetchMyApplications}
                           trigger={
                             <Button variant="ghost" size="icon" className="h-8 w-8 rounded-none border border-green-200 bg-green-50 text-green-600 hover:border-green-600 hover:bg-green-600 hover:text-white transition-all group" title="Review Customer">

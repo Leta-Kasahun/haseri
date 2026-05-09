@@ -20,9 +20,24 @@ class ReviewService
         $reviewed = \Haseri\Backend\Shared\Models\User::find($data['reviewed_user_id']);
         if (!$reviewed) throw new NotFoundException('User not found');
 
-        // Customer can only review technician
-        if ($reviewerId == $job->customer_id && $data['reviewed_user_id'] != $job->technician_id) {
-            throw new ConflictException('Customer can only review technician');
+        // Customer can only review technician if verified or has paid
+        if ($reviewerId == $job->customer_id) {
+            if ($data['reviewed_user_id'] != $job->technician_id) {
+                throw new ConflictException('Customer can only review technician');
+            }
+
+            // Check verification or payment
+            $isVerified = \Haseri\Backend\Shared\Models\CustomerVerification::where('user_id', $reviewerId)
+                ->where('status', 'verified')
+                ->exists();
+            
+            $hasPaid = \Haseri\Backend\Shared\Models\Payment::where('user_id', $reviewerId)
+                ->whereIn('status', ['success', 'paid'])
+                ->exists();
+
+            if (!$isVerified && !$hasPaid) {
+                throw new ConflictException('You must be verified or have a successful payment to leave a review');
+            }
         }
 
         // Technician can only review customer

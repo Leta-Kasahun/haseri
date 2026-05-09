@@ -121,7 +121,7 @@ export function CustomerJobsTable() {
                         <ReviewModal
                           jobId={job.id}
                           reviewedUserId={job.technician_id}
-                          reviewedUserName={job.technician?.first_name || "Technician"}
+                          reviewedUserName={job.technician?.name || job.technician?.first_name || "Technician"}
                           onSuccess={getMyJobs}
                           trigger={
                             <Button variant="ghost" size="icon" className="h-9 w-9 rounded-none border border-green-200 bg-green-50 text-green-600 hover:border-green-600 hover:bg-green-600 hover:text-white transition-all group" title="Review Technician">
