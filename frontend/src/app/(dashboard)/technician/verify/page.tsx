@@ -113,6 +113,8 @@ const TechnicianVerifyPage = () => {
   const isPending = status?.status === "pending";
   const isApproved = status?.status === "approved";
   const isRejected = status?.status === "rejected";
+  const isNotSubmitted = !status || status?.status === "not_submitted";
+
 
   if (isRefreshing) {
     return (
@@ -186,7 +188,7 @@ const TechnicianVerifyPage = () => {
                         {status?.status || "Processing"}
                       </span>
                     </div>
-                    {isRejected && (
+                    {(isRejected || isNotSubmitted) && (
                       <Button 
                         onClick={() => setShowReupload(true)}
                         className="w-full h-12 bg-slate-900 text-white hover:bg-primary rounded-none font-black uppercase tracking-widest text-[9px] transition-all"
@@ -194,6 +196,7 @@ const TechnicianVerifyPage = () => {
                         Re-Upload Documents
                       </Button>
                     )}
+
                 </div>
               </div>
 
@@ -219,8 +222,9 @@ const TechnicianVerifyPage = () => {
             </div>
           )}
 
-          {/* Re-upload Section */}
-          {showReupload && isRejected && (
+          {/* Re-upload / Submission Section */}
+          {(showReupload || isNotSubmitted) && (isRejected || isNotSubmitted) && (
+
             <div className="pt-10 border-t border-slate-100 dark:border-slate-800 space-y-8 animate-in fade-in slide-in-from-bottom-4">
               <div className="flex items-center justify-between">
                 <Heading level={3} className="text-[11px] font-black uppercase tracking-[0.3em] text-primary">New Document Submission</Heading>

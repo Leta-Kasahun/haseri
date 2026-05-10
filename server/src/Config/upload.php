@@ -1,6 +1,6 @@
 <?php
 return [
-    'max_size' => 5 * 1024 * 1024,
+    'max_size' => 10 * 1024 * 1024,
     'allowed_images' => ['jpg', 'jpeg', 'png'],
     'allowed_documents' => ['jpg', 'jpeg', 'png', 'pdf'],
     'paths' => [
