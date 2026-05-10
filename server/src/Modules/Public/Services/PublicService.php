@@ -97,9 +97,19 @@ class PublicService
             ->limit(5)
             ->get(['id', 'title']);
 
+        $technicians = User::where('role', 'provider')
+            ->where('is_active', true)
+            ->where(function($q) use ($query) {
+                $q->whereRaw('LOWER(first_name) LIKE ?', ["%{$query}%"])
+                  ->orWhereRaw('LOWER(last_name) LIKE ?', ["%{$query}%"]);
+            })
+            ->limit(5)
+            ->get(['id', 'first_name', 'last_name']);
+
         return [
             'categories' => $categories,
-            'jobs' => $jobs
+            'jobs' => $jobs,
+            'technicians' => $technicians
         ];
     }
 }

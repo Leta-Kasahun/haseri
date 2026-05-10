@@ -15,10 +15,12 @@ class JobRepository
         }
 
         if (!empty($filters['city'])) {
-            $query->whereHas('address', function ($q) use ($filters) {
-                $q->whereRaw('LOWER(city) = ?', [strtolower($filters['city'])]);
+            $city = strtolower($filters['city']);
+            $query->whereHas('address', function ($q) use ($city) {
+                $q->whereRaw('LOWER(city) LIKE ?', ["%{$city}%"]);
             });
         }
+
 
         if (!empty($filters['search'])) {
             $search = strtolower($filters['search']);

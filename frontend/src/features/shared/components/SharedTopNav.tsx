@@ -1,14 +1,13 @@
-"use client";
-
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { UserMenu } from "./UserMenu";
 import { NotificationCenter } from "@/src/features/notifications";
 import { ChatCenter } from "@/src/features/chat";
 import { useUiStore } from "@/src/hooks/useUiStore";
+import { useAuth } from "@/src/hooks/useAuth";
+import { GlobalSearch } from "./GlobalSearch";
 import {
-  Bell,
   Search,
   Menu,
   X
@@ -20,15 +19,16 @@ import { motion, AnimatePresence } from "framer-motion";
 export const SharedTopNav = () => {
   const pathname = usePathname();
   const { setSidebarOpen, sidebarOpen } = useUiStore();
+  const { user } = useAuth();
+  
+  const [showMobileSearch, setShowMobileSearch] = useState(false);
 
   return (
     <header className="sticky top-0 z-40 w-full bg-white/80 dark:bg-slate-950/80 backdrop-blur-md border-b border-slate-100 dark:border-slate-800 transition-colors">
       <div className="w-full px-4 sm:px-6 lg:px-10">
         <div className="flex items-center justify-between h-16 lg:h-20">
           
-          {/* Left Side: Hamburger & Mobile Branding */}
           <div className="flex items-center gap-4">
-            {/* Hamburger Button on the LEFT for Mobile */}
             <button 
               className="lg:hidden p-2 text-slate-900 dark:text-white bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-none transition-colors"
               onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -36,7 +36,6 @@ export const SharedTopNav = () => {
               {sidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
 
-            {/* Mobile Logo Section - Clean & Minimalist */}
             {!sidebarOpen && (
               <div className="flex lg:hidden items-center gap-2">
                 <Link href="/" className="flex items-center gap-2 group">
@@ -51,22 +50,18 @@ export const SharedTopNav = () => {
             )}
           </div>
 
-          {/* Centralized Search Bar (Desktop/Tablet) */}
           <div className="hidden sm:flex flex-1 max-w-[400px] mx-4 lg:mx-0 justify-center">
-            <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 text-slate-400 w-full rounded-xl focus-within:ring-2 focus-within:ring-primary/10 transition-all">
-              <Search className="w-4 h-4 text-slate-400" />
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-widest w-full text-slate-900 dark:text-white"
-              />
-            </div>
+            <GlobalSearch role={user?.role as any} className="w-full max-w-[400px]" />
           </div>
 
-          {/* Right Side: Professional Actions */}
           <div className="flex items-center gap-3 sm:gap-6">
             <div className="flex items-center gap-3 sm:gap-5">
-              <Button variant="ghost" size="icon" className="sm:hidden text-slate-500">
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="sm:hidden text-slate-500"
+                onClick={() => setShowMobileSearch(!showMobileSearch)}
+              >
                 <Search className="w-5 h-5" />
               </Button>
               
@@ -78,6 +73,19 @@ export const SharedTopNav = () => {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showMobileSearch && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="sm:hidden border-t border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-950 px-4 py-4"
+          >
+            <GlobalSearch role={user?.role as any} isMobile />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 };

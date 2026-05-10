@@ -37,13 +37,18 @@ export function TechnicianJobBrowser() {
   });
 
   useEffect(() => {
-    getJobs({
-      search: filters.search,
-      category_id: filters.category_id ? Number(filters.category_id) : undefined,
-      city: filters.city,
-      sort: filters.sort
-    });
+    const timer = setTimeout(() => {
+      getJobs({
+        search: filters.search,
+        category_id: filters.category_id ? Number(filters.category_id) : undefined,
+        city: filters.city,
+        sort: filters.sort
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [filters, getJobs]);
+
 
   useEffect(() => {
     const fetchCats = async () => {
