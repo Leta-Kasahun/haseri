@@ -16,4 +16,7 @@ export const publicApi = {
 
   getTechnician: (id: string) =>
     clientApi.get(API_ROUTES.PUBLIC.TECHNICIAN(id)),
+
+  getSearchSuggestions: (query: string) =>
+    clientApi.get(`${API_ROUTES.PUBLIC.SEARCH_SUGGESTIONS}?q=${query}`),
 };

@@ -3,7 +3,9 @@ namespace Haseri\Backend\Modules\Public\Services;
 
 use Haseri\Backend\Shared\Models\User;
 use Haseri\Backend\Shared\Models\Job;
+use Haseri\Backend\Shared\Models\JobCategory;
 use Haseri\Backend\Shared\Models\Review;
+
 
 class PublicService
 {
@@ -76,6 +78,28 @@ class PublicService
             'jobs_posted' => Job::count(),
             'jobs_completed' => Job::where('status', 'completed')->count(),
             'reviews' => Review::count(),
+        ];
+    }
+    public function searchSuggestions($query)
+    {
+        if (strlen($query) < 2) {
+            return ['categories' => [], 'jobs' => []];
+        }
+
+        $query = strtolower($query);
+
+        $categories = JobCategory::whereRaw('LOWER(name) LIKE ?', ["%{$query}%"])
+            ->limit(5)
+            ->get(['id', 'name']);
+
+        $jobs = Job::where('status', 'open')
+            ->whereRaw('LOWER(title) LIKE ?', ["%{$query}%"])
+            ->limit(5)
+            ->get(['id', 'title']);
+
+        return [
+            'categories' => $categories,
+            'jobs' => $jobs
         ];
     }
 }

@@ -60,4 +60,10 @@ class PublicController
 
         Response::success($tech);
     }
+    public function searchSuggestions()
+    {
+        $query = $_GET['q'] ?? '';
+        $result = $this->service->searchSuggestions($query);
+        Response::success($result);
+    }
 }

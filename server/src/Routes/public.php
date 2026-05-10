@@ -24,7 +24,13 @@ if ($uri === '/api/public/stats' && $method === 'GET') {
     exit;
 }
 
+if ($uri === '/api/public/search-suggestions' && $method === 'GET') {
+    (new PublicController())->searchSuggestions();
+    exit;
+}
+
 if (preg_match('/^\/api\/public\/technicians\/(\d+)$/', $uri, $m) && $method === 'GET') {
+
     (new PublicController())->technicianProfile($m[1]);
     exit;
 }

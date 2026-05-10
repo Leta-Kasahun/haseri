@@ -78,7 +78,9 @@ export const API_ROUTES = {
     HIGH_PRICE_JOBS: "/public/high-price-jobs",
     STATS: "/public/stats",
     TECHNICIAN: (id: string) => `/public/technicians/${id}`,
+    SEARCH_SUGGESTIONS: "/public/search-suggestions",
   },
+
   ADMIN: {
     DASHBOARD: "/admin/dashboard",
     USERS: "/admin/users",
