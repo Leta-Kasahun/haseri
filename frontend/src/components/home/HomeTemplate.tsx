@@ -1,18 +1,18 @@
 import React from "react";
 import { Navbar } from "@/src/components/layout/Navbar";
 import { Footer } from "@/src/components/layout/Footer";
-import { 
-  HeroSection, 
-  FeaturesSection,
-  CategoriesSection, 
-  HowItWorksSection,
-  StatsSection,
-  ExploreJobsSection,
-  TopProvidersSection,
-  TestimonialSection,
-  FaqSection,
-  CtaSection
-} from "./sections";
+import dynamic from "next/dynamic";
+
+const HeroSection = dynamic(() => import("./sections").then(m => m.HeroSection));
+const FeaturesSection = dynamic(() => import("./sections").then(m => m.FeaturesSection));
+const CategoriesSection = dynamic(() => import("./sections").then(m => m.CategoriesSection));
+const HowItWorksSection = dynamic(() => import("./sections").then(m => m.HowItWorksSection));
+const ExploreJobsSection = dynamic(() => import("./sections").then(m => m.ExploreJobsSection));
+const TopProvidersSection = dynamic(() => import("./sections").then(m => m.TopProvidersSection));
+const TestimonialSection = dynamic(() => import("./sections").then(m => m.TestimonialSection));
+const FaqSection = dynamic(() => import("./sections").then(m => m.FaqSection));
+const CtaSection = dynamic(() => import("./sections").then(m => m.CtaSection));
+
 
 
 export const HomeTemplate = () => {
@@ -24,7 +24,6 @@ export const HomeTemplate = () => {
         <FeaturesSection />
         <CategoriesSection />
         <HowItWorksSection />
-        <StatsSection />
         <ExploreJobsSection />
         <TopProvidersSection />
         <TestimonialSection />

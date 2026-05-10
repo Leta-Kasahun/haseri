@@ -2,7 +2,9 @@ export type JobCategory = {
   id: number;
   name: string;
   description: string | null;
+  jobs_count?: number;
 };
+
 
 export type Job = {
   id: number;

@@ -11,25 +11,41 @@ import { useAuth } from "@/src/hooks/useAuth";
 import { UserMenu } from "@/src/features/shared/components";
 import { NotificationCenter } from "@/src/features/notifications";
 import { ChatCenter } from "@/src/features/chat";
+import { jobsApi } from "@/src/features/jobs/services/jobs.api";
+import type { JobCategory } from "@/src/features/jobs/types";
+import { ChevronDown } from "lucide-react";
 
 export const Navbar = () => {
   const { isAuthenticated } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<JobCategory[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 20);
     };
     window.addEventListener("scroll", handleScroll);
+    
+    // Fetch real categories
+    const fetchCategories = async () => {
+      try {
+        const res = await jobsApi.getCategories();
+        setCategories(res.data?.data || res.data || []);
+      } catch (err) {
+        console.error("Failed to fetch categories for navbar", err);
+      }
+    };
+    fetchCategories();
+
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navLinks = [
-    { name: "Explore", href: "/jobs" },
-    { name: "Providers", href: "/providers" },
-    { name: "Categories", href: "/categories" },
-    { name: "How it Works", href: "/how-it-works" },
+    { name: "Technicians", href: "/providers" },
+    { name: "Categories", href: "/categories", hasDropdown: true },
+    { name: "How it Works", href: "/#how-it-works" },
     { name: "About", href: "/about" },
   ];
 
@@ -59,15 +75,63 @@ export const Navbar = () => {
         {/* Desktop Links */}
         <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
+            <div 
+              key={link.name} 
+              className="relative py-4"
+              onMouseEnter={() => link.hasDropdown && setShowDropdown(true)}
+              onMouseLeave={() => link.hasDropdown && setShowDropdown(false)}
             >
-              {link.name}
-            </Link>
+              <Link
+                href={link.href}
+                className={cn(
+                  "text-sm font-medium text-foreground/70 hover:text-primary transition-colors flex items-center gap-1",
+                  link.hasDropdown && showDropdown && "text-primary"
+                )}
+              >
+                {link.name}
+                {link.hasDropdown && <ChevronDown className={cn("w-4 h-4 transition-transform", showDropdown && "rotate-180")} />}
+              </Link>
+
+              {/* Categories Dropdown */}
+              {link.hasDropdown && (
+                <AnimatePresence>
+                  {showDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 w-64 bg-white dark:bg-slate-900 border-none shadow-2xl p-2 z-50"
+                    >
+                      <div className="flex flex-col">
+                        {categories.length > 0 ? (
+                          categories.map((cat) => (
+                            <Link
+                              key={cat.id}
+                              href={`/jobs?category_id=${cat.id}`}
+                              className="px-4 py-3 text-[11px] font-bold uppercase tracking-widest hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-b border-border/50 last:border-0"
+                            >
+                              {cat.name}
+                            </Link>
+                          ))
+                        ) : (
+                          <span className="px-4 py-3 text-[10px] text-muted-foreground uppercase font-bold italic">Loading...</span>
+                        )}
+                        <Link 
+                          href="/categories" 
+                          className="px-4 py-3 text-xs font-black uppercase tracking-widest text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors mt-1"
+                        >
+                          View All Categories
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
+            </div>
           ))}
         </div>
+
 
         {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-4">
@@ -111,18 +175,40 @@ export const Navbar = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.95 }}
-            className="absolute top-24 left-4 right-4 bg-white dark:bg-slate-950 rounded-none p-8 shadow-2xl border-2 border-foreground md:hidden"
+            className="absolute top-24 left-4 right-4 bg-white dark:bg-slate-950 rounded-none p-8 shadow-2xl border-2 border-foreground md:hidden overflow-y-auto max-h-[80vh]"
           >
             <div className="flex flex-col gap-6">
               {navLinks.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.href}
-                  className="text-2xl font-black uppercase tracking-tighter hover:text-primary transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.name}
-                </Link>
+                <div key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-2xl font-black uppercase tracking-tighter hover:text-primary transition-colors flex items-center justify-between"
+                    onClick={() => !link.hasDropdown && setMobileMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                  {link.hasDropdown && (
+                    <div className="mt-4 ml-4 flex flex-col gap-3 border-l-2 border-primary/20 pl-4">
+                      {categories.slice(0, 5).map(cat => (
+                        <Link 
+                          key={cat.id} 
+                          href={`/jobs?category_id=${cat.id}`}
+                          className="text-lg font-bold uppercase tracking-tight text-foreground/60 hover:text-primary"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {cat.name}
+                        </Link>
+                      ))}
+                      <Link 
+                        href="/categories" 
+                        className="text-sm font-black uppercase text-primary"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        More Categories +
+                      </Link>
+                    </div>
+                  )}
+                </div>
               ))}
               <div className="h-px bg-border my-2" />
               <div className="flex flex-col gap-4">
@@ -146,3 +232,4 @@ export const Navbar = () => {
     </div>
   );
 };
+

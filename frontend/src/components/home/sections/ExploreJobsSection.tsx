@@ -35,21 +35,21 @@ export const ExploreJobsSection = () => {
   return (
     <section className="py-24 bg-slate-50 dark:bg-slate-900">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-16">
+        <div className="mb-12">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-primary font-bold tracking-[0.2em] uppercase text-xs mb-4"
+            viewport={{ once: true }}
+            className="text-primary font-bold tracking-[0.3em] uppercase text-[10px] mb-3"
           >
             Latest Opportunities
           </motion.div>
-          <h2 className="text-5xl md:text-6xl font-black font-heading tracking-tighter uppercase leading-none mb-6 text-slate-900 dark:text-white">
+          <h2 className="text-3xl md:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-6 text-slate-900 dark:text-white">
             Explore <span className="text-primary">Recent</span> Jobs.
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto font-medium">
-            Find the perfect task that matches your skills. Apply, complete the work, and get paid securely.
-          </p>
+          <div className="h-1.5 w-16 bg-primary" />
         </div>
+
 
         <div className="flex flex-col gap-4 max-w-4xl mx-auto mb-12">
           {loading ? (
@@ -61,11 +61,13 @@ export const ExploreJobsSection = () => {
             jobs.slice(0, displayLimit).map((job, idx) => (
               <motion.div
                 key={job.id}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: idx * 0.1 }}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
                 className="group bg-white dark:bg-slate-950 border border-border hover:border-primary p-6 transition-all duration-300 flex flex-col md:flex-row md:items-center justify-between gap-6"
               >
+
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-[10px] font-black uppercase tracking-widest text-primary bg-primary/10 px-2 py-1">

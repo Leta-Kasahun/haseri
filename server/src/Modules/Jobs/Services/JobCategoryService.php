@@ -8,8 +8,14 @@ class JobCategoryService
 {
     public function all()
     {
-        return JobCategory::where('is_active', true)->orderBy('name')->get();
+        return JobCategory::where('is_active', true)
+            ->withCount(['jobs' => function($query) {
+                $query->where('status', 'open');
+            }])
+            ->orderBy('name')
+            ->get();
     }
+
 
     public function create(array $data)
     {

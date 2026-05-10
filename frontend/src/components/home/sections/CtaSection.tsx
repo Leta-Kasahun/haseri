@@ -29,7 +29,7 @@ export const CtaSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <h2 className="text-5xl md:text-7xl font-black font-heading tracking-tighter uppercase text-white mb-6">
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black font-heading tracking-tighter uppercase text-white mb-6 md:whitespace-nowrap">
               Ready to Fix Your Problem?
             </h2>
             <p className="text-xl text-white/80 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">

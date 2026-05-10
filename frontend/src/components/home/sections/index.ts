@@ -2,7 +2,6 @@ export * from './HeroSection';
 export * from './FeaturesSection';
 export * from './CategoriesSection';
 export * from './HowItWorksSection';
-export * from './StatsSection';
 export * from './ExploreJobsSection';
 export * from './TopProvidersSection';
 export * from './TestimonialSection';

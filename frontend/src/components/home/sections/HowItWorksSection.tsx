@@ -24,26 +24,25 @@ const steps = [
 
 export const HowItWorksSection = () => {
   return (
-    <section className="py-24 bg-slate-50 dark:bg-slate-900 overflow-hidden">
+    <section id="how-it-works" className="py-24 bg-slate-50 dark:bg-slate-900 overflow-hidden">
       <div className="container mx-auto px-6">
-        <div className="text-center mb-20">
+        <div className="mb-16">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
-            className="text-primary font-bold tracking-[0.3em] uppercase text-xs mb-4"
+            viewport={{ once: true }}
+            className="text-primary font-bold tracking-[0.3em] uppercase text-[10px] mb-3"
           >
             Simple Process
           </motion.div>
-          <h2 className="text-5xl md:text-6xl font-black font-heading tracking-tighter uppercase mb-6">
+          <h2 className="text-3xl md:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-6">
             How <span className="text-primary">Haseri</span> Works.
           </h2>
-          <p className="text-muted-foreground max-w-xl mx-auto font-medium">
-            Experience a seamless connection between Ethiopian talent and global standards. 
-            Three steps to get your task done.
-          </p>
+          <div className="h-1.5 w-16 bg-primary" />
         </div>
 
-        <div className="grid md:grid-cols-3 gap-12 relative">
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16 relative">
           {/* Connecting Line (Desktop) */}
           <div className="hidden md:block absolute top-1/2 left-0 w-full h-[1px] bg-border -translate-y-1/2 z-0" />
 
@@ -52,22 +51,25 @@ export const HowItWorksSection = () => {
               key={step.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-50px" }}
               transition={{ delay: idx * 0.2 }}
               className="relative z-10 flex flex-col items-center text-center group"
             >
-              <div className="w-20 h-20 bg-white dark:bg-slate-950 border-2 border-border group-hover:border-primary flex items-center justify-center mb-8 transition-all duration-500 transform group-hover:rotate-12">
-                <step.icon className="w-8 h-8 text-primary" />
-                <div className="absolute -top-3 -right-3 w-8 h-8 bg-foreground text-background flex items-center justify-center font-black text-xs">
+
+              <div className="w-16 h-16 md:w-20 md:h-20 bg-white dark:bg-slate-950 border-2 border-border group-hover:border-primary flex items-center justify-center mb-6 md:mb-8 transition-all duration-500 transform group-hover:rotate-12">
+                <step.icon className="w-6 h-6 md:w-8 md:h-8 text-primary" />
+                <div className="absolute -top-2 -right-2 md:-top-3 md:-right-3 w-6 h-6 md:w-8 md:h-8 bg-foreground text-background flex items-center justify-center font-black text-[10px] md:text-xs">
                   0{idx + 1}
                 </div>
               </div>
-              <h3 className="text-xl font-black uppercase tracking-tight mb-4">{step.title}</h3>
+              <h3 className="text-lg md:text-xl font-black uppercase tracking-tight mb-3 md:mb-4">{step.title}</h3>
               <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
                 {step.desc}
               </p>
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );
