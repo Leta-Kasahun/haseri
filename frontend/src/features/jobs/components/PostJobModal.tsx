@@ -184,7 +184,10 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
         setOpen(false);
         setPaymentModalOpen(true);
       } else {
-        toast.error(errorData?.error || errorData?.message || "Something went wrong. Please try again.");
+        const fallbackMessage = "Something went wrong. Please try again.";
+        const serverError = err?.errors?.error || err?.errors?.message;
+        const message = serverError || err?.message || fallbackMessage;
+        toast.error(message);
       }
     } finally {
       setLoading(false);
@@ -264,6 +267,7 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
                 <div className="relative">
                   <Input
                     id="price"
+                    type="number"
                     min="0"
                     step="0.01"
                     className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 font-bold text-xs h-12 px-4 bg-slate-50/50"

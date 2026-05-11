@@ -1,19 +1,15 @@
+# Haseri Frontend
 
-## Getting Started
+## Overview
+Haseri Frontend is a Next.js (App Router) web client for the Haseri marketplace platform. It delivers public marketing pages, role-based dashboards (customer, provider, admin), and real-time experiences such as chat and notifications.
 
-First, run the development server:
-
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Architecture Snapshot
+- **App Router**: Routes and layouts live under `src/app`, with grouped routes for `auth`, `public`, and `dashboard`.
+- **Feature-first modules**: Core business logic is organized under `src/features` (services, hooks, components, and types per domain).
+- **Shared UI system**: Reusable UI building blocks live in `src/ui` (atomic design) and `src/components`.
+- **State & data**: Global state uses Zustand in `src/stores`; server state uses TanStack Query in `src/lib/query`.
+- **Integrations**: Axios client in `src/lib/api`, Pusher in `src/lib/pusher` for real-time updates.
+- **Utilities & config**: Pure helpers in `src/utils`, environment validation in `src/config/env.ts`.
 
 ```bash
 haseri_frontend/                        # Root directory
