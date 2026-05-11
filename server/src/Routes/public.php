@@ -24,6 +24,16 @@ if ($uri === '/api/public/stats' && $method === 'GET') {
     exit;
 }
 
+if ($uri === '/api/public/skills' && $method === 'GET') {
+    (new PublicController())->skills();
+    exit;
+}
+
+if ($uri === '/api/public/technicians' && $method === 'GET') {
+    (new PublicController())->technicians();
+    exit;
+}
+
 if ($uri === '/api/public/search-suggestions' && $method === 'GET') {
     (new PublicController())->searchSuggestions();
     exit;

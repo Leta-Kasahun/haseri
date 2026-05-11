@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { cn } from "@/src/lib/utils";
 import { Button } from "@/src/components/ui/button";
-import { Menu, X, Search, Bell } from "lucide-react";
+import { Menu, X, Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@/src/hooks/useAuth";
@@ -12,6 +12,7 @@ import { UserMenu } from "@/src/features/shared/components";
 import { NotificationCenter } from "@/src/features/notifications";
 import { ChatCenter } from "@/src/features/chat";
 import { jobsApi } from "@/src/features/jobs/services/jobs.api";
+import { usePublicSkills } from "@/src/features/public/hooks";
 import type { JobCategory } from "@/src/features/jobs/types";
 import { ChevronDown } from "lucide-react";
 
@@ -20,7 +21,9 @@ export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categories, setCategories] = useState<JobCategory[]>([]);
-  const [showDropdown, setShowDropdown] = useState(false);
+  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
+  const [showSkillsDropdown, setShowSkillsDropdown] = useState(false);
+  const { skills, loading: skillsLoading } = usePublicSkills();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,8 +46,8 @@ export const Navbar = () => {
   }, []);
 
   const navLinks = [
-    { name: "Technicians", href: "/providers" },
-    { name: "Categories", href: "/categories", hasDropdown: true },
+    { name: "Technicians", href: "/providers", dropdown: "skills" },
+    { name: "Categories", href: "/categories", dropdown: "categories" },
     { name: "How it Works", href: "/#how-it-works" },
     { name: "About", href: "/about" },
   ];
@@ -78,24 +81,38 @@ export const Navbar = () => {
             <div 
               key={link.name} 
               className="relative py-4"
-              onMouseEnter={() => link.hasDropdown && setShowDropdown(true)}
-              onMouseLeave={() => link.hasDropdown && setShowDropdown(false)}
+              onMouseEnter={() => {
+                if (link.dropdown === "categories") setShowCategoryDropdown(true);
+                if (link.dropdown === "skills") setShowSkillsDropdown(true);
+              }}
+              onMouseLeave={() => {
+                if (link.dropdown === "categories") setShowCategoryDropdown(false);
+                if (link.dropdown === "skills") setShowSkillsDropdown(false);
+              }}
             >
               <Link
                 href={link.href}
                 className={cn(
                   "text-sm font-medium text-foreground/70 hover:text-primary transition-colors flex items-center gap-1",
-                  link.hasDropdown && showDropdown && "text-primary"
+                  link.dropdown === "categories" && showCategoryDropdown && "text-primary",
+                  link.dropdown === "skills" && showSkillsDropdown && "text-primary"
                 )}
               >
                 {link.name}
-                {link.hasDropdown && <ChevronDown className={cn("w-4 h-4 transition-transform", showDropdown && "rotate-180")} />}
+                {link.dropdown ? (
+                  <ChevronDown
+                    className={cn(
+                      "w-4 h-4 transition-transform",
+                      link.dropdown === "categories" && showCategoryDropdown && "rotate-180",
+                      link.dropdown === "skills" && showSkillsDropdown && "rotate-180"
+                    )}
+                  />
+                ) : null}
               </Link>
 
-              {/* Categories Dropdown */}
-              {link.hasDropdown && (
+              {link.dropdown === "categories" && (
                 <AnimatePresence>
-                  {showDropdown && (
+                  {showCategoryDropdown && (
                     <motion.div
                       initial={{ opacity: 0, y: 10, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -122,6 +139,44 @@ export const Navbar = () => {
                           className="px-4 py-3 text-xs font-black uppercase tracking-widest text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors mt-1"
                         >
                           View All Categories
+                        </Link>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              )}
+
+              {link.dropdown === "skills" && (
+                <AnimatePresence>
+                  {showSkillsDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 w-64 bg-white dark:bg-slate-900 border-none shadow-2xl p-2 z-50"
+                    >
+                      <div className="flex flex-col">
+                        {skills.length > 0 ? (
+                          skills.map((skill) => (
+                            <Link
+                              key={skill}
+                              href={`/providers?skill=${encodeURIComponent(skill)}`}
+                              className="px-4 py-3 text-[11px] font-bold uppercase tracking-widest hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors border-b border-border/50 last:border-0"
+                            >
+                              {skill}
+                            </Link>
+                          ))
+                        ) : (
+                          <span className="px-4 py-3 text-[10px] text-muted-foreground uppercase font-bold italic">
+                            {skillsLoading ? "Loading..." : "No skills yet"}
+                          </span>
+                        )}
+                        <Link
+                          href="/providers"
+                          className="px-4 py-3 text-xs font-black uppercase tracking-widest text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors mt-1"
+                        >
+                          View All Technicians
                         </Link>
                       </div>
                     </motion.div>
@@ -183,11 +238,11 @@ export const Navbar = () => {
                   <Link
                     href={link.href}
                     className="text-2xl font-black uppercase tracking-tighter hover:text-primary transition-colors flex items-center justify-between"
-                    onClick={() => !link.hasDropdown && setMobileMenuOpen(false)}
+                    onClick={() => !link.dropdown && setMobileMenuOpen(false)}
                   >
                     {link.name}
                   </Link>
-                  {link.hasDropdown && (
+                  {link.dropdown === "categories" && (
                     <div className="mt-4 ml-4 flex flex-col gap-3 border-l-2 border-primary/20 pl-4">
                       {categories.slice(0, 5).map(cat => (
                         <Link 
@@ -205,6 +260,27 @@ export const Navbar = () => {
                         onClick={() => setMobileMenuOpen(false)}
                       >
                         More Categories +
+                      </Link>
+                    </div>
+                  )}
+                  {link.dropdown === "skills" && (
+                    <div className="mt-4 ml-4 flex flex-col gap-3 border-l-2 border-primary/20 pl-4">
+                      {skills.slice(0, 5).map((skill) => (
+                        <Link
+                          key={skill}
+                          href={`/providers?skill=${encodeURIComponent(skill)}`}
+                          className="text-lg font-bold uppercase tracking-tight text-foreground/60 hover:text-primary"
+                          onClick={() => setMobileMenuOpen(false)}
+                        >
+                          {skill}
+                        </Link>
+                      ))}
+                      <Link
+                        href="/providers"
+                        className="text-sm font-black uppercase text-primary"
+                        onClick={() => setMobileMenuOpen(false)}
+                      >
+                        More Technicians +
                       </Link>
                     </div>
                   )}

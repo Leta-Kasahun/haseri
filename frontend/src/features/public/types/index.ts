@@ -4,10 +4,11 @@ export type PublicTechnician = {
   avatar: string | null;
   cover: string | null;
   skills: string[];
-  rating: number;
+  rating: number | string;
   total_reviews: number;
   completed_jobs: number;
   city: string | null;
+  specific_location?: string | null;
   verified: boolean;
 };
 

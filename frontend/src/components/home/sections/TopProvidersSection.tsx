@@ -1,33 +1,16 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Star, MapPin, CheckCircle, Loader2, ChevronRight } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
-import { publicApi } from "@/src/features/public/services/public.api";
+import { useTopTechnicians } from "@/src/features/public/hooks";
 import { resolveAssetUrl } from "@/src/utils/resolve-asset-url";
 import Link from "next/link";
 
 export const TopProvidersSection = () => {
-  const [providers, setProviders] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { technicians: providers, loading } = useTopTechnicians();
   const [displayLimit, setDisplayLimit] = useState(6);
-
-  useEffect(() => {
-    const fetchProviders = async () => {
-      try {
-        const res = await publicApi.getTopTechnicians();
-        const data = res.data?.data || res.data || [];
-        setProviders(Array.isArray(data) ? data : []);
-      } catch (err) {
-        console.error("Failed to fetch top technicians", err);
-        setProviders([]);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchProviders();
-  }, []);
 
   return (
     <section className="py-24 bg-white dark:bg-slate-950">
@@ -99,7 +82,7 @@ export const TopProvidersSection = () => {
                          {provider.specific_location ? `, ${provider.specific_location}` : ""}
                       </span>
                     </div>
-                    <Link href={`/profile/${provider.id}`}>
+                    <Link href={`/providers/${provider.id}`}>
                       <Button className="w-full rounded-none bg-background text-foreground border border-border group-hover:bg-primary group-hover:text-white group-hover:border-primary transition-all font-black text-[10px] md:text-xs tracking-widest uppercase h-11 md:h-12">
                         View Profile
                       </Button>

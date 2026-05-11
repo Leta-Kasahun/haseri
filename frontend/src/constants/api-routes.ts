@@ -74,9 +74,11 @@ export const API_ROUTES = {
   },
   PUBLIC: {
     TOP_TECHNICIANS: "/public/top-technicians",
+    TECHNICIANS: "/public/technicians",
     RECENT_JOBS: "/public/recent-jobs",
     HIGH_PRICE_JOBS: "/public/high-price-jobs",
     STATS: "/public/stats",
+    SKILLS: "/public/skills",
     TECHNICIAN: (id: string) => `/public/technicians/${id}`,
     SEARCH_SUGGESTIONS: "/public/search-suggestions",
   },

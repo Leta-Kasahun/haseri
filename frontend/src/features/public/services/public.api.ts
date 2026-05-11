@@ -14,6 +14,16 @@ export const publicApi = {
   getStats: () =>
     clientApi.get(API_ROUTES.PUBLIC.STATS),
 
+  getSkills: () =>
+    clientApi.get(API_ROUTES.PUBLIC.SKILLS),
+
+  getTechnicians: (skill?: string) =>
+    clientApi.get(
+      skill
+        ? `${API_ROUTES.PUBLIC.TECHNICIANS}?skill=${encodeURIComponent(skill)}`
+        : API_ROUTES.PUBLIC.TECHNICIANS
+    ),
+
   getTechnician: (id: string) =>
     clientApi.get(API_ROUTES.PUBLIC.TECHNICIAN(id)),
 
