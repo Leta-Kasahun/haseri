@@ -1,13 +1,14 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useJobApplications, useJobs } from "@/src/features/jobs/hooks";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/src/components/ui/table";
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
-import { Eye, Check, X as CloseIcon, Briefcase, Calendar, User } from "lucide-react";
+import { Eye, Check, X as CloseIcon, Briefcase, Calendar, User, MapPin, Search } from "lucide-react";
+import { Input } from "@/src/components/ui/input";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
 import { resolveAssetUrl } from "@/src/utils/resolve-asset-url";
@@ -21,6 +22,10 @@ export function CustomerApplicationsTable() {
   const [selectedJobId, setSelectedJobId] = useState<string>("");
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [chatApp, setChatApp] = useState<any>(null);
+  const [filters, setFilters] = useState({
+    search: "",
+    location: ""
+  });
 
   useEffect(() => {
     getMyJobs();
@@ -37,6 +42,42 @@ export function CustomerApplicationsTable() {
       getApplications(selectedJobId);
     }
   }, [selectedJobId, getApplications]);
+
+  const skills = useMemo(() => {
+    const map = new Map<string, string>();
+    applications.forEach((app: any) => {
+      const list = app.provider?.skills || [];
+      list.forEach((item: any) => {
+        const name = typeof item === "string" ? item : item?.skill_name;
+        if (!name) return;
+        const key = String(name).toLowerCase();
+        if (!map.has(key)) map.set(key, String(name));
+      });
+    });
+    return Array.from(map.values()).sort((a, b) => a.localeCompare(b));
+  }, [applications]);
+
+  const filteredApplications = useMemo(() => {
+    const search = filters.search.trim().toLowerCase();
+    const location = filters.location.trim().toLowerCase();
+    const skill = "";
+
+    const list = applications.filter((app: any) => {
+      const provider = app.provider || {};
+      const name = String(provider.name || "").toLowerCase();
+      const city = String(provider.address?.city || "").toLowerCase();
+      const skillList = (provider.skills || []).map((item: any) =>
+        String(typeof item === "string" ? item : item?.skill_name || "").toLowerCase()
+      );
+
+      if (search && !name.includes(search)) return false;
+      if (location && !city.includes(location)) return false;
+      if (skill && !skillList.some((item) => item.includes(skill))) return false;
+      return true;
+    });
+
+    return list;
+  }, [applications, filters]);
 
   const getStatusStyle = (status: string) => {
     switch (status.toLowerCase()) {
@@ -77,6 +118,30 @@ export function CustomerApplicationsTable() {
         </Select>
       </div>
 
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-6 md:p-8 rounded-none">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10">
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              value={filters.search}
+              onChange={(e) => setFilters({ ...filters, search: e.target.value })}
+              placeholder="Name..."
+              className="h-12 pl-11 rounded-none border border-slate-200 focus:border-slate-900 font-bold bg-slate-50/50"
+            />
+          </div>
+
+          <div className="relative">
+            <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <Input
+              value={filters.location}
+              onChange={(e) => setFilters({ ...filters, location: e.target.value })}
+              placeholder="Location..."
+              className="h-12 pl-11 rounded-none border border-slate-200 focus:border-slate-900 font-bold bg-slate-50/50"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Applicants Table */}
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-none overflow-hidden">
         <div className="overflow-x-auto">
@@ -100,14 +165,14 @@ export function CustomerApplicationsTable() {
                     </div>
                   </TableCell>
                 </TableRow>
-              ) : applications.length === 0 ? (
+              ) : filteredApplications.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="py-20 text-center text-[10px] font-bold uppercase tracking-widest text-slate-400">
                     No applications received for this job yet.
                   </TableCell>
                 </TableRow>
               ) : (
-                applications.map((app) => (
+                filteredApplications.map((app) => (
                   <TableRow key={app.id} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40 transition-colors border-b border-slate-50 dark:border-slate-800/50">
                     <TableCell className="py-5 px-8">
                       <div className="flex items-center gap-4">
