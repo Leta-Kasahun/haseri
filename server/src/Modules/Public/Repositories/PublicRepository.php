@@ -39,41 +39,23 @@ class PublicRepository
 
     public function getRecentJobs()
     {
-        return Job::with(['category', 'address'])
-            ->where('status', 'open')
+        return $this->jobsQuery()
             ->orderBy('created_at', 'desc')
             ->limit(10)
             ->get()
             ->map(function ($job) {
-                return [
-                    'id' => $job->id,
-                    'title' => $job->title,
-                    'price' => $job->price,
-                    'category' => $job->category ? $job->category->name : null,
-                    'city' => $job->address ? $job->address->city : null,
-                    'specific_location' => $job->address ? $job->address->specific_location : null,
-                    'created_at' => $job->created_at->toIso8601String(),
-                ];
+                return $this->mapJob($job);
             });
     }
 
     public function getHighPriceJobs()
     {
-        return Job::with(['category', 'address'])
-            ->where('status', 'open')
+        return $this->jobsQuery()
             ->orderBy('price', 'desc')
             ->limit(10)
             ->get()
             ->map(function ($job) {
-                return [
-                    'id' => $job->id,
-                    'title' => $job->title,
-                    'price' => $job->price,
-                    'category' => $job->category ? $job->category->name : null,
-                    'city' => $job->address ? $job->address->city : null,
-                    'specific_location' => $job->address ? $job->address->specific_location : null,
-                    'created_at' => $job->created_at->toIso8601String(),
-                ];
+                return $this->mapJob($job);
             });
     }
 
@@ -126,22 +108,29 @@ class PublicRepository
             $q->where('role', 'provider')->where('is_active', true);
         })->get(['skill_name']);
 
-        $unique = [];
-        foreach ($rows as $row) {
-            $name = $this->normalizeSkill($row->skill_name);
-            if ($name === '') {
-                continue;
-            }
-            $key = strtolower($name);
-            if (!isset($unique[$key])) {
-                $unique[$key] = $name;
-            }
-        }
+        return $this->uniqueSkills(
+            $rows->map(function ($row) {
+                return $row->skill_name;
+            })->all()
+        );
+    }
 
-        $skills = array_values($unique);
-        sort($skills, SORT_NATURAL | SORT_FLAG_CASE);
+    private function jobsQuery()
+    {
+        return Job::with(['category', 'address'])->where('status', 'open');
+    }
 
-        return $skills;
+    private function mapJob($job)
+    {
+        return [
+            'id' => $job->id,
+            'title' => $job->title,
+            'price' => $job->price,
+            'category' => $job->category ? $job->category->name : null,
+            'city' => $job->address ? $job->address->city : null,
+            'specific_location' => $job->address ? $job->address->specific_location : null,
+            'created_at' => $job->created_at->toIso8601String(),
+        ];
     }
 
     private function baseTechniciansQuery()
@@ -153,19 +142,7 @@ class PublicRepository
 
     private function mapTechnician($tech, $limitSkills)
     {
-        $skills = $tech->skills->pluck('skill_name')->filter()->map(function ($skill) {
-            return $this->normalizeSkill($skill);
-        })->filter();
-
-        $unique = [];
-        foreach ($skills as $skill) {
-            $key = strtolower($skill);
-            if (!isset($unique[$key])) {
-                $unique[$key] = $skill;
-            }
-        }
-
-        $skillsList = array_values($unique);
+        $skillsList = $this->uniqueSkills($tech->skills->pluck('skill_name')->all());
         if ($limitSkills) {
             $skillsList = array_slice($skillsList, 0, 2);
         }
@@ -185,7 +162,60 @@ class PublicRepository
 
     private function normalizeSkill($value)
     {
-        $value = trim(preg_replace('/\s+/', ' ', (string) $value));
+        $value = trim((string) $value);
+        if ($value === '') {
+            return '';
+        }
+
+        $value = preg_replace('/[^a-zA-Z0-9\s]+/', ' ', $value);
+        $value = trim(preg_replace('/\s+/', ' ', $value));
+        $value = strtolower($value);
+
+        $value = $this->canonicalizeSkill($value);
+
+        return $this->formatSkillLabel($value);
+    }
+
+    private function uniqueSkills(array $skills)
+    {
+        $unique = [];
+
+        foreach ($skills as $skill) {
+            $name = $this->normalizeSkill($skill);
+            if ($name === '') {
+                continue;
+            }
+            $key = strtolower($name);
+            if (!isset($unique[$key])) {
+                $unique[$key] = $name;
+            }
+        }
+
+        $skills = array_values($unique);
+        sort($skills, SORT_NATURAL | SORT_FLAG_CASE);
+
+        return $skills;
+    }
+
+    private function canonicalizeSkill($value)
+    {
+        if ($value === '') {
+            return '';
+        }
+
+        if (preg_match('/\binstal+er\b|\binstaler\b|\binstaller\b/', $value)) {
+            return 'installer';
+        }
+
         return $value;
+    }
+
+    private function formatSkillLabel($value)
+    {
+        if ($value === '') {
+            return '';
+        }
+
+        return ucwords($value);
     }
 }

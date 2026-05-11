@@ -47,7 +47,7 @@ export const Navbar = () => {
 
   const navLinks = [
     { name: "Technicians", href: "/providers", dropdown: "skills" },
-    { name: "Categories", href: "/categories", dropdown: "categories" },
+    { name: "Jobs Categories", href: "/categories", dropdown: "categories" },
     { name: "How it Works", href: "/#how-it-works" },
     { name: "About", href: "/about" },
   ];

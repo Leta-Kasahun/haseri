@@ -16,6 +16,9 @@ function ProvidersListContent() {
 }
 
 export default function ProvidersPage() {
+  const searchParams = useSearchParams();
+  const skill = searchParams.get("skill");
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
@@ -29,8 +32,11 @@ export default function ProvidersPage() {
             >
               Professionals
             </motion.div>
-            <h1 className="text-3xl md:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-6 text-slate-900 dark:text-white">
-              Verified <span className="text-primary">Technicians</span>
+            <h1 className="text-2xl md:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-6 text-slate-900 dark:text-white">
+              Technicians For
+              <span className="text-primary block md:inline md:ml-3">
+                {skill || "All Skills"}
+              </span>
             </h1>
             <div className="h-1.5 w-16 bg-primary" />
           </div>

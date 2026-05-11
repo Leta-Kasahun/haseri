@@ -124,6 +124,31 @@ import { Navbar } from "@/src/components/layout/Navbar";
 import { Footer } from "@/src/components/layout/Footer";
 
 export default function JobsPage() {
+  const searchParams = useSearchParams();
+  const categoryId = searchParams.get("category_id");
+  const [categoryName, setCategoryName] = useState("All Categories");
+
+  useEffect(() => {
+    const fetchCategoryName = async () => {
+      if (!categoryId) {
+        setCategoryName("All Categories");
+        return;
+      }
+      try {
+        const res = await jobsApi.getCategories();
+        const categories = res.data?.data || res.data || [];
+        const matched = categories.find((cat: { id: number; name: string }) =>
+          String(cat.id) === String(categoryId)
+        );
+        setCategoryName(matched?.name || "Category");
+      } catch {
+        setCategoryName("Category");
+      }
+    };
+
+    fetchCategoryName();
+  }, [categoryId]);
+
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <Navbar />
@@ -137,8 +162,8 @@ export default function JobsPage() {
             >
               Marketplace
             </motion.div>
-            <h1 className="text-3xl md:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-6 text-slate-900 dark:text-white whitespace-nowrap overflow-hidden text-ellipsis">
-              Available <span className="text-primary">Jobs</span> Under This Category
+            <h1 className="text-2xl md:text-5xl font-black font-heading tracking-tight uppercase leading-tight mb-6 text-slate-900 dark:text-white">
+              Jobs Under <span className="text-primary">{categoryName}</span>
             </h1>
             <div className="h-1.5 w-16 bg-primary" />
           </div>
