@@ -234,9 +234,9 @@ export function PostJobModal({ trigger, onSuccess, job }: PostJobModalProps) {
                   <SelectTrigger id="category" className="rounded-none border-2 border-slate-200 focus:border-primary focus:ring-0 uppercase font-bold text-xs h-12 bg-slate-50/50">
                     <SelectValue placeholder="SELECT CATEGORY" />
                   </SelectTrigger>
-                  <SelectContent className="rounded-none border-2 border-slate-900 p-0">
+                  <SelectContent className="rounded-none border-none shadow-2xl p-2 bg-white dark:bg-slate-900">
                     {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id.toString()} className="text-xs font-black uppercase tracking-widest py-3 focus:bg-slate-900 focus:text-white rounded-none">
+                      <SelectItem key={cat.id} value={cat.id.toString()} className="px-4 py-3 text-[11px] font-bold uppercase tracking-widest hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-none">
                         {cat.name}
                       </SelectItem>
                     ))}

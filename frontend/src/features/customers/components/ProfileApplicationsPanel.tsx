@@ -5,6 +5,7 @@ import { Heading } from "@/src/features/shared/components";
 import { CheckCircle2, XCircle, Users, Loader2, MessageSquare } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { useJobApplications } from "@/src/features/jobs/hooks";
 import type { Job, JobApplication } from "@/src/features/jobs/types";
 import { formatDate } from "@/src/utils/date-utils";
@@ -58,18 +59,25 @@ export function ProfileApplicationsPanel({ jobs }: ProfileApplicationsPanelProps
         </div>
         <div className="flex items-center gap-2">
           <Users className="w-4 h-4 text-primary" />
-          <select
-            value={selectedJobId ?? ""}
-            onChange={(event) => setSelectedJobId(Number(event.target.value))}
-            className="h-9 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-[11px] font-bold uppercase tracking-widest px-3 text-slate-700"
+          <Select
+            value={selectedJobId ? String(selectedJobId) : ""}
+            onValueChange={(value) => setSelectedJobId(value ? Number(value) : null)}
           >
-            {jobs.length === 0 && <option value="">No jobs yet</option>}
-            {jobs.map((job) => (
-              <option key={job.id} value={job.id}>
-                {job.title}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="h-9 rounded-none border-2 border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900 text-[11px] font-bold uppercase tracking-widest px-3 text-slate-700 focus:border-primary">
+              <SelectValue placeholder="No jobs yet" />
+            </SelectTrigger>
+            <SelectContent className="rounded-none border-none shadow-2xl p-2 bg-white dark:bg-slate-900">
+              {jobs.map((job) => (
+                <SelectItem
+                  key={job.id}
+                  value={String(job.id)}
+                  className="px-4 py-3 text-[11px] font-bold uppercase tracking-widest hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-none"
+                >
+                  {job.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
 

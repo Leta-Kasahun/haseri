@@ -83,10 +83,10 @@ export function TechnicianJobBrowser() {
             />
           </div>
           
-          <select 
+          <select
             value={filters.category_id}
             onChange={e => setFilters({...filters, category_id: e.target.value})}
-            className="h-12 px-4 bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-none font-bold text-xs uppercase tracking-widest outline-none focus:border-slate-900 appearance-none cursor-pointer"
+            className="h-12 px-4 bg-slate-50/50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-none font-bold text-xs uppercase tracking-widest outline-none focus:border-primary appearance-none cursor-pointer"
           >
             <option value="">All Categories</option>
             {categories.map(cat => (
@@ -104,10 +104,10 @@ export function TechnicianJobBrowser() {
             />
           </div>
 
-          <select 
+          <select
             value={filters.sort}
             onChange={e => setFilters({...filters, sort: e.target.value as any})}
-            className="h-12 px-4 bg-slate-50/50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-none font-bold text-xs uppercase tracking-widest outline-none focus:border-slate-900 appearance-none cursor-pointer"
+            className="h-12 px-4 bg-slate-50/50 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-none font-bold text-xs uppercase tracking-widest outline-none focus:border-primary appearance-none cursor-pointer"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>

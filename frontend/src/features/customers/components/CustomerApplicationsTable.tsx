@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/src/components/ui/badge";
 import { Button } from "@/src/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/src/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/src/components/ui/select";
 import { Eye, Check, X as CloseIcon, Briefcase, Calendar, User } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import { format } from "date-fns";
@@ -58,15 +59,22 @@ export function CustomerApplicationsTable() {
           <h2 className="text-sm font-black uppercase tracking-[0.2em] text-slate-900 dark:text-white">Select Job Posting</h2>
           <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Reviewing applications for specific services</p>
         </div>
-        <select
-          value={selectedJobId}
-          onChange={(e) => setSelectedJobId(e.target.value)}
-          className="h-12 px-4 bg-slate-50 dark:bg-slate-800 border-2 border-slate-100 dark:border-slate-800 rounded-none font-black text-[11px] uppercase tracking-widest outline-none focus:border-primary transition-all min-w-[280px]"
-        >
-          {jobs.map((job) => (
-            <option key={job.id} value={job.id}>{job.title}</option>
-          ))}
-        </select>
+        <Select value={selectedJobId} onValueChange={setSelectedJobId}>
+          <SelectTrigger className="h-12 px-4 bg-slate-50/50 dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-800 rounded-none font-black text-[11px] uppercase tracking-widest focus:border-primary min-w-[280px]">
+            <SelectValue placeholder="Select job" />
+          </SelectTrigger>
+          <SelectContent className="rounded-none border-none shadow-2xl p-2 bg-white dark:bg-slate-900">
+            {jobs.map((job) => (
+              <SelectItem
+                key={job.id}
+                value={String(job.id)}
+                className="px-4 py-3 text-[11px] font-bold uppercase tracking-widest hover:text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors rounded-none"
+              >
+                {job.title}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
 
       {/* Applicants Table */}
