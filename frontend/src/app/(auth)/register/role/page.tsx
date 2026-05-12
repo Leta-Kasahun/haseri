@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "@/src/components/ui/button";
-import { useGoogleRoleSelection } from "@/src/features/auth/shared";
 import { useRegister } from "@/src/features/auth/user/hooks/useRegister";
 import { useRouter } from "next/navigation";
 import type { RegisterInput, UserRole } from "@/src/features/auth/user/types";
@@ -14,14 +13,6 @@ export default function RegisterRolePage() {
   const [registerDataChecked, setRegisterDataChecked] = useState(false);
   const registerDataKey = "haseri:register:data";
 
-  const {
-    googleUserId,
-    googleRoleError,
-    googleRoleLoading,
-    googleStorageChecked,
-    assignGoogleRole,
-  } = useGoogleRoleSelection();
-
   useEffect(() => {
     const stored = sessionStorage.getItem(registerDataKey);
     if (stored) {
@@ -31,22 +22,19 @@ export default function RegisterRolePage() {
   }, []);
 
   useEffect(() => {
-    if (!registerDataChecked || !googleStorageChecked) return;
-    if (!registerData && !googleUserId) {
+    if (!registerDataChecked) return;
+    if (!registerData) {
       router.push("/register");
     }
-  }, [googleStorageChecked, googleUserId, registerData, registerDataChecked, router]);
+  }, [registerData, registerDataChecked, router]);
 
   const handleRoleSelect = async (role: UserRole) => {
-    const handled = await assignGoogleRole(role);
-    if (handled) return;
-
     if (!registerData) return;
     sessionStorage.removeItem(registerDataKey);
     await register({ ...registerData, role });
   };
 
-  const isSubmitting = loading || googleRoleLoading;
+  const isSubmitting = loading;
 
   return (
     <div className="w-full max-w-xl mx-auto">
@@ -76,9 +64,9 @@ export default function RegisterRolePage() {
             Join as Customer
           </Button>
 
-          {(error || googleRoleError) && (
+          {error && (
             <div className="p-4 bg-destructive/5 border-l-4 border-destructive text-destructive text-[10px] font-bold uppercase tracking-widest">
-              {googleRoleError || error}
+              {error}
             </div>
           )}
         </div>

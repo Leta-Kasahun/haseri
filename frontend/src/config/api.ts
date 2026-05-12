@@ -2,8 +2,6 @@ export const API_ROUTES = {
   AUTH: {
     REGISTER: "/auth/register",
     LOGIN: "/auth/login",
-    GOOGLE: "/auth/google",
-    GOOGLE_ROLE: "/auth/google/role",
     REFRESH: "/auth/refresh",
     LOGOUT: "/auth/logout",
     FORGOT_PASSWORD: "/auth/forgot-password",

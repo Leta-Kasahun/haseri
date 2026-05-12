@@ -6,8 +6,8 @@ const parsedEnv = parseFrontendPublicEnv({
   NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   NEXT_PUBLIC_API_PREFIX: process.env.NEXT_PUBLIC_API_PREFIX,
   NEXT_PUBLIC_API_TIMEOUT_MS: process.env.NEXT_PUBLIC_API_TIMEOUT_MS,
-  NEXT_PUBLIC_GOOGLE_CLIENT_ID: process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
+  NODE_ENV: process.env.NODE_ENV,
 } as NodeJS.ProcessEnv);
 const trimTrailingSlash = (value: string): string => value.replace(/\/+$/, "");
 const appUrl = trimTrailingSlash(parsedEnv.NEXT_PUBLIC_BASE_URL || parsedEnv.NEXT_PUBLIC_APP_URL);
@@ -19,7 +19,6 @@ export const env = {
   API_PREFIX: apiPrefix,
   API_BASE_URL: parsedEnv.NEXT_PUBLIC_API_URL || `${backendOrigin}${apiPrefix}`,
   API_TIMEOUT_MS: parsedEnv.NEXT_PUBLIC_API_TIMEOUT_MS,
-  GOOGLE_CLIENT_ID: parsedEnv.NEXT_PUBLIC_GOOGLE_CLIENT_ID,
   APP_NAME: parsedEnv.NEXT_PUBLIC_APP_NAME,
   IS_PRODUCTION: process.env.NODE_ENV === "production",
 } as const;

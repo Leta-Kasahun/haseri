@@ -9,13 +9,6 @@ import { useLogin } from "../hooks/useLogin";
 import { Mail, Phone, Lock, ArrowRight } from "lucide-react";
 import { emailSchema, phoneSchema, passwordSchema } from "@/src/utils/validators";
 import { getRequiredSchemaError } from "@/src/utils/validators/form";
-import { useGoogleRegister } from "../../shared";
-
-declare global {
-  interface Window {
-    google?: any;
-  }
-}
 
 export const LoginForm = () => {
   const { login, loading, error } = useLogin();
@@ -60,12 +53,6 @@ export const LoginForm = () => {
       setErrors((prev) => ({ ...prev, password: passwordError }));
     }
   };
-
-  const googleAuth = useGoogleRegister({
-    buttonText: "signin_with",
-  });
-
-
 
   return (
     <div className="w-full max-w-xl mx-auto px-4 sm:px-0">
@@ -187,28 +174,6 @@ export const LoginForm = () => {
             {!loading && <ArrowRight className="ml-3 w-4 h-4" />}
           </Button>
         </form>
-
-        <div className="mt-12">
-          <div className="relative mb-10">
-            <div className="absolute inset-0 flex items-center">
-              <span className="w-full border-t border-border/50" />
-            </div>
-            <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-[0.3em]">
-              <span className="bg-white/80 dark:bg-slate-950/80 backdrop-blur-sm px-6 text-muted-foreground">Security Verified</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 gap-4">
-            <div className="w-full h-14 rounded-none border border-border bg-white text-slate-900 font-bold uppercase text-[10px] tracking-[0.2em] hover:bg-white/90 transition-all flex items-center justify-center">
-              <div id={googleAuth.googleButtonId} className="w-full" />
-            </div>
-            {googleAuth.googleError && (
-              <p className="text-[10px] text-destructive font-semibold uppercase tracking-wider">
-                {googleAuth.googleError}
-              </p>
-            )}
-          </div>
-        </div>
 
         <p className="mt-10 text-center text-xs font-medium text-muted-foreground tracking-tight">
           New to Haseri?{" "}

@@ -7,6 +7,4 @@ export const userAuthApi = {
   logout: () => clientApi.post("/auth/logout"),
   forgotPassword: (data: ForgotPasswordInput) => clientApi.post("/auth/forgot-password", data),
   resetPassword: (data: ResetPasswordInput) => clientApi.post("/auth/reset-password", data),
-  google: (data: { id_token: string }) => clientApi.post("/auth/google", data),
-  googleRole: (data: { user_id: string; role: string }) => clientApi.post("/auth/google/role", data),
 };
