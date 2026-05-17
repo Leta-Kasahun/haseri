@@ -1,0 +1,41 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend.yml'
+  pull_request:
+    branches: [main, master]
+    paths:
+      - 'server/**'
+      - '.github/workflows/backend.yml'
+
+jobs:
+  build:
+    name: Install & Syntax Check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    defaults:
+      run:
+        working-directory: server
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, pdo, pdo_mysql, gd
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
+
+      - name: Check PHP syntax
+        run: find src -name "*.php" -print0 | xargs -0 -n1 php -l
