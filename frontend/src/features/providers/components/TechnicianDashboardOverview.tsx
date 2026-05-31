@@ -26,6 +26,8 @@ import { useJobs } from "@/src/features/jobs/hooks";
 import { providersApi } from "@/src/features/providers/services/providers.api";
 import { JobApplyModal } from "@/src/features/jobs/components";
 import { formatDistanceToNow } from "date-fns";
+import { jobsApi } from "@/src/features/jobs/services";
+import type { JobApplication } from "@/src/features/jobs/types";
 
 const itemVariants = {
   hidden: { y: 20, opacity: 0 },
@@ -48,19 +50,78 @@ export function TechnicianDashboardOverview() {
   const [status, setStatus] = useState<{ status: string; verified_at: string | null } | null>(null);
   const [stats, setStats] = useState<any>(null);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [derivedActive, setDerivedActive] = useState<number | null>(null);
+  const [derivedSuccessRate, setDerivedSuccessRate] = useState<number | null>(null);
+
+  const normalizeStats = (raw: any) => {
+    const data = raw?.data ?? raw;
+    const toNumber = (value: unknown) => {
+      const parsed = Number(value);
+      return Number.isFinite(parsed) ? parsed : 0;
+    };
+
+    return {
+      completed_jobs: toNumber(data?.completed_jobs ?? data?.completedJobs),
+      active_requests: toNumber(
+        data?.active_requests ?? data?.activeRequests ?? data?.active_jobs ?? data?.activeJobs
+      ),
+      success_rate: toNumber(data?.success_rate ?? data?.successRate),
+      rating: toNumber(data?.rating ?? data?.average_rating ?? data?.averageRating),
+      review_count: toNumber(data?.review_count ?? data?.reviewCount ?? data?.total_reviews),
+    };
+  };
+
+  const deriveActiveFromApplications = (applications: JobApplication[]) =>
+    applications.filter((app) => {
+      if (app.status !== "accepted") return false;
+      const jobStatus = app.job?.status;
+      if (!jobStatus) return true;
+      return jobStatus === "assigned" || jobStatus === "in_progress";
+    }).length;
 
   useEffect(() => {
+    let ignore = false;
     const init = async () => {
-      const [statusData, statsRes] = await Promise.all([
-        checkStatus(),
-        providersApi.getStats()
-      ]);
-      setStatus(statusData);
-      setStats(statsRes.data.data);
-      setStatsLoading(false);
+      setStatsLoading(true);
+      try {
+        const [statusResult, statsResult, applicationsResult] = await Promise.allSettled([
+          checkStatus(),
+          providersApi.getStats(),
+          jobsApi.getMyApplications()
+        ]);
+
+        if (!ignore) {
+          if (statusResult.status === "fulfilled") {
+            setStatus(statusResult.value);
+          }
+          if (statsResult.status === "fulfilled") {
+            setStats(normalizeStats(statsResult.value.data));
+          }
+          if (applicationsResult.status === "fulfilled") {
+            const applications = applicationsResult.value.data?.data ?? [];
+            const activeCount = deriveActiveFromApplications(applications);
+            setDerivedActive(activeCount);
+
+            const normalized = normalizeStats(statsResult.status === "fulfilled" ? statsResult.value.data : null);
+            const completedCount = normalized.completed_jobs;
+            const total = completedCount + activeCount;
+            const rate = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+            setDerivedSuccessRate(rate);
+          }
+        }
+      } finally {
+        if (!ignore) {
+          setStatsLoading(false);
+        }
+      }
+
       getJobs({ limit: 4 });
     };
+
     init();
+    return () => {
+      ignore = true;
+    };
   }, [checkStatus, getJobs]);
 
   const isVerified = status?.status === "approved";
@@ -69,29 +130,29 @@ export function TechnicianDashboardOverview() {
   const dashboardStats = [
     {
       title: "Completed Jobs",
-      value: stats?.completed_jobs || "0",
+      value: stats?.completed_jobs ?? 0,
       change: "Lifetime total",
       icon: <CheckCircle2 size={18} />,
       positive: true
     },
     {
       title: "Active Requests",
-      value: stats?.active_requests || "0",
+      value: derivedActive ?? stats?.active_requests ?? 0,
       change: "Jobs in progress",
       icon: <Briefcase size={18} />,
       positive: true
     },
     {
       title: "Success Rate",
-      value: `${stats?.success_rate || 100}%`,
+      value: `${derivedSuccessRate ?? stats?.success_rate ?? 0}%`,
       change: "Excellent",
       icon: <TrendingUp size={18} />,
       positive: true
     },
     {
       title: "Client Rating",
-      value: `${stats?.rating || '0.0'}/5`,
-      change: `${stats?.review_count || 0} Reviews`,
+      value: `${(stats?.rating ?? 0).toFixed(1)}/5`,
+      change: `${stats?.review_count ?? 0} Reviews`,
       icon: <Star size={18} />,
       positive: true
     },
