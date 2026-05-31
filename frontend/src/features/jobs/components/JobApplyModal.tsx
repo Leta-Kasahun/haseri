@@ -15,8 +15,7 @@ import { Label } from "@/src/components/ui/label";
 import { 
   Briefcase, 
   Send, 
-  Loader2,
-  AlertCircle
+  Loader2
 } from "lucide-react";
 import { useJobApplications } from "../hooks/useJobApplications";
 import { useTechnicianApplications } from "../hooks/useTechnicianApplications";
@@ -34,10 +33,12 @@ interface JobApplyModalProps {
 export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: JobApplyModalProps) {
   const [open, setOpen] = useState(false);
   const { apply, loading: applyLoading } = useJobApplications();
-  const { updateApplication, loading: updateLoading } = useTechnicianApplications();
+  const { updateApplication, loading: updateLoading, fetchMyApplications } = useTechnicianApplications();
   
   const [verificationStatus, setVerificationStatus] = useState<string>("approved");
   const [checkingStatus, setCheckingStatus] = useState(false);
+  const [checkingApplications, setCheckingApplications] = useState(false);
+  const [hasApplied, setHasApplied] = useState(false);
 
   useEffect(() => {
     if (open && !isEdit) {
@@ -49,7 +50,33 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
     }
   }, [open, isEdit]);
 
+  useEffect(() => {
+    if (open && !isEdit) {
+      const jobId = job?.id ?? job?.job_id;
+      setHasApplied(false);
+
+      if (!jobId) {
+        return;
+      }
+
+      setCheckingApplications(true);
+      fetchMyApplications()
+        .then((apps) => {
+          const applied = Array.isArray(apps)
+            ? apps.some(
+                (app) =>
+                  app.job_id === jobId && app.status !== "withdrawn" && app.status !== "rejected"
+              )
+            : false;
+          setHasApplied(applied);
+        })
+        .catch(() => setHasApplied(false))
+        .finally(() => setCheckingApplications(false));
+    }
+  }, [open, isEdit, fetchMyApplications, job?.id]);
+
   const loading = isEdit ? updateLoading : applyLoading;
+  const isApplied = !isEdit && hasApplied;
 
   const [formData, setFormData] = useState({
     proposed_price: isEdit ? application?.proposed_price?.toString() : (job?.price?.toString() || ""),
@@ -58,6 +85,11 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!isEdit && isApplied) {
+      toast.error("You have already applied for this job.");
+      return;
+    }
 
     if (isEdit) {
       const result = await updateApplication(application.id.toString(), {
@@ -80,6 +112,7 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
 
       if (result.success) {
         toast.success("Application submitted successfully!");
+        setHasApplied(true);
         setOpen(false);
         onSuccess?.();
       } else {
@@ -90,14 +123,30 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
 
   const isRestricted = verificationStatus !== "approved" && !isEdit;
 
+  const renderTrigger = () => {
+    if (trigger && React.isValidElement(trigger)) {
+      const nextChildren = isApplied ? "Applied" : trigger.props.children;
+      return React.cloneElement(trigger, {
+        disabled: isApplied || checkingApplications,
+        "aria-disabled": isApplied || checkingApplications,
+        children: nextChildren,
+      });
+    }
+
+    return (
+      <Button
+        className="h-10 px-6 bg-primary text-white hover:bg-rose-700 rounded-none font-black uppercase tracking-widest text-[9px] transition-all"
+        disabled={isApplied || checkingApplications}
+      >
+        {isApplied ? "Applied" : isEdit ? "Edit Application" : "Apply Now"}
+      </Button>
+    );
+  };
+
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        {trigger || (
-          <Button className="h-10 px-6 bg-primary text-white hover:bg-rose-700 rounded-none font-black uppercase tracking-widest text-[9px] transition-all">
-            {isEdit ? "Edit Application" : "Apply Now"}
-          </Button>
-        )}
+        {renderTrigger()}
       </DialogTrigger>
       <DialogContent className="max-w-[95vw] sm:max-w-[740px] bg-white dark:bg-slate-950 rounded-none border-4 border-slate-900 dark:border-white p-0 overflow-hidden shadow-[12px_12px_0px_0px_rgba(15,23,42,0.1)] flex flex-col">
         <div className="bg-slate-900 p-5 md:p-6 text-white relative shrink-0">
@@ -139,7 +188,7 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
           <div className="pt-4 flex justify-end">
             <Button
               type="submit"
-              disabled={loading || isRestricted || checkingStatus}
+              disabled={loading || isRestricted || checkingStatus || checkingApplications || isApplied}
               className="w-full h-14 bg-slate-900 text-white hover:bg-primary rounded-none font-black uppercase tracking-widest text-[11px] transition-all disabled:opacity-50"
             >
               {checkingStatus ? (
@@ -147,6 +196,13 @@ export function JobApplyModal({ job, application, isEdit, trigger, onSuccess }: 
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   Checking...
                 </>
+              ) : checkingApplications ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Checking...
+                </>
+              ) : isApplied ? (
+                "Applied"
               ) : isRestricted ? (
                 "First verify your identity"
               ) : loading ? (
