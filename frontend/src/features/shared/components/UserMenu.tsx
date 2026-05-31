@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/hooks/useAuth";
+import { userAuthApi } from "@/src/features/auth/user/services";
+import { setAccessToken } from "@/src/lib/api/client";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -51,9 +53,16 @@ export const UserMenu = () => {
 
   if (!user) return null;
 
-  const handleLogout = () => {
-    logout();
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      await userAuthApi.logout();
+    } catch {
+      // Ignore logout errors and clear local state anyway.
+    } finally {
+      setAccessToken(null);
+      logout();
+      router.push("/login");
+    }
   };
 
   const initials = `${user?.first_name?.[0] || ""}${user?.last_name?.[0] || ""}`.toUpperCase() || "U";
