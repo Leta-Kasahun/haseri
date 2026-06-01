@@ -176,7 +176,9 @@ const TechnicianVerifyPage = () => {
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                     <Clock className="w-5 h-5 text-primary" />
-                    <Heading level={3} className="text-[10px] font-black uppercase tracking-[0.3em]">Status Overview</Heading>
+                    <h3 className="text-[11px] font-black uppercase tracking-widest text-black dark:text-white whitespace-nowrap">
+                      Status Overview
+                    </h3>
                 </div>
                 <div className="space-y-4">
                     <div className="p-4 bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
@@ -204,7 +206,9 @@ const TechnicianVerifyPage = () => {
               <div className="space-y-6">
                 <div className="flex items-center gap-3">
                     <ShieldCheck className="w-5 h-5 text-primary" />
-                    <Heading level={3} className="text-[10px] font-black uppercase tracking-[0.3em]">Verified Privileges</Heading>
+                    <h3 className="text-[11px] font-black uppercase tracking-widest text-black dark:text-white whitespace-nowrap">
+                      Verified Privileges
+                    </h3>
                 </div>
                 <ul className="space-y-4">
                     {[
